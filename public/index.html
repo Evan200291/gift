@@ -24,11 +24,6 @@
     <section class="hero">
         <div class="shell hero-inner">
             <div class="hero-copy">
-                <span class="hero-badge">
-                    <span class="dot"></span>
-                    <span data-i18n="heroBadge">Verified sellers · Direct contact</span>
-                </span>
-
                 <h1 class="display" id="heroTitle">Buy Game Accounts From Verified Sellers</h1>
                 <p class="hero-sub" id="heroSub">eFootball, Mobile Legends, PUBG Mobile and Free Fire accounts listed by subscribed resellers.</p>
 
@@ -76,7 +71,7 @@
         <div class="shell">
             <div class="section-head">
                 <div>
-                    <span class="eyebrow" data-i18n="categoriesTitle">Pick your game</span>
+                    <span class="eyebrow" data-i18n="categoriesEyebrow">Categories</span>
                     <h2 data-i18n="categoriesTitle">Pick your game</h2>
                     <p data-i18n="categoriesSub">Four titles, one marketplace.</p>
                 </div>
@@ -95,46 +90,22 @@
                     <p data-i18n="listingsSub">Fresh stock from every seller on the platform.</p>
                 </div>
             </div>
-        </div>
 
-        <div class="toolbar">
-            <div class="shell">
-                <div class="toolbar-inner">
-                    <div class="search" id="searchWrap">
-                        <span class="ico" id="searchIcon"></span>
-                        <input type="search" id="searchInput" autocomplete="off"
-                               data-i18n-ph="searchPlaceholder" placeholder="Search…"
-                               data-i18n-aria="searchPlaceholder" aria-label="Search">
-                        <button type="button" class="clear" id="searchClear" data-i18n-aria="clearSearch" aria-label="Clear"></button>
-                    </div>
-
-                    <div class="price-range" id="priceRange">
-                        <input type="number" id="priceMin" min="0" step="1" inputmode="numeric" data-i18n-ph="priceMin" placeholder="Min $" aria-label="Minimum price">
-                        <span class="to">–</span>
-                        <input type="number" id="priceMax" min="0" step="1" inputmode="numeric" data-i18n-ph="priceMax" placeholder="Max $" aria-label="Maximum price">
-                    </div>
-
-                    <div class="select-wrap">
-                        <select id="gameSelect" data-i18n-aria="allGames" aria-label="Game"></select>
-                    </div>
-
-                    <div class="select-wrap">
-                        <select id="sortSelect" aria-label="Sort">
-                            <option value="newest" data-i18n="sortNewest">Newest first</option>
-                            <option value="price_asc" data-i18n="sortPriceAsc">Price: low to high</option>
-                            <option value="price_desc" data-i18n="sortPriceDesc">Price: high to low</option>
-                            <option value="oldest" data-i18n="sortOldest">Oldest first</option>
-                        </select>
-                    </div>
-
-                    <span class="result-count" id="resultCount"></span>
-                </div>
+            <div class="search" id="searchWrap" style="max-width:420px;margin-bottom:14px;">
+                <span class="ico" id="searchIcon"></span>
+                <input type="search" id="searchInput" autocomplete="off"
+                       data-i18n-ph="searchPlaceholder" placeholder="Search…"
+                       data-i18n-aria="searchPlaceholder" aria-label="Search">
+                <button type="button" class="clear" id="searchClear" data-i18n-aria="clearSearch" aria-label="Clear"></button>
             </div>
-        </div>
 
-        <div class="shell">
+            <div class="chips" id="homeGameChips"></div>
+
             <div id="grid" class="grid" aria-live="polite"></div>
-            <div id="pagination" class="pagination"></div>
+
+            <div class="listings-more">
+                <a class="btn btn-outline" href="/browse" id="viewMoreBtn" data-i18n="viewAll">View all</a>
+            </div>
         </div>
     </section>
 

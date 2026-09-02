@@ -109,6 +109,14 @@
     const games = () => (SITE.games && SITE.games.length ? SITE.games : GAME_FALLBACK);
     const gameById = (id) => games().find((g) => g.id === id) || games()[0];
 
+    const GAME_LOGO = {
+        efootball: '/img/games/efootball.svg',
+        mlbb: '/img/games/mlbb.svg',
+        pubg: '/img/games/pubg.png',
+        freefire: '/img/games/freefire.png',
+    };
+    function gameLogo(id) { return GAME_LOGO[id] || ''; }
+
     const GAME_KEY = {
         efootball: 'Efootball', mlbb: 'Mlbb', pubg: 'Pubg', freefire: 'Freefire',
     };
@@ -388,7 +396,7 @@
         // formatting
         esc, truncate, money, shortDate, monthYear,
         // games
-        games, gameById, gameName, fieldLabel, gameIcon,
+        games, gameById, gameName, fieldLabel, gameIcon, gameLogo,
         // ui
         ICONS, statusPill, channelsFrom, channelList,
         toast, copyText, skeletonCards, emptyState,

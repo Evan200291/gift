@@ -5,42 +5,57 @@
     'use strict';
 
     const {
-        t, esc, api, site, siteText, games, gameName, gameById, gameIcon,
-        ICONS, toast, skeletonCards, emptyState, applyTranslations,
-        getLang, $, $$, debounce, shortDate, truncate,
+        t, esc, api, site, siteText, games, gameName, gameById, gameIcon, gameLogo,
+        ICONS, skeletonCards, emptyState, applyTranslations,
+        getLang, $, $$, shortDate, truncate, debounce,
     } = window.EX;
 
-    const state = { page: 1, totalPages: 1, total: 0, q: '', game: '', sort: 'newest', minPrice: '', maxPrice: '', busy: false };
+    const state = { game: '', q: '', busy: false };
+    const PREVIEW_LIMIT = 6;
 
     /* ---------------- categories ---------------- */
 
+    function setGame(id) {
+        state.game = state.game === id ? '' : id;
+        $$('.cat-card').forEach((c) => c.classList.toggle('active', c.dataset.game === state.game));
+        $$('#homeGameChips .chip').forEach((c) => c.classList.toggle('active', c.dataset.game === state.game));
+        load();
+    }
+
     function renderCategories(counts) {
         const rail = $('#catRail');
-        rail.innerHTML = games().map((g) => `
+        rail.innerHTML = games().map((g) => {
+            const logo = gameLogo(g.id);
+            const glyph = logo
+                ? `<img src="${esc(logo)}" alt="" loading="lazy">`
+                : gameIcon(g.id);
+            return `
             <button type="button" class="cat-card${state.game === g.id ? ' active' : ''}"
                     data-game="${esc(g.id)}" style="--cat:${esc(g.accent || '#7c5cff')}">
-                <span class="cat-glyph">${gameIcon(g.id)}</span>
+                <span class="cat-glyph">${glyph}</span>
                 <span class="cat-meta">
                     <b>${esc(gameName(g.id))}</b>
                     <span>${(counts && counts[g.id]) || 0} ${esc(t('accountsAvailable'))}</span>
                 </span>
-            </button>`).join('');
+                <span class="cat-go">${ICONS.arrow}</span>
+            </button>`;
+        }).join('');
 
         $$('.cat-card', rail).forEach((card) => {
-            card.addEventListener('click', () => {
-                state.game = state.game === card.dataset.game ? '' : card.dataset.game;
-                $('#gameSelect').value = state.game;
-                $$('.cat-card', rail).forEach((c) => c.classList.toggle('active', c.dataset.game === state.game));
-                load(1, true);
-            });
+            card.addEventListener('click', () => setGame(card.dataset.game));
         });
     }
 
-    function renderGameSelect() {
-        const select = $('#gameSelect');
-        select.innerHTML = `<option value="">${esc(t('allGames'))}</option>`
-            + games().map((g) => `<option value="${esc(g.id)}">${esc(gameName(g.id))}</option>`).join('');
-        select.value = state.game;
+    function renderChips() {
+        const wrap = $('#homeGameChips');
+        if (!wrap) return;
+        const items = [{ id: '', label: t('allGames') }, ...games().map((g) => ({ id: g.id, label: gameName(g.id) }))];
+        wrap.innerHTML = items.map((g) =>
+            `<button type="button" class="chip${state.game === g.id ? ' active' : ''}" data-game="${esc(g.id)}">${esc(g.label)}</button>`
+        ).join('');
+        $$('.chip', wrap).forEach((chip) => {
+            chip.addEventListener('click', () => setGame(chip.dataset.game));
+        });
     }
 
     /* ---------------- listings ---------------- */
@@ -48,7 +63,7 @@
     function renderGrid(items) {
         const grid = $('#grid');
         if (!items.length) {
-            grid.innerHTML = (state.q || state.game || state.minPrice || state.maxPrice)
+            grid.innerHTML = (state.game || state.q)
                 ? emptyState('noResultsTitle', 'noResultsBody', '🔍')
                 : emptyState('emptyTitle', 'emptyBody', '🎮');
             return;
@@ -58,7 +73,7 @@
         // Slot the in-grid advertisement in after the first row so it reads as
         // part of the catalogue rather than an interruption.
         if (cards.length >= 4) {
-            cards.splice(Math.min(6, cards.length), 0,
+            cards.splice(Math.min(4, cards.length), 0,
                 '<div data-ad="home-inline" data-ad-variant="card"></div>');
         }
         grid.innerHTML = cards.join('');
@@ -66,35 +81,30 @@
         window.UI.mountAds();
     }
 
-    async function load(page, scrollTo) {
+    function browseHref() {
+        const params = new URLSearchParams();
+        if (state.game) params.set('game', state.game);
+        if (state.q) params.set('q', state.q);
+        const qs = params.toString();
+        return qs ? `/browse?${qs}` : '/browse';
+    }
+
+    async function load() {
         if (state.busy) return;
         state.busy = true;
-        state.page = page || 1;
-        $('#grid').innerHTML = skeletonCards(6);
-        $('#pagination').innerHTML = '';
+        $('#grid').innerHTML = skeletonCards(PREVIEW_LIMIT);
 
         try {
             const params = new URLSearchParams();
-            if (state.q) params.set('q', state.q);
             if (state.game) params.set('game', state.game);
-            if (state.minPrice) params.set('minPrice', state.minPrice);
-            if (state.maxPrice) params.set('maxPrice', state.maxPrice);
-            if (state.sort !== 'newest') params.set('sort', state.sort);
-            params.set('page', String(state.page));
+            if (state.q) params.set('q', state.q);
+            params.set('limit', String(PREVIEW_LIMIT));
 
             const data = await api(`/api/listings?${params}`);
-            state.page = data.page;
-            state.totalPages = data.totalPages;
-            state.total = data.total;
-
             renderGrid(data.items || []);
-            window.UI.pagination($('#pagination'), state, (p) => load(p, true));
-            $('#resultCount').textContent = data.total ? `${data.total} ${t('resultsCount')}` : '';
 
-            if (scrollTo) {
-                const target = document.getElementById('listings');
-                if (target) window.scrollTo({ top: target.offsetTop - 90, behavior: 'smooth' });
-            }
+            const more = $('#viewMoreBtn');
+            if (more) more.href = browseHref();
         } catch {
             $('#grid').innerHTML = emptyState('errorTitle', 'errorBody', '⚠️');
         } finally {
@@ -102,10 +112,33 @@
         }
     }
 
+    function initSearch() {
+        const wrap = $('#searchWrap');
+        const input = $('#searchInput');
+        const clear = $('#searchClear');
+        if (!wrap || !input || !clear) return;
+
+        $('#searchIcon').innerHTML = ICONS.search;
+        clear.innerHTML = ICONS.close;
+
+        const sync = () => wrap.classList.toggle('has-value', input.value.length > 0);
+        const run = debounce(() => { state.q = input.value.trim(); load(); }, 320);
+
+        input.addEventListener('input', () => { sync(); run(); });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); state.q = input.value.trim(); load(); }
+            if (e.key === 'Escape') { input.value = ''; sync(); state.q = ''; load(); }
+        });
+        clear.addEventListener('click', () => {
+            input.value = ''; sync(); state.q = ''; input.focus(); load();
+        });
+    }
+
     /* ---------------- sellers + blog ---------------- */
 
     function hudSellerCard(s) {
-        const accent = (gameById((s.games || [])[0]) || {}).accent || 'var(--neon-deep)';
+        const firstGame = (s.games || [])[0];
+        const accent = (gameById(firstGame) || {}).accent || 'var(--neon-deep)';
         const av = s.avatar
             ? `<img src="${esc(s.avatar)}" alt="">`
             : esc((s.displayName || s.username || '?').charAt(0).toUpperCase());
@@ -114,7 +147,7 @@
                 <span class="hud-av" style="background:${esc(accent)}">${av}</span>
                 <span>
                     <span class="hud-name">${esc(truncate(s.displayName || s.username, 16))}${s.verified ? ` ${ICONS.verified}` : ''}</span>
-                    <span class="hud-game">${esc(gameName((s.games || [])[0]) || '')}</span>
+                    ${firstGame ? `<span class="hud-game">${esc(gameName(firstGame))}</span>` : ''}
                 </span>
             </div>
             <div class="hud-sel-bot"><span><b>${s.listingCount || 0}</b> ${esc(t('sellerListings'))}</span><span class="go">${esc(t('viewDetails'))} →</span></div>
@@ -200,67 +233,24 @@
         if (site().sellerPitch) $('#sellPitch').textContent = site().sellerPitch;
     }
 
-    /* ---------------- toolbar ---------------- */
-
-    function initToolbar() {
-        const wrap = $('#searchWrap');
-        const input = $('#searchInput');
-        const clear = $('#searchClear');
-
-        $('#searchIcon').innerHTML = ICONS.search;
-        clear.innerHTML = ICONS.close;
-
-        const sync = () => wrap.classList.toggle('has-value', input.value.length > 0);
-        const run = debounce(() => { state.q = input.value.trim(); load(1); }, 320);
-
-        input.addEventListener('input', () => { sync(); run(); });
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); state.q = input.value.trim(); load(1); }
-            if (e.key === 'Escape') { input.value = ''; sync(); state.q = ''; load(1); }
-        });
-        clear.addEventListener('click', () => {
-            input.value = ''; sync(); state.q = ''; input.focus(); load(1);
-        });
-
-        const priceMin = $('#priceMin');
-        const priceMax = $('#priceMax');
-        const runPrice = debounce(() => {
-            state.minPrice = priceMin.value.trim();
-            state.maxPrice = priceMax.value.trim();
-            load(1);
-        }, 400);
-        [priceMin, priceMax].forEach((el) => {
-            el.addEventListener('input', runPrice);
-            el.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); runPrice(); } });
-        });
-
-        $('#gameSelect').addEventListener('change', (e) => {
-            state.game = e.target.value;
-            $$('.cat-card').forEach((c) => c.classList.toggle('active', c.dataset.game === state.game));
-            load(1);
-        });
-
-        $('#sortSelect').addEventListener('change', (e) => { state.sort = e.target.value; load(1); });
-    }
-
     /* ---------------- boot ---------------- */
 
     (async function boot() {
         await window.UI.boot();
         applyCopy();
-        renderGameSelect();
-        initToolbar();
+        renderChips();
+        initSearch();
 
         await Promise.all([loadCatalogue(), loadSellers(), loadPosts()]);
-        await load(1);
+        await load();
 
         document.addEventListener('langchange', () => {
             applyCopy();
-            renderGameSelect();
+            renderChips();
             loadCatalogue();
             loadSellers();
             loadPosts();
-            load(state.page);
+            load();
             applyTranslations();
         });
     })();

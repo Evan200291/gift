@@ -185,7 +185,7 @@
         $('#crumbTitle').textContent = listing.title_en || listing.title_mm || t('navBrowse');
         const crumbGame = $('#crumbGame');
         crumbGame.textContent = gameName(listing.game);
-        crumbGame.href = `/?game=${encodeURIComponent(listing.game)}#listings`;
+        crumbGame.href = `/browse?game=${encodeURIComponent(listing.game)}`;
 
         window.UI.mountAds();
         wire();

@@ -56,6 +56,7 @@ window.I18N = {
         statSellers: 'Verified sellers',
         statGames: 'Games covered',
 
+        categoriesEyebrow: 'Categories',
         categoriesTitle: 'Pick your game',
         categoriesSub: 'Four titles, one marketplace.',
         accountsAvailable: 'accounts',
@@ -232,6 +233,7 @@ window.I18N = {
         statSellers: 'စိစစ်ပြီး ရောင်းသူ',
         statGames: 'ဂိမ်းအရေအတွက်',
 
+        categoriesEyebrow: 'ကဏ္ဍများ',
         categoriesTitle: 'ဂိမ်းရွေးချယ်ပါ',
         categoriesSub: 'ဂိမ်းလေးမျိုး၊ ဈေးကွက်တစ်ခုတည်း။',
         accountsAvailable: 'အကောင့်',

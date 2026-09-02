@@ -61,6 +61,7 @@
         document.title = tmpl.replace("%s", brand);
         const mark = $("#authMark"); if (mark) mark.textContent = brand.trim().charAt(0).toUpperCase();
         const name = $("#authBrand"); if (name) name.textContent = brand;
+        const tagline = $("#authTagline"); if (tagline) tagline.textContent = (site() && site().tagline) || "Digital Store";
 
         bindLogin();
         bindLogout();

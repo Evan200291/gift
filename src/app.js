@@ -36,6 +36,7 @@ const VIEWS_DIR = path.join(store.ROOT, 'views');
  * ------------------------------------------------------------------ */
 const PAGES = [
     { test: (p) => p === '/', file: 'index.html' },
+    { test: (p) => p === '/browse', file: 'browse.html' },
     { test: (p) => p === '/listing' || p.startsWith('/listing/'), file: 'listing.html' },
     { test: (p) => p === '/store' || p.startsWith('/store/'), file: 'store.html' },
     { test: (p) => p === '/sellers', file: 'sellers.html' },

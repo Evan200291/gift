@@ -120,28 +120,44 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
    Myanmar glyphs ship with a taller cap height, wider per-character
    advance, and combining marks that stack above the consonant. Rendered
    at the same px as Latin it looks visually larger and looser, so mixed
-   EN/MM rows look broken. Fix: render smaller, tighten leading, slight
-   negative tracking, and block optical-size auto-inflation.
+   EN/MM rows look broken. Fix: render slightly smaller with more leading.
 
-   Translated strings are swapped in as plain text via applyTranslations()
-   — nothing tags the individual heading/button/paragraph with a `.mm`
-   class — so this has to key off the page-level `body.lang-mm` toggle
-   that setLang() sets, not rely on per-element classes or [lang] alone. */
+   NEGATIVE letter-spacing is dangerous here and was removed — Myanmar
+   combining marks are positioned relative to the base consonant's advance
+   width, so tightening tracking pulls neighbouring clusters into each
+   other and letters visually fuse. Real Myanmar sites (e.g. shop.com.mm)
+   use normal tracking with generous line-height instead, which is what
+   this now matches.
+
+   Translated strings are swapped in as plain text via applyTranslations(),
+   which only ever touches elements carrying data-i18n/-ph/-aria — so that
+   attribute is the precise hook for "this text is Myanmar right now".
+   Do NOT key this off `body.lang-mm` + a broad tag list: that also caught
+   things that are never translated (the "EXABYTE" brand name, prices,
+   dates) and shrank them too. Dynamic MM content that has no data-i18n
+   hook (listing titles, seller bios) opts in explicitly via `.mm`/[lang]
+   instead, applied by the page's own JS. */
 .mm,
 [lang="my"],
-body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small, input, textarea, select, option) {
+body.lang-mm [data-i18n] {
     font-family: var(--font-mm);
-    font-size: .82em !important;
-    line-height: 1.34 !important;
-    letter-spacing: -0.012em;
+    font-size: .84em;
+    line-height: 1.5;
+    letter-spacing: normal;
     font-optical-sizing: none;
     text-justify: inter-cluster;
 }
 /* Inside small components (buttons/inputs/labels) opt out of the size
-   shrink so control dimensions stay stable across languages. */
+   shrink so control dimensions stay stable across languages — only the
+   font-family changes there, so Myanmar glyphs still render correctly. */
 .mm.btn, .mm.input, .mm label, .lang-switch button.mm,
-.btn .mm, .input .mm, label .mm {
+.btn .mm, .input .mm, label .mm,
+body.lang-mm .btn[data-i18n], body.lang-mm .btn [data-i18n],
+body.lang-mm label[data-i18n], body.lang-mm label [data-i18n],
+body.lang-mm select[data-i18n], body.lang-mm option[data-i18n],
+body.lang-mm input[data-i18n-ph] {
     font-size: inherit;
+    line-height: inherit;
 }
 
 /* ---------- 4. Layout ---------------------------------------------------- */
@@ -175,6 +191,7 @@ body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small
     font-family: var(--font-display); font-weight: 700; font-size: 1rem;
     color: #fff; flex-shrink: 0;
 }
+.brand-div { width: 1px; height: 26px; background: var(--line-strong); flex-shrink: 0; }
 .brand-name { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
 .brand-name b {
     font-family: var(--font-display); font-size: 1.02rem; font-weight: 700;
@@ -196,19 +213,33 @@ body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small
 .nav-links a:hover { color: var(--neon); background: var(--neon-faint); }
 .nav-links a.active { color: var(--neon); background: var(--neon-faint); }
 .nav-tools { display: flex; align-items: center; gap: 10px; }
+/* Sliding segmented toggle — a floating track with a solid chip behind
+   whichever language is active, rather than two adjoining bordered boxes. */
 .lang-switch {
-    display: inline-flex;
-    border: 1px solid var(--line-strong); overflow: hidden;
-    font-size: .68rem; font-weight: 700;
+    position: relative;
+    display: inline-flex; align-items: center;
+    gap: 2px; padding: 3px;
+    border: 1px solid var(--line-strong);
+    clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
+    background: var(--bg-soft);
+    font-size: .66rem; font-weight: 700;
 }
 .lang-switch button {
-    padding: 7px 11px; color: var(--text-3); background: var(--surface);
-    transition: color var(--t-fast), background var(--t-fast); white-space: nowrap;
+    position: relative; z-index: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 26px; min-width: 34px; padding: 0 12px;
+    color: var(--text-3); background: transparent;
+    letter-spacing: .03em; white-space: nowrap; line-height: 1;
+    transition: color var(--t-fast);
 }
-.lang-switch button + button { border-left: 1px solid var(--line-strong); }
-.lang-switch button[data-lang="mm"] { font-family: var(--font-mm); font-size: .72rem; }
+.lang-switch button[data-lang="mm"] { font-family: var(--font-mm); }
 .lang-switch button:hover { color: var(--text-2); }
-.lang-switch button.active { background: var(--neon-deep); color: #fff; }
+.lang-switch button.active {
+    color: #fff;
+    clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
+    background: var(--neon-deep);
+    box-shadow: 0 0 10px 1px rgba(24,86,232,.55), inset 0 0 8px rgba(120,170,255,.6);
+}
 /* ---------- 6. Buttons --------------------------------------------------- */
 .btn {
     --btn-bg: var(--surface);
@@ -278,19 +309,6 @@ body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small
     gap: 34px; align-items: center;
 }
 .hero-copy { max-width: 580px; }
-.hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 6px 14px; margin-bottom: 16px;
-    border: 1px solid #D6DEEE; border-radius: var(--r-sm);
-    background: var(--neon-faint);
-    font-size: .76rem; font-weight: 700; color: var(--neon-deep);
-}
-.hero-badge .dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--neon);
-    box-shadow: 0 0 0 3px var(--neon-soft);
-    animation: boot-blink 1.6s steps(2, end) infinite;
-}
 .hero h1 { font-size: clamp(1.9rem, 4vw, 2.85rem); line-height: 1.1; margin-bottom: 12px; }
 .hero h1 .accent { color: var(--neon); }
 .hero-sub { color: var(--text-2); font-size: 1rem; max-width: 54ch; margin-bottom: 20px; }
@@ -358,7 +376,8 @@ body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small
 .toolbar-inner {
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     padding: 11px; border: 1px solid var(--line);
-    border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
+    background: var(--surface); box-shadow: var(--sh-1);
 }
 .search { position: relative; flex: 1 1 260px; min-width: 200px; display: flex; align-items: center; }
 .search .ico {
@@ -367,7 +386,7 @@ body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small
 }
 .search input {
     width: 100%; padding: 10px 38px 10px 40px;
-    border: 1px solid var(--line); border-radius: var(--r-sm);
+    border: 1px solid var(--line);
     background: var(--bg-soft); color: var(--text); font-size: .88rem;
     transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
@@ -381,7 +400,7 @@ body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small
 .search.has-value .clear { display: grid; }
 .price-range {
     display: flex; align-items: center; gap: 6px;
-    padding: 4px 6px; border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: 4px 6px; border: 1px solid var(--line);
     background: var(--bg-soft);
 }
 .price-range input {
@@ -394,9 +413,10 @@ body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small
 .price-range input::-webkit-outer-spin-button, .price-range input::-webkit-inner-spin-button { margin: 0; }
 .price-range .to { color: var(--text-3); font-size: .8rem; }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+#homeGameChips { margin-top: 18px; }
 .chip {
     padding: 8px 14px; border: 1px solid var(--line);
-    border-radius: var(--r-sm); background: var(--bg-soft);
+    background: var(--bg-soft);
     color: var(--text-2); font-size: .8rem; font-weight: 600;
     transition: all var(--t-fast); cursor: pointer;
 }
@@ -413,7 +433,7 @@ body.lang-mm :is(h1, h2, h3, h4, p, a, span, b, label, button, li, td, th, small
 select {
     appearance: none; -webkit-appearance: none;
     padding: 9px 36px 9px 14px; border: 1px solid var(--line);
-    border-radius: var(--r-sm); background: var(--bg-soft);
+    background: var(--bg-soft);
     color: var(--text); font-size: .82rem; font-weight: 600;
     cursor: pointer; transition: border-color var(--t-fast);
 }
@@ -422,10 +442,15 @@ select:focus { outline: none; border-color: var(--neon); box-shadow: 0 0 0 3px v
 select option { background: var(--surface); color: var(--text); }
 .result-count { font-size: .8rem; color: var(--text-3); margin-left: auto; padding-right: 4px; }
 /* ---------- 9. Product grid + cards -------------------------------------- */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
+.listings-more { display: flex; justify-content: center; margin-top: 24px; }
+/* Full browse page: two wide columns instead of many small ones. */
+.browse-grid { grid-template-columns: 1fr; }
+@media (min-width: 680px) { .browse-grid { grid-template-columns: repeat(2, 1fr); } }
 .card {
     position: relative; display: flex; flex-direction: column;
-    border: 1px solid var(--line); border-radius: var(--r-lg);
+    border: 1px solid var(--line);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
     background: var(--surface); overflow: hidden; cursor: pointer;
     isolation: isolate;
     transition: transform var(--t), border-color var(--t), box-shadow var(--t);
@@ -485,10 +510,11 @@ select option { background: var(--surface); color: var(--text); }
 .card-foot {
     margin-top: auto; padding-top: 10px;
     border-top: 1px solid var(--line-soft);
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 6px 10px;
 }
 .card-cta {
-    display: inline-flex; align-items: center; gap: 6px;
+    display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
     font-size: .8rem; font-weight: 700; color: var(--neon);
     transition: gap var(--t-fast), color var(--t-fast);
 }
@@ -503,7 +529,7 @@ select option { background: var(--surface); color: var(--text); }
 .sk-media, .sk-line { animation: shimmer 1.4s linear infinite; }
 @keyframes shimmer { 0%{opacity:.5} 50%{opacity:1} 100%{opacity:.5} }
 /* ---------- 10. Empty state --------------------------------------------- */
-.empty { padding: 46px 20px; text-align: center; border: 1px dashed var(--line-strong); border-radius: var(--r-lg); background: var(--surface); }
+.empty { padding: 46px 20px; text-align: center; border: 1px dashed var(--line-strong); clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg))); background: var(--surface); }
 .empty .glyph { font-size: 2rem; margin-bottom: 12px; opacity: .7; }
 .empty h3 { font-size: 1.05rem; margin-bottom: 6px; }
 .empty p { color: var(--text-3); font-size: .88rem; max-width: 42ch; margin-inline: auto; }
@@ -513,7 +539,8 @@ select option { background: var(--surface); color: var(--text); }
 .pg {
     min-width: 36px; height: 36px; padding: 0 11px;
     display: inline-grid; place-items: center;
-    border: 1px solid var(--line); border-radius: var(--r-sm);
+    border: 1px solid var(--line);
+    clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
     background: var(--surface); color: var(--text-2);
     font-size: .83rem; font-weight: 600;
     transition: all var(--t-fast);
@@ -531,7 +558,8 @@ select option { background: var(--surface); color: var(--text); }
 .gallery { display: flex; flex-direction: column; gap: 10px; }
 .gallery-stage {
     position: relative; aspect-ratio: 16 / 9;
-    border: 1px solid var(--line); border-radius: var(--r-lg);
+    border: 1px solid var(--line);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
     background: var(--surface-2); overflow: hidden; box-shadow: var(--sh-1);
 }
 .gallery-stage img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
@@ -564,7 +592,7 @@ select option { background: var(--surface); color: var(--text); }
 .thumb:hover { opacity: .85; transform: translateY(-2px); }
 .thumb.active { opacity: 1; border-color: var(--neon); box-shadow: 0 0 0 2px var(--neon-soft); }
 /* Info panel */
-.panel { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: 18px; }
+.panel { border: 1px solid var(--line); clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg))); background: var(--surface); padding: 18px; }
 .panel + .panel { margin-top: 14px; }
 .panel h3 { font-size: .76rem; letter-spacing: .12em; text-transform: uppercase; color: var(--neon); font-weight: 700; margin-bottom: 12px; }
 .buy-panel { position: sticky; top: calc(var(--nav-h) + 16px); }
@@ -619,13 +647,13 @@ select option { background: var(--surface); color: var(--text); }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 /* ---------- 13. Footer --------------------------------------------------- */
 .site-footer { margin-top: 30px; border-top: 1px solid var(--line); background: var(--surface); }
-.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 26px; padding: 36px 0 26px; }
-.footer-brand p { color: var(--text-2); font-size: .86rem; max-width: 38ch; margin-top: 9px; }
-.footer-col h4 { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-3); margin-bottom: 12px; font-weight: 700; }
-.footer-col ul { display: flex; flex-direction: column; gap: 8px; }
-.footer-col a { color: var(--text-2); font-size: .86rem; transition: color var(--t-fast); }
-.footer-col a:hover { color: var(--neon); }
-.footer-bottom { border-top: 1px solid var(--line); padding: 16px 0; color: var(--text-3); font-size: .78rem; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 26px; padding-block: 36px 26px; }
+.footer-about p { color: var(--text-2); font-size: .86rem; max-width: 38ch; margin-top: 9px; }
+.footer-grid h4 { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-3); margin-bottom: 12px; font-weight: 700; }
+.footer-list { display: flex; flex-direction: column; gap: 8px; }
+.footer-list a, .footer-list span { color: var(--text-2); font-size: .86rem; transition: color var(--t-fast); }
+.footer-list a:hover { color: var(--neon); }
+.footer-bottom { border-top: 1px solid var(--line); padding-block: 16px; color: var(--text-3); font-size: .78rem; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
 .footer-bottom b { color: var(--neon-deep); }
 
 /* ---------- 14. Toast notifications -------------------------------------- */
@@ -644,7 +672,7 @@ select option { background: var(--surface); color: var(--text); }
 .field label { font-size: .77rem; font-weight: 600; color: var(--text-2); letter-spacing: .01em; display: flex; align-items: center; gap: 6px; }
 .field input, .field textarea, .field select {
     width: 100%; padding: 10px 13px;
-    border: 1px solid var(--line-strong); border-radius: var(--r-sm);
+    border: 1px solid var(--line-strong);
     background: var(--surface); color: var(--text); font-size: .88rem;
     transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
 }
@@ -696,25 +724,36 @@ select option { background: var(--surface); color: var(--text); }
 .mtabbar {
     display: none;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
-    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px));
     background: rgba(244, 246, 250, .96); backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
 }
 .mtabbar a {
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    padding: 6px 2px; color: var(--text-3); font-size: .64rem; font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 4px 2px; color: var(--text-3); font-size: .6rem; font-weight: 600;
+    --tab: var(--neon);
 }
-.mtabbar a .ico { display: grid; place-items: center; }
-.mtabbar a.active { color: var(--neon); }
-.mtabbar a.active .ico { color: var(--neon); }
+.mtabbar a .ico { display: grid; place-items: center; width: 18px; height: 18px; margin: 0 auto; transition: filter var(--t-fast); }
+.mtabbar a .ico svg { width: 17px; height: 17px; }
+.mtabbar a.active { color: var(--tab); }
+.mtabbar a.active .ico { color: var(--tab); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tab) 65%, transparent)); }
+.mtabbar a:nth-child(1) { --tab: #1856E8; }
+.mtabbar a:nth-child(2) { --tab: #7C5CFF; }
+.mtabbar a:nth-child(3) { --tab: #0FA7A0; }
+.mtabbar a:nth-child(4) { --tab: #E0961B; }
 
 /* ---------- 17. Responsive ----------------------------------------------- */
 @media (max-width: 980px) {
     .hero-inner { grid-template-columns: 1fr; }
-    .hero-visual { max-width: 460px; }
+    .hero-visual { max-width: 460px; min-height: 0; }
     .detail { grid-template-columns: 1fr; gap: 22px; }
     .buy-panel { position: static; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
+    /* The about blurb runs much taller than a link column once space is
+       tight — pairing it with one column locks the whole row to its height
+       and strands the other links with a dead gap below them. Give it its
+       own full-width row so the link columns align on their own rhythm. */
+    .footer-about { grid-column: 1 / -1; }
 }
 @media (max-width: 720px) {
     :root { --nav-h: 58px; }
@@ -726,19 +765,23 @@ select option { background: var(--surface); color: var(--text); }
     .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .toolbar { top: var(--nav-h); }
     .toolbar-inner { padding: 9px; gap: 8px; }
+    .search { flex: 1 1 100%; }
+    .price-range, .select-wrap { flex: 1 1 calc(50% - 4px); min-width: 0; }
+    .price-range input { width: auto; flex: 1 1 0; min-width: 0; }
+    .select-wrap select { width: 100%; }
     .result-count { margin-left: 0; width: 100%; }
     .chips { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
     .chips::-webkit-scrollbar { display: none; }
-    .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; padding: 26px 0 20px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; padding-block: 26px 20px; }
     .footer-bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
-    .toast-stack { left: 16px; right: 16px; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); max-width: none; }
+    .toast-stack { left: 16px; right: 16px; bottom: calc(58px + env(safe-area-inset-bottom, 0px)); max-width: none; }
     .hero-actions .btn { flex: 1 1 auto; }
     .card-body { padding: 10px 11px 11px; }
     .card-title { font-size: .84rem; }
     .price-tag { font-size: 1.05rem; }
 
     .mtabbar { display: grid; grid-template-columns: repeat(4, 1fr); }
-    body { padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px)); }
+    body { padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)); }
     .site-footer { margin-bottom: 0; }
 }
 @media (max-width: 420px) {

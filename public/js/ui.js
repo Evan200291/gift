@@ -18,7 +18,7 @@
 
     const NAV = [
         { href: '/', key: 'navHome', match: (p) => p === '/' },
-        { href: '/#listings', key: 'navBrowse', match: () => false },
+        { href: '/browse', key: 'navBrowse', match: (p) => p === '/browse' },
         { href: '/sellers', key: 'navSellers', match: (p) => p.startsWith('/sellers') || p.startsWith('/store') },
         { href: '/blog', key: 'navBlog', match: (p) => p.startsWith('/blog') },
         { href: '/sell', key: 'navSell', match: (p) => p === '/sell' },
@@ -27,9 +27,10 @@
 
     function brandBlock() {
         const brand = site().brand || 'EXABYTE';
-        const tagline = site().tagline || 'Game Account Marketplace';
+        const tagline = site().tagline || 'Digital Store';
         return `<a class="brand" href="/">
             <span class="brand-mark">${esc(brand.trim().charAt(0).toUpperCase() || 'E')}</span>
+            <span class="brand-div"></span>
             <span class="brand-name"><b>${esc(brand)}</b><span>${esc(tagline)}</span></span>
         </a>`;
     }
@@ -46,8 +47,8 @@
             <nav class="nav-links">${links}</nav>
             <div class="nav-tools">
                 <div class="lang-switch" role="group" aria-label="Language">
-                    <button type="button" data-lang="en">EN</button>
-                    <button type="button" data-lang="mm">မြန်မာ</button>
+                    <button type="button" data-lang="en" class="${getLang() === 'en' ? 'active' : ''}">EN</button>
+                    <button type="button" data-lang="mm" class="${getLang() === 'mm' ? 'active' : ''}">မြန်မာ</button>
                 </div>
                 <a class="btn btn-outline btn-sm nav-portal" href="/seller" data-i18n="navSellerLogin">${esc(t('navSellerLogin'))}</a>
                 <button type="button" class="btn btn-ghost btn-icon nav-burger" data-i18n-aria="menu" aria-label="Menu">${ICONS.menu}</button>
@@ -65,7 +66,7 @@
 
     const TABBAR = [
         { href: '/', key: 'navHome', icon: 'home', match: (p) => p === '/' },
-        { href: '/#listings', key: 'navBrowse', icon: 'grid', match: () => false },
+        { href: '/browse', key: 'navBrowse', icon: 'grid', match: (p) => p === '/browse' },
         { href: '/sellers', key: 'navSellers', icon: 'users', match: (p) => p.startsWith('/sellers') || p.startsWith('/store') },
         { href: '/sell', key: 'navSell', icon: 'tag', match: (p) => p === '/sell' },
     ];
@@ -126,7 +127,7 @@
             <div>
                 <h4 data-i18n="footerMarketplace">${esc(t('footerMarketplace'))}</h4>
                 <div class="footer-list">
-                    <a href="/#listings" data-i18n="navBrowse">${esc(t('navBrowse'))}</a>
+                    <a href="/browse" data-i18n="navBrowse">${esc(t('navBrowse'))}</a>
                     <a href="/sellers" data-i18n="navSellers">${esc(t('navSellers'))}</a>
                     <a href="/blog" data-i18n="navBlog">${esc(t('navBlog'))}</a>
                 </div>

@@ -80,7 +80,7 @@ const DEFAULT_ADMIN_PATH = '/control-8f3a2c';
 
 const DEFAULT_SETTINGS = {
     brand: 'EXABYTE',
-    tagline: 'Game Account Marketplace',
+    tagline: 'Digital Store',
     currency: 'MMK',
     currencySymbol: 'Ks',
     pageSize: 12,

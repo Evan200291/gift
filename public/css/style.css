@@ -112,7 +112,44 @@ a:hover { color: var(--neon-bright); }
     -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 code, pre, kbd, samp { font-family: var(--font-mono); }
-.mm { font-size: 1.02em; }
+
+/* ---------- Myanmar (Burmese) text -------------------------------------
+   Why this block exists:
+   Myanmar glyphs in Noto Sans Myanmar / Padauk ship with a much taller
+   cap height, wider per-character advance, and combining marks that stack
+   above the consonant. If we render them at the same px as Latin, the
+   text looks visually larger and looser, which makes mixed EN/MM rows
+   look broken (MM text dominates the line). The previous rule
+   (`font-size: 1.02em`) made it WORSE.
+
+   The fix:
+     - Render mm text a touch smaller (.94em) so the *visual* size matches
+       the surrounding English.
+     - Tighten line-height to 1.5 (vs the 1.6 default) because mm glyphs
+       already have tall ascenders and need less leading.
+     - Slight negative letter-spacing to compensate for wide per-char advance.
+     - `font-optical-sizing: none` blocks browser auto-inflation of Burmese.
+   This selector targets BOTH .mm (form inputs / inline marks) AND [lang="my"]
+   (rendered text in templates), so the fix covers all current call sites
+   in one place. Specific component overrides further down still win. */
+.mm,
+[lang="my"] {
+    font-family: var(--font-mm);
+    font-size: .94em;
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+    font-optical-sizing: none;
+    /* `text-justify: inter-cluster` avoids wide inter-word gaps that appear
+       in Burmese when browsers try to justify. */
+    text-justify: inter-cluster;
+}
+/* When the mm element is INSIDE a small component, the .94em still scales
+   off the parent (good), but buttons / inputs / labels need to opt out
+   of the size shrink to keep their own dimensions stable. */
+.mm.btn, .mm.input, .mm label, .lang-switch button.mm,
+.btn .mm, .input .mm, label .mm {
+    font-size: inherit;
+}
 
 /* ---------- 4. Layout ---------------------------------------------------- */
 .shell { width: 100%; max-width: var(--shell); margin-inline: auto; padding-inline: 22px; }
@@ -425,8 +462,9 @@ select option { background: var(--surface-2); color: var(--text); }
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .card-title-mm {
-    font-family: var(--font-mm); font-size: .88rem; line-height: 1.85;
-    color: var(--text-2);
+    /* Inherits the global .mm font family / .94em size from [lang="my"].
+       We only re-assert line-height and color so it can never balloon the card. */
+    font-size: .82rem; line-height: 1.5; color: var(--text-2);
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .spec-row { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -526,7 +564,7 @@ select option { background: var(--surface-2); color: var(--text); }
 .panel h3 { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--neon); font-weight: 700; margin-bottom: 14px; }
 .buy-panel { position: sticky; top: calc(var(--nav-h) + 18px); }
 .detail-title { font-size: clamp(1.4rem, 3vw, 1.95rem); letter-spacing: -0.02em; margin-bottom: 6px; }
-.detail-title-mm { font-family: var(--font-mm); font-size: 1rem; line-height: 1.85; color: var(--text-2); margin-bottom: 14px; }
+.detail-title-mm { font-size: .95rem; line-height: 1.5; color: var(--text-2); margin-bottom: 14px; }
 .price-block { display: flex; align-items: baseline; gap: 10px; padding: 16px 0; margin: 16px 0; border-block: 1px solid var(--line-soft); }
 .price-block .amount { font-family: var(--font-display); font-size: clamp(1.9rem, 4vw, 2.5rem); font-weight: 700; letter-spacing: -0.03em; color: var(--neon); }
 .price-block .cur { font-size: .8rem; font-weight: 700; color: var(--text-3); letter-spacing: .1em; }
@@ -543,7 +581,7 @@ select option { background: var(--surface-2); color: var(--text); }
 }
 .player-tag::before { content: 'â˜…'; color: var(--neon); font-size: .75rem; }
 .prose { color: var(--text-2); font-size: .93rem; white-space: pre-wrap; }
-.prose.mm { font-family: var(--font-mm); line-height: 1.95; }
+.prose.mm { line-height: 1.7; }
 .lang-tag { display: inline-block; padding: 1px 7px; margin-left: 8px; border: 1px solid var(--line-strong); border-radius: 5px; font-family: var(--font-ui); font-size: .6rem; font-weight: 700; letter-spacing: .1em; color: var(--text-3); vertical-align: middle; }
 
 /* Contact channels */
@@ -607,6 +645,9 @@ select option { background: var(--surface-2); color: var(--text); }
 }
 .field textarea { resize: vertical; min-height: 92px; line-height: 1.65; }
 .field input::placeholder, .field textarea::placeholder { color: var(--text-3); }
+/* Tighten Myanmar form fields: their native line-height makes typed mm
+   text overflow single-line inputs and balloon multi-line textareas. */
+.field input.mm, .field textarea.mm { line-height: 1.45; }
 .field input:focus, .field textarea:focus, .field select:focus {
     outline: none; border-color: var(--neon); background: var(--surface);
     box-shadow: 0 0 0 3px var(--neon-soft);

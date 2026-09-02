@@ -243,7 +243,7 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
 .article h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); margin-bottom: 12px; }
 .article .article-meta { color: var(--text-3); font-size: .84rem; margin-bottom: 26px; display: flex; gap: 12px; align-items: center; }
 .article .prose { font-size: 1rem; line-height: 1.85; color: var(--text-2); }
-.article .prose.mm { line-height: 2.05; }
+.article .prose.mm { line-height: 1.85; }
 .article-section + .article-section { margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--line-soft); }
 /* ---------- 7. Plans, steps, notices ------------------------------------ */
 .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }

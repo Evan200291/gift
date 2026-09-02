@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-title="Advertise — %s">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07080d">
+<title>Advertise</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+</head>
+
+<body class="lang-en">
+
+<header data-header></header>
+
+<main>
+    <section class="hero" style="padding-block:56px 30px;">
+        <div class="shell">
+            <span class="hero-badge"><span class="dot"></span><span data-i18n="navAdvertise">Advertise</span></span>
+            <h1 class="display" style="font-size:clamp(1.9rem,4.6vw,3rem);margin-bottom:16px;" data-i18n="advertiseTitle">Advertise on the marketplace</h1>
+            <p class="hero-sub" id="adsNote" data-i18n="advertiseSub"></p>
+            <div class="hero-actions" id="adsCta"></div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="shell">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow" data-i18n="navAdvertise">Advertise</span>
+                    <h2 data-i18n="adSlotsTitle">Available placements</h2>
+                </div>
+            </div>
+            <div id="slotList" class="stack gap-16"></div>
+        </div>
+    </section>
+</main>
+
+<footer data-footer></footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/core.js"></script>
+<script src="/js/ui.js"></script>
+<script src="/js/pages/advertise.js"></script>
+</body>
+</html>

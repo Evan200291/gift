@@ -1,221 +1,205 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-title="%s — Game Account Marketplace">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eFootball Account Reseller</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07080d">
+<meta name="description" content="Buy eFootball, Mobile Legends, PUBG Mobile and Free Fire accounts from verified resellers. Contact sellers directly — no buyer account needed.">
+<title>Game Account Marketplace</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
 </head>
+
 <body class="lang-en">
 
-<nav class="navbar">
-    <div class="nav-inner">
-        <a href="/" class="logo" style="text-decoration:none;">
-            <span class="logo-mark">e</span>
-            <span class="logo-text">eFootball Store<small>Premium Mobile Accounts</small></span>
-        </a>
-        <ul class="nav-links">
-            <li><a href="/" data-page="home" class="active" data-i18n="home">Home</a></li>
-            <li><a href="/admin.html" data-page="admin" data-i18n="admin">Admin</a></li>
-            <li>
-                <div class="lang-switch">
-                    <button data-lang="en">EN</button>
-                    <button data-lang="mm">မြန်မာ</button>
+<header data-header></header>
+
+<main>
+    <!-- ========== Hero ========== -->
+    <section class="hero">
+        <div class="shell hero-inner">
+            <div class="hero-copy">
+                <span class="hero-badge">
+                    <span class="dot"></span>
+                    <span data-i18n="heroBadge">Verified sellers · Direct contact</span>
+                </span>
+
+                <h1 class="display" id="heroTitle">Buy Game Accounts From Verified Sellers</h1>
+                <p class="hero-sub" id="heroSub">eFootball, Mobile Legends, PUBG Mobile and Free Fire accounts listed by subscribed resellers.</p>
+
+                <div class="hero-actions">
+                    <a class="btn btn-primary btn-lg" href="#listings" data-i18n="heroCtaBrowse">Browse accounts</a>
+                    <a class="btn btn-outline btn-lg" href="/sell" data-i18n="heroCtaSell">Start selling</a>
                 </div>
-            </li>
-        </ul>
-    </div>
-</nav>
 
-<section class="hero">
-    <h1 data-i18n="heroTitle">Buy & Sell eFootball Accounts</h1>
-    <p data-i18n="heroSubtitle">Browse premium eFootball mobile accounts with legendary players, top stats, and instant delivery. Bilingual listings in English & Burmese.</p>
-    <div class="search-bar">
-        <input id="searchInput" type="text" data-i18n-placeholder="searchPlaceholder" placeholder="Search by title, description, players...">
-        <button class="btn btn-primary" id="searchBtn" data-i18n="searchBtn">Search</button>
-    </div>
-</section>
-
-<main class="container">
-    <div id="grid" class="accounts-grid"></div>
-    <div id="pagination" class="pagination"></div>
-</main>
-
-<footer class="footer">
-    <p>© <span id="year"></span> eFootball Account Reseller · Made with ⚽ for gamers</p>
-</footer>
-
-<script src="/js/app.js"></script>
-<script>
-    let allAccounts = [];
-    let currentPage = 1;
-    let totalPages = 1;
-    let totalItems = 0;
-    let currentQuery = '';
-    let siteSettings = null;
-
-    document.getElementById('year').textContent = new Date().getFullYear();
-    setActiveNav('home');
-
-    async function loadSiteSettings() {
-        try {
-            siteSettings = await fetch('/api/site').then((r) => r.json());
-            const brandEl = document.querySelector('.logo-text');
-            if (brandEl) {
-                brandEl.innerHTML = `${escapeHtml(siteSettings.brand || 'eFootball Store')}<small>${escapeHtml(siteSettings.tagline || 'Premium Mobile Accounts')}</small>`;
-            }
-            const heroTitleEl = document.querySelector('.hero h1');
-            const heroSubEl = document.querySelector('.hero p');
-            if (heroTitleEl) {
-                heroTitleEl.textContent = pickText(siteSettings.heroTitleEn, siteSettings.heroTitleMm) || heroTitleEl.textContent;
-                heroTitleEl.dataset.i18n = '';
-            }
-            if (heroSubEl) {
-                heroSubEl.textContent = pickText(siteSettings.heroSubtitleEn, siteSettings.heroSubtitleMm) || heroSubEl.textContent;
-                heroSubEl.dataset.i18n = '';
-            }
-            document.title = (siteSettings.brand || 'eFootball Account Reseller');
-        } catch {}
-    }
-
-    async function loadAccounts(query = '', page = 1) {
-        const grid = document.getElementById('grid');
-        grid.innerHTML = '<div class="loader">Loading...</div>';
-        document.getElementById('pagination').innerHTML = '';
-        currentQuery = query;
-        currentPage = page;
-        try {
-            const params = new URLSearchParams();
-            if (query) params.set('q', query);
-            params.set('page', String(page));
-            const res = await fetch(`/api/accounts?${params.toString()}`);
-            const data = await res.json();
-            if (Array.isArray(data)) {
-                allAccounts = data;
-                totalPages = 1; currentPage = 1; totalItems = data.length;
-            } else {
-                allAccounts = data.items || [];
-                currentPage = data.page || 1;
-                totalPages = data.totalPages || 1;
-                totalItems = data.total || 0;
-            }
-            renderGrid(allAccounts);
-            renderPagination();
-        } catch (err) {
-            grid.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div>${err.message}</div>`;
-        }
-    }
-
-    function renderGrid(accounts) {
-        const grid = document.getElementById('grid');
-        if (!accounts || accounts.length === 0) {
-            grid.innerHTML = `
-                <div class="empty-state" style="grid-column:1/-1;">
-                    <div class="icon">${t('emptyStateIcon')}</div>
-                    <p>${t('emptyState')}</p>
-                </div>`;
-            return;
-        }
-        grid.innerHTML = accounts.map((acc) => {
-            const title = accountText(acc, 'title');
-            const titleEn = acc.title_en ? `<div class="card-title">${escapeHtml(acc.title_en)}</div>` : '';
-            const titleMm = acc.title_mm ? `<div class="card-title-mm">${escapeHtml(acc.title_mm)}</div>` : '';
-            const desc = accountText(acc, 'description');
-            const featured = acc.featured_players
-                ? `<span class="badge">⭐ ${escapeHtml(truncate(acc.featured_players, 30))}</span>` : '';
-            const rating = acc.overall_rating
-                ? `<span class="badge">📊 ${escapeHtml(acc.overall_rating)}</span>` : '';
-            return `
-                <div class="account-card" onclick="location.href='/account.html?id=${acc.id}'">
-                    ${renderPhoneFrame(acc.images)}
-                    <div class="card-body">
-                        ${renderStatus(acc.status)}
-                        ${titleEn}
-                        ${titleMm}
-                        <div class="card-desc">${escapeHtml(truncate(desc, 100))}</div>
-                        <div class="card-meta">
-                            ${featured}
-                            ${rating}
-                        </div>
-                        <div class="card-price">${formatPrice(acc.price)}</div>
-                        <button class="btn btn-primary btn-block btn-sm">${t('viewDetails')}</button>
+                <div class="hero-stats">
+                    <div class="stat-chip">
+                        <b id="statAccounts" class="tabular">—</b>
+                        <span data-i18n="statAccounts">Live accounts</span>
+                    </div>
+                    <div class="stat-chip">
+                        <b id="statSellers" class="tabular">—</b>
+                        <span data-i18n="statSellers">Verified sellers</span>
+                    </div>
+                    <div class="stat-chip">
+                        <b id="statGames" class="tabular">4</b>
+                        <span data-i18n="statGames">Games covered</span>
                     </div>
                 </div>
-            `;
-        }).join('');
-    }
+            </div>
 
-    function renderPagination() {
-        const wrap = document.getElementById('pagination');
-        if (totalPages <= 1) { wrap.innerHTML = ''; return; }
-        const items = [];
-        const mkBtn = (label, page, opts = {}) => {
-            const cls = ['pg-btn'];
-            if (opts.disabled) cls.push('disabled');
-            if (opts.active) cls.push('active');
-            return `<button class="${cls.join(' ')}" ${opts.disabled ? 'disabled' : ''} data-page="${page}">${label}</button>`;
-        };
-        items.push(mkBtn('‹', currentPage - 1, { disabled: currentPage <= 1 }));
-        const win = 1;
-        const start = Math.max(1, currentPage - win);
-        const end = Math.min(totalPages, currentPage + win);
-        if (start > 1) {
-            items.push(mkBtn('1', 1));
-            if (start > 2) items.push('<span class="pg-ellipsis">…</span>');
-        }
-        for (let p = start; p <= end; p++) {
-            items.push(mkBtn(String(p), p, { active: p === currentPage }));
-        }
-        if (end < totalPages) {
-            if (end < totalPages - 1) items.push('<span class="pg-ellipsis">…</span>');
-            items.push(mkBtn(String(totalPages), totalPages));
-        }
-        items.push(mkBtn('›', currentPage + 1, { disabled: currentPage >= totalPages }));
-        items.push(`<span class="pg-info">${totalItems} ${t('itemsTotal') || 'items'}</span>`);
-        wrap.innerHTML = items.join('');
-        wrap.querySelectorAll('.pg-btn').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                if (btn.disabled) return;
-                const p = parseInt(btn.dataset.page, 10);
-                if (!isNaN(p) && p !== currentPage) loadAccounts(currentQuery, p);
-            });
-        });
-    }
+            <div class="hero-visual" aria-hidden="true">
+                <div class="hero-card">
+                    <div class="hero-card-top"><span class="glyph">🎮</span></div>
+                    <div class="hero-card-body">
+                        <div class="bar w1"></div>
+                        <div class="bar w2"></div>
+                        <div class="row">
+                            <span class="pill pill-available"><span class="dot"></span>Available</span>
+                            <span class="price-tag">$—</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-float a"><i>🛡️</i> Verified seller</div>
+                <div class="hero-float b"><i>⚡</i> Direct contact</div>
+            </div>
+        </div>
+    </section>
 
-    function escapeHtml(s) {
-        if (s == null) return '';
-        return String(s).replace(/[&<>"']/g, (c) => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-        })[c]);
-    }
-    function truncate(s, n) {
-        if (!s) return '';
-        return s.length > n ? s.slice(0, n - 1) + '…' : s;
-    }
+    <!-- ========== Ad · leaderboard ========== -->
+    <section class="section-sm">
+        <div class="shell"><div data-ad="home-leaderboard" data-ad-variant="wide"></div></div>
+    </section>
 
-    // Search
-    document.getElementById('searchBtn').addEventListener('click', () => {
-        loadAccounts(document.getElementById('searchInput').value.trim(), 1);
-    });
-    document.getElementById('searchInput').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') loadAccounts(e.target.value.trim(), 1);
-    });
+    <!-- ========== Categories ========== -->
+    <section class="section-sm">
+        <div class="shell">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow" data-i18n="categoriesTitle">Pick your game</span>
+                    <h2 data-i18n="categoriesTitle">Pick your game</h2>
+                    <p data-i18n="categoriesSub">Four titles, one marketplace.</p>
+                </div>
+            </div>
+            <div class="cat-rail" id="catRail"></div>
+        </div>
+    </section>
 
-    // Re-render on language change
-    document.addEventListener('langchange', () => {
-        renderGrid(allAccounts);
-        renderPagination();
-    });
+    <!-- ========== Listings ========== -->
+    <section id="listings" class="section">
+        <div class="shell">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow" data-i18n="navBrowse">Browse</span>
+                    <h2 data-i18n="listingsTitle">Latest accounts</h2>
+                    <p data-i18n="listingsSub">Fresh stock from every seller on the platform.</p>
+                </div>
+            </div>
+        </div>
 
-    (async function init() {
-        await loadSiteSettings();
-        await loadAccounts('', 1);
-    })();
-</script>
+        <div class="toolbar">
+            <div class="shell">
+                <div class="toolbar-inner">
+                    <div class="search" id="searchWrap">
+                        <span class="ico" id="searchIcon"></span>
+                        <input type="search" id="searchInput" autocomplete="off"
+                               data-i18n-ph="searchPlaceholder" placeholder="Search…"
+                               data-i18n-aria="searchPlaceholder" aria-label="Search">
+                        <button type="button" class="clear" id="searchClear" data-i18n-aria="clearSearch" aria-label="Clear"></button>
+                    </div>
 
+                    <div class="chips" id="statusChips" role="group">
+                        <button type="button" class="chip active" data-status="" data-i18n="filterAll">All</button>
+                        <button type="button" class="chip" data-status="available" data-i18n="filterAvailable">Available</button>
+                        <button type="button" class="chip" data-status="reserved" data-i18n="filterReserved">Reserved</button>
+                    </div>
+
+                    <div class="select-wrap">
+                        <select id="gameSelect" data-i18n-aria="allGames" aria-label="Game"></select>
+                    </div>
+
+                    <div class="select-wrap">
+                        <select id="sortSelect" aria-label="Sort">
+                            <option value="newest" data-i18n="sortNewest">Newest first</option>
+                            <option value="price_asc" data-i18n="sortPriceAsc">Price: low to high</option>
+                            <option value="price_desc" data-i18n="sortPriceDesc">Price: high to low</option>
+                            <option value="oldest" data-i18n="sortOldest">Oldest first</option>
+                        </select>
+                    </div>
+
+                    <span class="result-count" id="resultCount"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="shell">
+            <div id="grid" class="grid" aria-live="polite"></div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+    </section>
+
+    <!-- ========== Sellers ========== -->
+    <section class="section-sm">
+        <div class="shell">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow" data-i18n="navSellers">Sellers</span>
+                    <h2 data-i18n="sellersTitle">Trusted sellers</h2>
+                    <p data-i18n="sellersSub">Every seller here holds an active subscription.</p>
+                </div>
+                <a class="btn btn-outline btn-sm" href="/sellers" data-i18n="viewAll">View all</a>
+            </div>
+            <div class="seller-grid" id="sellerGrid"></div>
+        </div>
+    </section>
+
+    <!-- ========== Blog ========== -->
+    <section class="section-sm" id="blogSection" hidden>
+        <div class="shell">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow" data-i18n="navBlog">Blog</span>
+                    <h2 data-i18n="blogTitle">From the blog</h2>
+                    <p data-i18n="blogSub">Guides, patch notes and safe-trading advice.</p>
+                </div>
+                <a class="btn btn-outline btn-sm" href="/blog" data-i18n="viewAll">View all</a>
+            </div>
+            <div class="post-grid" id="postGrid"></div>
+        </div>
+    </section>
+
+    <!-- ========== Sell CTA ========== -->
+    <section class="section-sm">
+        <div class="shell">
+            <div class="store-head" style="justify-content:space-between;">
+                <div class="store-head-meta">
+                    <h1 class="display" data-i18n="sellTitle">Sell your accounts here</h1>
+                    <p id="sellPitch" data-i18n="sellSub">Get your stock in front of buyers already looking for it.</p>
+                </div>
+                <div class="store-head-actions">
+                    <a class="btn btn-primary" href="/sell" data-i18n="navSell">Sell with us</a>
+                    <a class="btn btn-outline" href="/seller" data-i18n="navSellerLogin">Seller login</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== Ad · footer ========== -->
+    <section class="section-sm">
+        <div class="shell"><div data-ad="footer" data-ad-variant="wide"></div></div>
+    </section>
+</main>
+
+<footer data-footer></footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/core.js"></script>
+<script src="/js/ui.js"></script>
+<script src="/js/pages/home.js"></script>
 </body>
 </html>

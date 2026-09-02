@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" data-title="Seller portal — %s">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07080d">
+<title>Seller portal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/panel.css">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+</head>
+
+<body class="lang-en">
+
+<!-- ================= Sign in ================= -->
+<div class="auth-screen" id="authScreen" hidden>
+    <div class="auth-card">
+        <a class="auth-brand" href="/">
+            <span class="brand-mark" id="authMark">E</span>
+            <b id="authBrand">EXABYTE</b>
+        </a>
+        <h1 class="display" data-i18n="portalTitle">Seller portal</h1>
+        <p class="sub" data-i18n="portalSub">Sign in to manage your listings.</p>
+
+        <form id="loginForm" autocomplete="on">
+            <div class="field">
+                <label for="loginUser" data-i18n="username">Username</label>
+                <input type="text" id="loginUser" name="username" required autocomplete="username" spellcheck="false" autocapitalize="none">
+            </div>
+            <div class="field">
+                <label for="loginPass" data-i18n="password">Password</label>
+                <input type="password" id="loginPass" name="password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn" data-i18n="signIn">Sign in</button>
+        </form>
+
+        <p class="auth-foot">
+            <span data-i18n="noAccountYet">No seller account yet?</span>
+            <a href="/sell" data-i18n="applyToSell">Apply to sell</a>
+        </p>
+    </div>
+</div>
+
+<!-- ================= Portal ================= -->
+<div id="portal" hidden>
+    <header class="portal-top">
+        <div class="shell portal-top-inner">
+            <a class="brand" href="/">
+                <span class="brand-mark" id="portalMark">E</span>
+                <span class="brand-name"><b id="portalBrand">EXABYTE</b><span data-i18n="portalTitle">Seller portal</span></span>
+            </a>
+            <span class="nav-spacer"></span>
+            <div class="lang-switch" role="group" aria-label="Language">
+                <button type="button" data-lang="en">EN</button>
+                <button type="button" data-lang="mm">မြန်မာ</button>
+            </div>
+            <span class="who">
+                <span class="avatar" id="meAvatar">S</span>
+                <b id="meName">—</b>
+            </span>
+            <button type="button" class="btn btn-outline btn-sm" id="logoutBtn" data-i18n="signOut">Sign out</button>
+        </div>
+    </header>
+
+    <main class="shell" style="padding-bottom:64px;">
+        <div id="subBanner"></div>
+
+        <div class="tiles" id="tiles"></div>
+
+        <div class="tabs" role="tablist">
+            <button type="button" class="tab active" data-tab="listings" data-i18n="myListings">My listings</button>
+            <button type="button" class="tab" data-tab="profile" data-i18n="myProfile">Profile &amp; contacts</button>
+            <button type="button" class="tab" data-tab="security" data-i18n="password">Password</button>
+        </div>
+
+        <!-- ---- Listings ---- -->
+        <section id="tab-listings">
+            <div class="bar">
+                <div class="search" id="searchWrap">
+                    <span class="ico" id="searchIcon"></span>
+                    <input type="search" id="searchInput" data-i18n-ph="searchPlaceholder" placeholder="Search…" autocomplete="off">
+                    <button type="button" class="clear" id="searchClear" aria-label="Clear"></button>
+                </div>
+                <div class="select-wrap"><select id="gameFilter"></select></div>
+                <div class="select-wrap">
+                    <select id="statusFilter">
+                        <option value="" data-i18n="filterAll">All</option>
+                        <option value="available" data-i18n="statusAvailable">Available</option>
+                        <option value="reserved" data-i18n="statusReserved">Reserved</option>
+                        <option value="sold" data-i18n="statusSold">Sold</option>
+                    </select>
+                </div>
+                <div class="select-wrap">
+                    <select id="sortFilter">
+                        <option value="newest" data-i18n="sortNewest">Newest first</option>
+                        <option value="oldest" data-i18n="sortOldest">Oldest first</option>
+                        <option value="price_desc" data-i18n="sortPriceDesc">Price: high to low</option>
+                        <option value="price_asc" data-i18n="sortPriceAsc">Price: low to high</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" id="newBtn" data-i18n="newListing">New listing</button>
+            </div>
+
+            <div class="portal-rows" id="rows"></div>
+            <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- ---- Profile ---- -->
+        <section id="tab-profile" class="hidden">
+            <form id="profileForm" class="card-block">
+                <h3 data-i18n="myProfile">Profile &amp; contacts</h3>
+                <p class="sub">Buyers see this on every listing you publish. At least one contact channel is required.</p>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="p_displayName">Store / display name</label>
+                        <input type="text" id="p_displayName" maxlength="60" required>
+                    </div>
+                    <div class="field">
+                        <label>Public store link</label>
+                        <div class="copyline"><span id="p_storeUrl">—</span>
+                            <button type="button" class="btn btn-ghost btn-sm" id="copyStoreUrl">Copy</button></div>
+                    </div>
+                    <div class="field full">
+                        <label for="p_bio_en">About you <span class="lang-tag">EN</span></label>
+                        <textarea id="p_bio_en" rows="2" maxlength="400"></textarea>
+                    </div>
+                    <div class="field full">
+                        <label for="p_bio_mm">About you <span class="lang-tag">MM</span></label>
+                        <textarea id="p_bio_mm" rows="2" maxlength="400" lang="my" class="mm"></textarea>
+                    </div>
+                    <div class="field">
+                        <label for="p_telegram">Telegram username</label>
+                        <input type="text" id="p_telegram" maxlength="120" placeholder="@yourhandle">
+                    </div>
+                    <div class="field">
+                        <label for="p_facebook">Facebook page / profile URL</label>
+                        <input type="text" id="p_facebook" maxlength="200" placeholder="https://facebook.com/yourpage">
+                    </div>
+                    <div class="field">
+                        <label for="p_email">Email</label>
+                        <input type="email" id="p_email" maxlength="120" placeholder="you@gmail.com">
+                    </div>
+                    <div class="field">
+                        <label for="p_phone">Phone</label>
+                        <input type="text" id="p_phone" maxlength="40" placeholder="+95 9xx xxx xxx">
+                    </div>
+                    <div class="field">
+                        <label for="p_viber">Viber</label>
+                        <input type="text" id="p_viber" maxlength="40" placeholder="+95 9xx xxx xxx">
+                    </div>
+                </div>
+                <div class="actions"><button type="submit" class="btn btn-primary">Save profile</button></div>
+            </form>
+        </section>
+
+        <!-- ---- Password ---- -->
+        <section id="tab-security" class="hidden">
+            <form id="passwordForm" class="card-block">
+                <h3 data-i18n="password">Password</h3>
+                <p class="sub">Changing your password signs you out of every other device.</p>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="s_current">Current password</label>
+                        <input type="password" id="s_current" required autocomplete="current-password">
+                    </div>
+                    <div class="field">
+                        <label for="s_new">New password</label>
+                        <input type="password" id="s_new" required minlength="8" autocomplete="new-password">
+                        <span class="hint">At least 8 characters, with letters and numbers.</span>
+                    </div>
+                </div>
+                <div class="actions"><button type="submit" class="btn btn-primary">Update password</button></div>
+            </form>
+        </section>
+    </main>
+</div>
+
+<!-- ================= Listing editor ================= -->
+<div class="modal-scrim" id="editor">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+        <div class="modal-head">
+            <h2 id="editorTitle" class="display">New listing</h2>
+            <button type="button" class="btn btn-ghost btn-icon" id="editorClose" aria-label="Close">×</button>
+        </div>
+        <form id="editorForm">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="f_game">Game</label>
+                        <select id="f_game" required></select>
+                    </div>
+                    <div class="field">
+                        <label for="f_status">Status</label>
+                        <select id="f_status">
+                            <option value="available" data-i18n="statusAvailable">Available</option>
+                            <option value="reserved" data-i18n="statusReserved">Reserved</option>
+                            <option value="sold" data-i18n="statusSold">Sold</option>
+                        </select>
+                    </div>
+
+                    <div class="field full">
+                        <label for="f_title_en">Title <span class="lang-tag">EN</span></label>
+                        <input type="text" id="f_title_en" maxlength="120" required placeholder="Mythic Glory · 120 skins">
+                    </div>
+                    <div class="field full">
+                        <label for="f_title_mm">Title <span class="lang-tag">MM</span></label>
+                        <input type="text" id="f_title_mm" maxlength="160" lang="my" class="mm">
+                    </div>
+
+                    <div class="field">
+                        <label for="f_price">Price</label>
+                        <div class="input-prefix">
+                            <span id="priceSymbol">$</span>
+                            <input type="number" id="f_price" min="0" step="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="f_level" id="lbl_level">Level / rank</label>
+                        <input type="text" id="f_level" maxlength="60">
+                    </div>
+                    <div class="field">
+                        <label for="f_currency_amount" id="lbl_currency">In-game currency</label>
+                        <input type="text" id="f_currency_amount" maxlength="60">
+                    </div>
+                    <div class="field">
+                        <label for="f_server" data-i18n="server">Server / region</label>
+                        <input type="text" id="f_server" maxlength="60">
+                    </div>
+
+                    <div class="field full">
+                        <label for="f_highlights" id="lbl_highlights">Highlights</label>
+                        <input type="text" id="f_highlights" maxlength="400" placeholder="Comma separated">
+                        <span class="hint">Each item becomes a tag on the listing page.</span>
+                    </div>
+
+                    <div class="field full">
+                        <label for="f_description_en">Description <span class="lang-tag">EN</span></label>
+                        <textarea id="f_description_en" rows="4" maxlength="4000"></textarea>
+                    </div>
+                    <div class="field full">
+                        <label for="f_description_mm">Description <span class="lang-tag">MM</span></label>
+                        <textarea id="f_description_mm" rows="4" maxlength="4000" lang="my" class="mm"></textarea>
+                    </div>
+
+                    <div class="field full">
+                        <label for="f_contact_note">Extra note for buyers <span class="dim">(optional)</span></label>
+                        <input type="text" id="f_contact_note" maxlength="160" placeholder="e.g. Only available after 6pm">
+                    </div>
+
+                    <div class="field full">
+                        <label>Screenshots</label>
+                        <div class="dropzone" id="dropzone">
+                            <div class="glyph">🖼️</div>
+                            <p>Click or drop images here</p>
+                            <small>Up to 6 images, 8 MB each. Any size works — every upload is cropped to 16:9 and converted to WebP automatically.</small>
+                            <input type="file" id="fileInput" multiple accept="image/*">
+                        </div>
+                        <div class="shots" id="shots"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button type="button" class="btn btn-ghost" id="editorCancel">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="editorSave">Save listing</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================= Confirm ================= -->
+<div class="modal-scrim" id="confirm">
+    <div class="modal" style="max-width:420px;" role="alertdialog" aria-modal="true">
+        <div class="modal-head"><h2 class="display" id="confirmTitle">Delete listing?</h2></div>
+        <div class="modal-body"><p class="muted" id="confirmBody"></p></div>
+        <div class="modal-foot">
+            <button type="button" class="btn btn-ghost" id="confirmNo">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmYes">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/core.js"></script>
+<script src="/js/ui.js"></script>
+<script src="/js/panel.js"></script>
+<script src="/js/pages/portal.js"></script>
+</body>
+</html>

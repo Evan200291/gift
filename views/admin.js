@@ -10,8 +10,8 @@
    the Security tab. The default path is /control-8f3a2c.
 
    This file replaces the original 70-line login stub. It owns
-   the three tabs defined in admin.html (Listings Â· Store &
-   contact Â· Security). The admin API also covers sellers,
+   the four tabs defined in admin.html (Listings Â· Sellers Â·
+   Store & contact Â· Security). The admin API also covers
    plans, posts and ad slots, but exposing them needs more
    markup in admin.html â€” the endpoints are all in place and
    tested; only the UI for them is omitted here.
@@ -134,6 +134,7 @@
 
     const TAB_LOADERS = {
         listings: () => Listings.load(),
+        sellers: () => Sellers.load(),
         store: () => Store.load(),
         security: () => Security.load(),
     };
@@ -586,6 +587,475 @@
         },
     };
     /* =============================================================
+       Sellers tab
+       =============================================================
+       Backend exposes GET/POST/PUT/DELETE /api/admin/sellers,
+       PUT /api/admin/sellers/:id/subscription,
+       POST /api/admin/sellers/:id/payment,
+       POST /api/admin/sellers/:id/extend.
+       Plans are loaded once on first open and cached.
+       ============================================================= */
+    const SellerState = { q: '', status: '', sort: 'newest', page: 1, limit: 20, total: 0, totalPages: 1 };
+    const SellerEditor = { open: false, editing: null, plans: null };
+
+    const Sellers = {
+        async load() {
+            await Promise.all([Sellers.loadTiles(), Sellers.loadRows()]);
+        },
+
+        async loadTiles() {
+            try {
+                const o = await api('/api/admin/sellers?limit=999');
+                const items = (o && o.items) || [];
+                const now = Date.now();
+                let active = 0, expiring = 0, expired = 0, suspended = 0;
+                items.forEach((s) => {
+                    if (s.status === 'suspended') { suspended++; return; }
+                    const exp = Number(s.subscriptionState && s.subscriptionState.expiresAt) || 0;
+                    if (!exp) return; // no plan yet
+                    const days = Math.round((exp - now) / 86400000);
+                    if (days < 0) expired++;
+                    else if (days <= 7) expiring++;
+                    else active++;
+                });
+                const host = $('#sellerTiles');
+                if (!host) return;
+                host.innerHTML = [
+                    Sellers.tile('Total sellers', items.length, 'accent'),
+                    Sellers.tile('Active', active),
+                    Sellers.tile('Expiring (≤7d)', expiring),
+                    Sellers.tile('Suspended', suspended),
+                ].join('');
+            } catch (err) {
+                toast(err.message || 'Could not load sellers', 'error');
+            }
+        },
+
+        tile(label, value, mod) {
+            return '<div class="tile' + (mod ? ' ' + mod : '') + '">'
+                + '<label>' + esc(label) + '</label>'
+                + '<b>' + esc(String(value)) + '</b>'
+                + '</div>';
+        },
+
+        async loadRows() {
+            const host = $('#sellerRows');
+            if (!host) return;
+            host.innerHTML = '<div class="rowcard"><div class="avatar-lg">⏳</div><div class="info"><div class="name-en">Loading…</div></div><div class="acts"></div></div>';
+            try {
+                const params = new URLSearchParams({
+                    q: SellerState.q,
+                    state: SellerState.status,
+                    sort: SellerState.sort,
+                    page: String(SellerState.page),
+                    limit: String(SellerState.limit),
+                });
+                const data = await api('/api/admin/sellers?' + params.toString());
+                const items = data.items || [];
+                SellerState.total = data.total || 0;
+                SellerState.totalPages = data.totalPages || 1;
+                if (!items.length) {
+                    host.innerHTML = '<div class="rowcard"><div class="avatar-lg">🛡️</div><div class="info"><div class="name-en">No sellers yet</div><div class="name-sub">Click <b>+ New seller</b> above to add the first one.</div></div><div class="acts"></div></div>';
+                } else {
+                    host.innerHTML = items.map(Sellers.renderRow).join('');
+                }
+                Sellers.wireRows(host);
+                Sellers.renderPagination();
+            } catch (err) {
+                host.innerHTML = '<div class="rowcard"><div class="avatar-lg">⚠️</div><div class="info"><div class="name-en">' + esc(err.message || 'Load failed') + '</div></div><div class="acts"></div></div>';
+            }
+        },
+
+        renderRow(s) {
+            const name = s.displayName || s.username;
+            const initial = (name || '?').charAt(0).toUpperCase();
+            const sub = s.subscriptionState || {};
+            const plan = sub.planName || sub.planId || '';
+            const days = sub.daysLeft;
+            let expPill = '';
+            if (s.status === 'suspended') {
+                expPill = '<span class="exp-pill suspended">Suspended</span>';
+            } else if (Number.isFinite(days)) {
+                if (days < 0) {
+                    expPill = '<span class="exp-pill expired">Expired ' + Math.abs(days) + 'd ago</span>';
+                } else if (days === 0) {
+                    expPill = '<span class="exp-pill expiring">Expires today</span>';
+                } else if (days <= 7) {
+                    expPill = '<span class="exp-pill expiring">' + days + 'd left</span>';
+                } else {
+                    expPill = '<span class="exp-pill">' + days + 'd left</span>';
+                }
+            } else if (plan) {
+                expPill = '<span class="exp-pill lifetime">No expiry</span>';
+            } else {
+                expPill = '<span class="exp-pill suspended">No plan</span>';
+            }
+            const planBadge = plan
+                ? '<span class="plan-badge">' + esc(plan) + '</span>'
+                : '<span class="plan-badge none">No plan</span>';
+            const verified = s.verified
+                ? '<span class="plan-badge" style="color:#22d3ee;background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.3);">✓ Verified</span>'
+                : '';
+            const listingCount = (s.subscriptionState && s.subscriptionState.listingCount);
+            const listingsBadge = Number.isFinite(listingCount)
+                ? '<span class="plan-badge none">' + listingCount + ' listings</span>'
+                : '';
+            return '<div class="rowcard" data-id="' + esc(s.id) + '">'
+                + '<div class="avatar-lg">' + esc(initial) + '</div>'
+                + '<div class="info">'
+                +   '<div class="name-en">' + esc(name) + '</div>'
+                +   '<div class="name-sub">@' + esc(s.username) + ' · ' + planBadge + ' ' + verified + ' ' + expPill + ' ' + listingsBadge + '</div>'
+                + '</div>'
+                + '<div class="acts">'
+                +   '<button type="button" class="btn btn-ghost btn-sm" data-act="edit">Edit</button>'
+                +   '<button type="button" class="btn btn-ghost btn-sm" data-act="del">Delete</button>'
+                + '</div>'
+                + '</div>';
+        },
+
+        wireRows(host) {
+            $$('.rowcard', host).forEach((card) => {
+                const id = card.dataset.id;
+                const edit = card.querySelector('[data-act="edit"]');
+                const del = card.querySelector('[data-act="del"]');
+                if (edit) edit.addEventListener('click', () => Sellers.openEditor(id));
+                if (del) del.addEventListener('click', () => Sellers.confirmDelete(id, card));
+            });
+        },
+
+        renderPagination() {
+            const host = $('#sellerPagination');
+            if (!host) return;
+            const state = { page: SellerState.page, totalPages: SellerState.totalPages };
+            const UI = window.UI;
+            if (UI && UI.pagination) {
+                UI.pagination(host, state, (p) => { SellerState.page = p; Sellers.loadRows(); });
+            } else {
+                host.innerHTML = '';
+            }
+        },
+
+        bind() {
+            if (Sellers._bound) return;
+            Sellers._bound = true;
+
+            const search = $('#sellerSearch');
+            const searchClear = $('#sellerSearchClear');
+            if (search) {
+                let timer = null;
+                const run = () => { SellerState.q = search.value.trim(); SellerState.page = 1; Sellers.loadRows(); };
+                search.addEventListener('input', () => {
+                    if (searchClear) searchClear.style.display = search.value ? '' : 'none';
+                    clearTimeout(timer);
+                    timer = setTimeout(run, 250);
+                });
+                search.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        search.value = '';
+                        if (searchClear) searchClear.style.display = 'none';
+                        run();
+                    }
+                });
+            }
+            if (searchClear) {
+                searchClear.innerHTML = ICONS.close;
+                searchClear.addEventListener('click', () => {
+                    if (search) search.value = '';
+                    searchClear.style.display = 'none';
+                    SellerState.q = '';
+                    SellerState.page = 1;
+                    Sellers.loadRows();
+                });
+            }
+            const status = $('#sellerStatus');
+            if (status) status.addEventListener('change', (e) => {
+                SellerState.status = e.target.value;
+                SellerState.page = 1;
+                Sellers.loadRows();
+            });
+            const sort = $('#sellerSort');
+            if (sort) sort.addEventListener('change', (e) => {
+                SellerState.sort = e.target.value;
+                SellerState.page = 1;
+                Sellers.loadRows();
+            });
+            const newBtn = $('#newSellerBtn');
+            if (newBtn) newBtn.addEventListener('click', () => Sellers.openEditor(null));
+            const searchIcon = $('#sellerSearchIcon');
+            if (searchIcon) searchIcon.innerHTML = ICONS.search;
+
+            Sellers.bindEditor();
+            Sellers.bindConfirm();
+            Sellers.bindInnerTabs();
+        },
+
+        /* ---- inner tabs inside the editor modal ---- */
+
+        bindInnerTabs() {
+            $$('.pane-tab').forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    const name = tab.dataset.pane;
+                    $$('.pane-tab').forEach((t) => t.classList.toggle('active', t === tab));
+                    $$('.pane').forEach((p) => p.classList.toggle('active', p.dataset.pane === name));
+                });
+            });
+        },
+
+        activatePane(name) {
+            const tab = $('.pane-tab[data-pane="' + name + '"]');
+            if (tab) tab.click();
+        },
+
+        /* ---- editor modal ---- */
+
+        bindEditor() {
+            const close = $('#sellerEditorClose');
+            const cancel = $('#sellerEditorCancel');
+            const scrim = $('#sellerEditor');
+            if (close) close.addEventListener('click', Sellers.closeEditor);
+            if (cancel) cancel.addEventListener('click', Sellers.closeEditor);
+            if (scrim) scrim.addEventListener('click', (e) => { if (e.target === scrim) Sellers.closeEditor(); });
+
+            const form = $('#sellerForm');
+            if (form) form.addEventListener('submit', Sellers.saveEditor);
+
+            const extendBtn = $('#s_extendBtn');
+            if (extendBtn) extendBtn.addEventListener('click', Sellers.extendSubscription);
+        },
+
+        async openEditor(id) {
+            SellerEditor.editing = id;
+            SellerEditor.open = true;
+
+            const form = $('#sellerForm');
+            if (form) form.reset();
+
+            const title = $('#sellerEditorTitle');
+            if (title) title.textContent = id ? 'Edit seller' : 'New seller';
+
+            // Username is immutable once set.
+            const u = $('#s_username');
+            if (u) u.disabled = Boolean(id);
+
+            // On create, password is required; on edit, it's optional (leave blank to keep current).
+            const pw = $('#s_password');
+            if (pw) pw.required = !id;
+            const hint = $('#s_passwordHint');
+            if (hint) hint.textContent = id
+                ? 'Leave blank to keep the current password. Min 8 characters if changing.'
+                : 'Min 8 characters with letters and numbers.';
+
+            // Reset to Account pane.
+            Sellers.activatePane('account');
+
+            // Load plans into the select (cached after first call).
+            await Sellers.loadPlans();
+
+            if (id) {
+                await Sellers.populateEditor(id);
+            } else {
+                // Defaults for new seller
+                const setVal = (sid, v) => { const el = $('#' + sid); if (el) el.value = v; };
+                setVal('s_status', 'active');
+                const must = $('#s_mustChange'); if (must) must.checked = true;
+                const ver = $('#s_verified'); if (ver) ver.checked = false;
+                const paid = $('#s_paid'); if (paid) paid.checked = true;
+                const ex = $('#s_expiresAt'); if (ex) ex.value = '';
+            }
+
+            const scrim = $('#sellerEditor');
+            if (scrim) scrim.classList.add('open');
+            // Focus the first editable field for keyboard users.
+            setTimeout(() => { if (u && !u.disabled) u.focus(); else { const dn = $('#s_displayName'); if (dn) dn.focus(); } }, 50);
+        },
+
+        async populateEditor(id) {
+            try {
+                const all = await api('/api/admin/sellers?limit=999');
+                const found = (all.items || []).find((s) => s.id === id);
+                if (!found) { toast('Seller not found', 'error'); return; }
+
+                const setVal = (sid, v) => { const el = $('#' + sid); if (el) el.value = v == null ? '' : v; };
+                const setCheck = (sid, v) => { const el = $('#' + sid); if (el) el.checked = Boolean(v); };
+
+                setVal('s_username', found.username || '');
+                setVal('s_displayName', found.displayName || '');
+                setVal('s_password', '');
+                setCheck('s_mustChange', found.mustChangePassword);
+                setVal('s_status', found.status || 'active');
+                setCheck('s_verified', found.verified);
+                setVal('s_bio_en', found.bio_en || '');
+                setVal('s_bio_mm', found.bio_mm || '');
+                setVal('s_notes', found.notes || '');
+
+                const c = found.contacts || {};
+                setVal('s_telegram', c.telegram || '');
+                setVal('s_facebook', c.facebook || '');
+                setVal('s_email', c.email || '');
+                setVal('s_phone', c.phone || '');
+                setVal('s_viber', c.viber || '');
+
+                const sub = found.subscription || {};
+                setVal('s_planId', sub.planId || '');
+                setCheck('s_paid', sub.paid);
+                setVal('s_subNote', sub.note || '');
+                const ex = $('#s_expiresAt');
+                if (ex) {
+                    if (sub.expiresAt) {
+                        const d = new Date(sub.expiresAt);
+                        ex.value = d.toLocaleString();
+                    } else {
+                        ex.value = 'No expiry set';
+                    }
+                }
+            } catch (err) {
+                toast(err.message || 'Could not load seller', 'error');
+            }
+        },
+
+        closeEditor() {
+            const scrim = $('#sellerEditor');
+            if (scrim) scrim.classList.remove('open');
+            SellerEditor.open = false;
+            SellerEditor.editing = null;
+        },
+
+        async saveEditor(e) {
+            e.preventDefault();
+            const id = SellerEditor.editing;
+            const btn = $('#sellerEditorSave');
+            if (!btn) return;
+            btn.disabled = true;
+            const restore = btn.textContent;
+            btn.textContent = 'Saving…';
+
+            const getVal = (sid) => { const el = $('#' + sid); return el ? (el.type === 'checkbox' ? el.checked : el.value) : ''; };
+
+            const body = {
+                displayName: getVal('s_displayName'),
+                bio_en: getVal('s_bio_en'),
+                bio_mm: getVal('s_bio_mm'),
+                notes: getVal('s_notes'),
+                status: getVal('s_status'),
+                verified: getVal('s_verified'),
+                mustChangePassword: getVal('s_mustChange'),
+                telegram: getVal('s_telegram'),
+                facebook: getVal('s_facebook'),
+                email: getVal('s_email'),
+                phone: getVal('s_phone'),
+                viber: getVal('s_viber'),
+                planId: getVal('s_planId') || undefined,
+                paid: getVal('s_paid'),
+                subscriptionNote: getVal('s_subNote') || undefined,
+            };
+            const password = getVal('s_password');
+            if (password) body.password = password;
+            if (!id) {
+                body.username = getVal('s_username');
+            }
+
+            try {
+                if (id) {
+                    await api('/api/admin/sellers/' + id, { method: 'PUT', json: body });
+                    toast('Seller updated', 'success');
+                } else {
+                    await api('/api/admin/sellers', { method: 'POST', json: body });
+                    toast('Seller created', 'success');
+                }
+                Sellers.closeEditor();
+                await Sellers.load();
+            } catch (err) {
+                toast(err.message || 'Save failed', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = restore;
+            }
+        },
+
+        /* ---- subscription sub-actions (extend, mark paid) ---- */
+
+        async loadPlans() {
+            if (Array.isArray(SellerEditor.plans)) return;
+            try {
+                const r = await api('/api/admin/plans');
+                SellerEditor.plans = (r && r.plans) || [];
+            } catch {
+                SellerEditor.plans = [];
+            }
+            const sel = $('#s_planId');
+            if (!sel) return;
+            const current = sel.value;
+            sel.innerHTML = '<option value="">— No plan / no subscription —</option>'
+                + SellerEditor.plans.map((p) => {
+                    const price = (p.price != null) ? (' · ' + p.price + '/' + (p.interval || 'mo')) : '';
+                    return '<option value="' + esc(p.id) + '">' + esc(p.name || p.id) + esc(price) + '</option>';
+                }).join('');
+            if (current) sel.value = current;
+        },
+
+        async extendSubscription() {
+            if (!SellerEditor.editing) return;
+            const days = parseInt((($('#s_extendDays') || {}).value || ''), 10);
+            if (!Number.isFinite(days) || days < 1) {
+                toast('Enter how many days to add (1–3650)', 'error');
+                return;
+            }
+            const btn = $('#s_extendBtn');
+            if (btn) btn.disabled = true;
+            try {
+                await api('/api/admin/sellers/' + SellerEditor.editing + '/extend', {
+                    method: 'POST',
+                    json: { days },
+                });
+                toast('Extended by ' + days + ' days', 'success');
+                await Sellers.populateEditor(SellerEditor.editing);
+                await Sellers.loadRows();
+            } catch (err) {
+                toast(err.message || 'Could not extend', 'error');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        },
+
+        /* ---- delete confirm (reuses #confirm modal) ---- */
+
+        confirmDelete(id, cardEl) {
+            const title = (cardEl && cardEl.querySelector('.name-en') || {}).textContent || 'this seller';
+            const body = $('#confirmBody');
+            if (body) body.textContent = '"' + title.trim() + '" and all of their listings will be removed permanently.';
+            const headTitle = document.querySelector('#confirm .display');
+            if (headTitle) headTitle.textContent = 'Delete seller?';
+            const scrim = $('#confirm');
+            if (scrim) scrim.classList.add('open');
+            const yes = $('#confirmYes');
+            const no = $('#confirmNo');
+            const off = () => {
+                scrim.classList.remove('open');
+                yes.removeEventListener('click', onYes);
+                no.removeEventListener('click', off);
+            };
+            const onYes = async () => {
+                off();
+                try {
+                    const r = await api('/api/admin/sellers/' + id, { method: 'DELETE' });
+                    const n = (r && r.listingsRemoved) || 0;
+                    toast('Seller deleted' + (n ? ' · ' + n + ' listings removed' : ''), 'success');
+                    await Sellers.load();
+                } catch (err) {
+                    toast(err.message || 'Delete failed', 'error');
+                }
+            };
+            yes.addEventListener('click', onYes);
+            no.addEventListener('click', off);
+        },
+
+        bindConfirm() {
+            const scrim = $('#confirm');
+            if (!scrim) return;
+            scrim.addEventListener('click', (e) => { if (e.target === scrim) scrim.classList.remove('open'); });
+        },
+    };
+    /* =============================================================
        Store & contact tab
        ============================================================= */
     const Store = {
@@ -744,6 +1214,7 @@
         Store.bind();
         Security.bind();
         Listings.bind();
+        Sellers.bind();
         await Listings.load(); // listings is the default tab
     }
 

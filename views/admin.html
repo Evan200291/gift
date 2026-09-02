@@ -257,6 +257,76 @@
     .rowcard .acts { grid-column: 1 / -1; justify-content: flex-end; }
     .modal-body { padding: 18px; }
 }
+
+/* ---- Sellers tab extras ---- */
+.tabbed-form {
+    display: flex; gap: 4px;
+    padding: 4px;
+    margin-bottom: 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg-soft);
+}
+.pane-tab {
+    flex: 1;
+    padding: 8px 12px;
+    border: 0; background: transparent;
+    color: var(--text-3);
+    font: inherit; font-size: .85rem; font-weight: 600;
+    border-radius: calc(var(--r) - 2px);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.pane-tab:hover { color: var(--text-1); }
+.pane-tab.active {
+    background: var(--surface);
+    color: var(--text-1);
+    box-shadow: 0 1px 0 var(--line);
+}
+.pane { display: none; }
+.pane.active { display: block; }
+
+.rowcard .info .name-en { color: var(--text-1); font-weight: 600; }
+.rowcard .info .name-sub {
+    color: var(--text-3);
+    font-size: .78rem;
+    margin-top: 2px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+
+.plan-badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--accent, #7c5cff);
+    background: rgba(124,92,255,.12);
+    border: 1px solid rgba(124,92,255,.3);
+    border-radius: 999px;
+}
+.plan-badge.none { color: var(--text-3); background: transparent; border-color: var(--line); text-transform: none; letter-spacing: 0; font-weight: 500; }
+
+.exp-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px;
+    font-size: .74rem; font-weight: 600;
+    border-radius: 999px;
+    background: rgba(34,211,238,.1);
+    color: #22d3ee;
+    border: 1px solid rgba(34,211,238,.3);
+}
+.exp-pill.expired { background: rgba(255,95,109,.12); color: #ff8b95; border-color: rgba(255,95,109,.4); }
+.exp-pill.expiring { background: rgba(255,176,32,.12); color: #ffcf7d; border-color: rgba(255,176,32,.4); }
+.exp-pill.lifetime { background: rgba(124,92,255,.12); color: #b6a3ff; border-color: rgba(124,92,255,.3); }
+.exp-pill.suspended { background: rgba(120,120,140,.15); color: #a8a8b8; border-color: rgba(120,120,140,.3); }
+
+.rowcard .avatar-lg {
+    width: 48px; height: 48px;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(124,92,255,.3), rgba(34,211,238,.2));
+    color: #fff; font-weight: 700; font-size: 1.1rem;
+    border: 1px solid var(--line);
+}
 </style>
 </head>
 
@@ -307,6 +377,7 @@
     <main class="shell" style="padding-bottom:60px;">
         <div class="tabs" role="tablist">
             <button type="button" class="tab active" data-tab="listings">Listings</button>
+            <button type="button" class="tab" data-tab="sellers">Sellers</button>
             <button type="button" class="tab" data-tab="store">Store &amp; contact</button>
             <button type="button" class="tab" data-tab="security">Security</button>
         </div>
@@ -342,6 +413,40 @@
 
             <div class="rows" id="rows"></div>
             <div class="pagination" id="adminPagination"></div>
+        </section>
+
+        <!-- ---- Sellers ---- -->
+        <section id="tab-sellers" class="hidden">
+            <div class="tiles" id="sellerTiles"></div>
+
+            <div class="bar">
+                <div class="search" id="sellerSearchWrap">
+                    <span class="ico" id="sellerSearchIcon"></span>
+                    <input type="search" id="sellerSearch" placeholder="Search by username, display name…" autocomplete="off">
+                    <button type="button" class="clear" id="sellerSearchClear" aria-label="Clear"></button>
+                </div>
+                <div class="select-wrap">
+                    <select id="sellerStatus" aria-label="Status filter">
+                        <option value="">All states</option>
+                        <option value="active">Active</option>
+                        <option value="expiring">Expiring (≤7 days)</option>
+                        <option value="expired">Expired</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+                <div class="select-wrap">
+                    <select id="sellerSort" aria-label="Sort">
+                        <option value="newest">Newest first</option>
+                        <option value="name">Name (A→Z)</option>
+                        <option value="expiresSoon">Expires soonest</option>
+                        <option value="listings">Most listings</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" id="newSellerBtn">+ New seller</button>
+            </div>
+
+            <div class="rows" id="sellerRows"></div>
+            <div class="pagination" id="sellerPagination"></div>
         </section>
 
         <!-- ---- Store & contact ---- -->
@@ -574,6 +679,157 @@
             <div class="modal-foot">
                 <button type="button" class="btn btn-ghost" id="editorCancel">Cancel</button>
                 <button type="submit" class="btn btn-primary" id="editorSave">Save listing</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================= Seller editor modal ================= -->
+<div class="modal-scrim" id="sellerEditor">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sellerEditorTitle" style="max-width:680px;">
+        <div class="modal-head">
+            <h2 id="sellerEditorTitle" class="display">New seller</h2>
+            <button type="button" class="btn btn-ghost btn-icon" id="sellerEditorClose" aria-label="Close">×</button>
+        </div>
+
+        <form id="sellerForm">
+            <div class="modal-body">
+                <div class="tabbed-form" role="tablist">
+                    <button type="button" class="pane-tab active" data-pane="account" role="tab">Account</button>
+                    <button type="button" class="pane-tab" data-pane="contacts" role="tab">Contacts &amp; bio</button>
+                    <button type="button" class="pane-tab" data-pane="subscription" role="tab">Subscription</button>
+                </div>
+
+                <div class="pane active" data-pane="account">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="s_username">Username <span class="dim">(letters, numbers, . _ -)</span></label>
+                            <input type="text" id="s_username" maxlength="40" required
+                                   pattern="[a-z0-9._-]+" spellcheck="false" autocapitalize="none"
+                                   placeholder="e.g. fox_store">
+                            <span class="hint">3–40 chars. Cannot be changed later.</span>
+                        </div>
+                        <div class="field">
+                            <label for="s_displayName">Display name</label>
+                            <input type="text" id="s_displayName" maxlength="60" placeholder="What buyers see">
+                        </div>
+
+                        <div class="field">
+                            <label for="s_password">Password</label>
+                            <input type="password" id="s_password" maxlength="200" autocomplete="new-password"
+                                   placeholder="At least 8 characters">
+                            <span class="hint" id="s_passwordHint">Min 8 characters with letters and numbers.</span>
+                        </div>
+                        <div class="field">
+                            <label class="switch" style="margin-top:24px;">
+                                <input type="checkbox" id="s_mustChange">
+                                <span class="track"></span>
+                                <span>Force password change on first sign-in</span>
+                            </label>
+                        </div>
+
+                        <div class="field">
+                            <label for="s_status">Account state</label>
+                            <select id="s_status">
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label class="switch" style="margin-top:24px;">
+                                <input type="checkbox" id="s_verified">
+                                <span class="track"></span>
+                                <span>Show as verified seller</span>
+                            </label>
+                        </div>
+
+                        <div class="field full">
+                            <label for="s_bio_en">Bio <span class="lang-tag">EN</span></label>
+                            <textarea id="s_bio_en" rows="2" maxlength="400" placeholder="Short seller description (English)"></textarea>
+                        </div>
+                        <div class="field full">
+                            <label for="s_bio_mm">Bio <span class="lang-tag">MM</span></label>
+                            <textarea id="s_bio_mm" rows="2" maxlength="400" lang="my" class="mm" placeholder="မြန်မာလို ဖော်ပြချက်"></textarea>
+                        </div>
+
+                        <div class="field full">
+                            <label for="s_notes">Internal notes <span class="dim">(admin only, not shown publicly)</span></label>
+                            <textarea id="s_notes" rows="2" maxlength="500" placeholder="Payment terms, source, reminders…"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pane" data-pane="contacts">
+                    <p class="sub" style="margin-bottom:14px;color:var(--text-3);font-size:.84rem;">
+                        Contact channels shown on the seller's public storefront and on every one of their listings.
+                    </p>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="s_telegram">Telegram</label>
+                            <input type="text" id="s_telegram" maxlength="200" placeholder="@handle or https://t.me/…">
+                        </div>
+                        <div class="field">
+                            <label for="s_viber">Viber</label>
+                            <input type="text" id="s_viber" maxlength="200" placeholder="+95 9…">
+                        </div>
+                        <div class="field">
+                            <label for="s_phone">Phone</label>
+                            <input type="text" id="s_phone" maxlength="200" placeholder="+95 9…">
+                        </div>
+                        <div class="field">
+                            <label for="s_email">Email</label>
+                            <input type="email" id="s_email" maxlength="200" placeholder="seller@example.com">
+                        </div>
+                        <div class="field full">
+                            <label for="s_facebook">Facebook</label>
+                            <input type="text" id="s_facebook" maxlength="200" placeholder="https://facebook.com/… or @username">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pane" data-pane="subscription">
+                    <p class="sub" style="margin-bottom:14px;color:var(--text-3);font-size:.84rem;">
+                        Assign a plan to enable the seller's storefront. Use <b>Extend</b> to renew — it adds the days to the current period without overwriting paid status.
+                    </p>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="s_planId">Plan</label>
+                            <select id="s_planId">
+                                <option value="">— No plan / no subscription —</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Current expiry</label>
+                            <input type="text" id="s_expiresAt" disabled placeholder="Never">
+                        </div>
+
+                        <div class="field">
+                            <label class="switch" style="margin-top:24px;">
+                                <input type="checkbox" id="s_paid">
+                                <span class="track"></span>
+                                <span>Mark as paid</span>
+                            </label>
+                        </div>
+                        <div class="field">
+                            <label for="s_extendDays">Extend by (days)</label>
+                            <div style="display:flex;gap:8px;">
+                                <input type="number" id="s_extendDays" min="1" max="3650" step="1" placeholder="30" style="flex:1;">
+                                <button type="button" class="btn btn-outline" id="s_extendBtn">Extend</button>
+                            </div>
+                            <span class="hint">Adds N days to the current period and marks as paid. 1–3650 days.</span>
+                        </div>
+
+                        <div class="field full">
+                            <label for="s_subNote">Subscription note</label>
+                            <input type="text" id="s_subNote" maxlength="300" placeholder="e.g. paid via KBZ on 12-Mar">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-foot">
+                <button type="button" class="btn btn-ghost" id="sellerEditorCancel">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="sellerEditorSave">Save seller</button>
             </div>
         </form>
     </div>

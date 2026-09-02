@@ -9,7 +9,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/components.css">
 <link rel="stylesheet" href="/css/panel.css">
@@ -17,6 +17,8 @@
 </head>
 
 <body class="lang-en">
+
+<header data-header></header>
 
 <!-- ================= Sign in ================= -->
 <div class="auth-screen" id="authScreen" hidden>
@@ -45,6 +47,7 @@
             <a href="/sell" data-i18n="applyToSell">Apply to sell</a>
         </p>
     </div>
+    <div data-ad="portal-login" data-ad-variant="wide"></div>
 </div>
 
 <!-- ================= Portal ================= -->
@@ -116,6 +119,17 @@
             <form id="profileForm" class="card-block">
                 <h3 data-i18n="myProfile">Profile &amp; contacts</h3>
                 <p class="sub">Buyers see this on every listing you publish. At least one contact channel is required.</p>
+
+                <div class="avatar-upload">
+                    <span class="preview" id="p_avatarPreview">S</span>
+                    <div class="acts">
+                        <label class="btn btn-outline btn-sm" for="p_avatarFile">Change photo</label>
+                        <button type="button" class="btn btn-ghost btn-sm" id="p_avatarRemove" hidden>Remove</button>
+                        <input type="file" id="p_avatarFile" accept="image/*">
+                        <span class="hint">Square photo recommended, up to 8 MB.</span>
+                    </div>
+                </div>
+
                 <div class="form-grid">
                     <div class="field">
                         <label for="p_displayName">Store / display name</label>
@@ -182,7 +196,7 @@
 </div>
 
 <!-- ================= Listing editor ================= -->
-<div class="modal-scrim" id="editor">
+<div class="modal-scrim" id="editor" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
         <div class="modal-head">
             <h2 id="editorTitle" class="display">New listing</h2>
@@ -274,7 +288,7 @@
 </div>
 
 <!-- ================= Confirm ================= -->
-<div class="modal-scrim" id="confirm">
+<div class="modal-scrim" id="confirm" hidden>
     <div class="modal" style="max-width:420px;" role="alertdialog" aria-modal="true">
         <div class="modal-head"><h2 class="display" id="confirmTitle">Delete listing?</h2></div>
         <div class="modal-body"><p class="muted" id="confirmBody"></p></div>

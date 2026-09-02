@@ -123,7 +123,7 @@
         return `<div class="panel">
             <h3>${esc(t('soldBy'))}</h3>
             <a class="seller-card" href="/store/${esc(seller.username)}" style="padding:0;border:0;background:none;">
-                <span class="avatar lg">${esc((seller.displayName || '?').charAt(0).toUpperCase())}</span>
+                <span class="avatar lg">${seller.avatar ? `<img src="${esc(seller.avatar)}" alt="">` : esc((seller.displayName || '?').charAt(0).toUpperCase())}</span>
                 <span class="seller-meta">
                     <b>${esc(seller.displayName)}${seller.verified ? `<span class="verified">${ICONS.verified}</span>` : ''}</b>
                     <span class="dim">${esc(t('memberSince'))} ${esc(monthYear(seller.since))}</span>

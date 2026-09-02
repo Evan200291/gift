@@ -74,7 +74,7 @@ router.get('/overview', (req, res) => {
  * Resellers
  * ================================================================== */
 router.get('/sellers', (req, res) => {
-    const { q, state, page, limit } = req.query;
+    const { q, state, sort, page, limit } = req.query;
     const all = store.readListings().map(listings.shape);
 
     let rows = store.readUsers()
@@ -95,10 +95,18 @@ router.get('/sellers', (req, res) => {
     }
     if (state === 'active') rows = rows.filter((u) => u.subscriptionState.active);
     if (state === 'unpaid') rows = rows.filter((u) => !u.subscriptionState.paid);
+    if (state === 'expiring') rows = rows.filter((u) => u.subscriptionState.expiringSoon);
     if (state === 'expired') rows = rows.filter((u) => u.subscriptionState.expired);
     if (state === 'suspended') rows = rows.filter((u) => u.status !== 'active');
 
-    rows.sort((a, b) => (a.subscriptionState.daysLeft || 0) - (b.subscriptionState.daysLeft || 0));
+    const sorters = {
+        newest: (a, b) => (b.createdAt || 0) - (a.createdAt || 0),
+        name: (a, b) => (a.displayName || a.username).localeCompare(b.displayName || b.username),
+        expiresSoon: (a, b) => (a.subscriptionState.daysLeft || 0) - (b.subscriptionState.daysLeft || 0),
+        listings: (a, b) => b.listingCount - a.listingCount,
+    };
+    rows.sort(sorters[sort] || sorters.expiresSoon);
+
     res.json(paginate(rows, page, intIn(limit, 5, 60, 20)));
 });
 
@@ -129,6 +137,7 @@ router.post('/sellers', (req, res) => {
         status: 'active',
         tokenVersion: 1,
         verified: bool(body.verified),
+        featured: bool(body.featured),
         bio_en: text(body.bio_en, 400),
         bio_mm: text(body.bio_mm, 400),
         contacts,
@@ -156,6 +165,8 @@ router.put('/sellers/:id', (req, res) => {
     if (body.bio_mm !== undefined) user.bio_mm = text(body.bio_mm, 400);
     if (body.notes !== undefined) user.notes = text(body.notes, 500);
     if (body.verified !== undefined) user.verified = bool(body.verified);
+    if (body.featured !== undefined) user.featured = bool(body.featured);
+    if (body.mustChangePassword !== undefined) user.mustChangePassword = bool(body.mustChangePassword);
     if (body.status !== undefined && store.USER_STATUSES.includes(body.status)) {
         user.status = body.status;
         if (body.status !== 'active') user.tokenVersion = (user.tokenVersion || 1) + 1;
@@ -165,6 +176,26 @@ router.put('/sellers/:id', (req, res) => {
     CONTACT_KEYS.forEach((key) => {
         if (body[key] !== undefined) user.contacts[key] = text(body[key], 200);
     });
+
+    // Subscription fields ride along on the main save. Only reassign (and
+    // reset the billing period) when the plan itself is actually changing;
+    // a paid/note-only edit should never silently reset a seller's expiry.
+    const planKey = body.plan !== undefined ? body.plan : body.planId;
+    const noteVal = body.note !== undefined ? body.note : body.subscriptionNote;
+    const currentPlan = (user.subscription && user.subscription.plan) || null;
+    const planChanged = planKey !== undefined && (planKey || null) !== currentPlan;
+
+    if (planChanged) {
+        user.subscription = buildSubscription({ ...body, plan: planKey }, user.subscription);
+    } else if (body.paid !== undefined || noteVal !== undefined) {
+        const sub = user.subscription || {};
+        if (body.paid !== undefined) {
+            sub.paid = bool(body.paid);
+            if (sub.paid) sub.lastPaymentAt = Date.now();
+        }
+        if (noteVal !== undefined) sub.note = text(noteVal, 300);
+        user.subscription = sub;
+    }
 
     if (body.password) {
         const problem = auth.passwordProblem(body.password);
@@ -200,11 +231,19 @@ router.delete('/sellers/:id', wrap(async (req, res) => {
 
 /* ---------------- subscriptions ---------------- */
 
-/** Build a subscription object from an admin request body. */
+/**
+ * Build a subscription object from an admin request body.
+ * Accepts either `plan`/`note` or the `planId`/`subscriptionNote` names the
+ * seller-editor form sends. `planId: ''` explicitly clears the plan; the key
+ * being absent entirely leaves whatever plan is already assigned untouched.
+ */
 function buildSubscription(body, existing) {
     const plans = store.readPlans();
-    const plan = plans.find((p) => p.id === body.plan) || null;
     const base = existing || {};
+
+    const planProvided = body.plan !== undefined || body.planId !== undefined;
+    const planKey = body.plan !== undefined ? body.plan : body.planId;
+    const plan = planKey ? (plans.find((p) => p.id === planKey) || null) : null;
 
     const days = body.days !== undefined
         ? intIn(body.days, 0, 3650, plan ? plan.days : 30)
@@ -215,16 +254,18 @@ function buildSubscription(body, existing) {
         ? num(body.expiresAt, 0)
         : startedAt + days * store.DAY_MS;
 
+    const noteVal = body.note !== undefined ? body.note : body.subscriptionNote;
+
     return {
-        plan: plan ? plan.id : (base.plan || null),
-        planName: plan ? plan.name : (base.planName || ''),
-        listingLimit: plan ? num(plan.listingLimit, 0) : num(base.listingLimit, 0),
-        price: plan ? num(plan.price, 0) : num(base.price, 0),
+        plan: planProvided ? (plan ? plan.id : null) : (base.plan || null),
+        planName: planProvided ? (plan ? plan.name : '') : (base.planName || ''),
+        listingLimit: planProvided ? (plan ? num(plan.listingLimit, 0) : 0) : num(base.listingLimit, 0),
+        price: planProvided ? (plan ? num(plan.price, 0) : 0) : num(base.price, 0),
         paid: body.paid !== undefined ? bool(body.paid) : Boolean(base.paid),
         startedAt,
         expiresAt,
         lastPaymentAt: body.paid !== undefined && bool(body.paid) ? Date.now() : (base.lastPaymentAt || 0),
-        note: body.note !== undefined ? text(body.note, 300) : (base.note || ''),
+        note: noteVal !== undefined ? text(noteVal, 300) : (base.note || ''),
     };
 }
 

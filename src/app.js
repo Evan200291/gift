@@ -121,8 +121,18 @@ function build() {
         return res.send(adminJs.split('__ADMIN_BASE__').join(base));
     });
 
-    /* ---- 5. public assets ---- */
-    app.use(express.static(PUBLIC_DIR, { maxAge: '1h', index: false }));
+    /* ---- 5. public assets ----
+       CSS/JS/HTML change often during active development; always revalidate
+       (a fast conditional GET / 304) instead of trusting a maxAge, or every
+       edit is invisible to a returning visitor until they hard-reload.
+       Uploaded images are content-hashed filenames, so those alone are safe
+       to cache hard (see the /uploads mount above). */
+    app.use(express.static(PUBLIC_DIR, {
+        index: false,
+        etag: true,
+        lastModified: true,
+        setHeaders: (res) => res.setHeader('Cache-Control', 'no-store'),
+    }));
 
     /* ---- 6. API ---- */
     app.use('/api', publicRoutes);

@@ -61,11 +61,34 @@
         </div>`;
     }
 
+    /* ================= mobile tab bar ================= */
+
+    const TABBAR = [
+        { href: '/', key: 'navHome', icon: 'home', match: (p) => p === '/' },
+        { href: '/#listings', key: 'navBrowse', icon: 'grid', match: () => false },
+        { href: '/sellers', key: 'navSellers', icon: 'users', match: (p) => p.startsWith('/sellers') || p.startsWith('/store') },
+        { href: '/sell', key: 'navSell', icon: 'tag', match: (p) => p === '/sell' },
+    ];
+
+    function mountTabbar() {
+        if (document.querySelector('.mtabbar')) return;
+        const path = window.location.pathname.replace(/\/+$/, '') || '/';
+        const bar = document.createElement('nav');
+        bar.className = 'mtabbar';
+        bar.setAttribute('aria-label', 'Primary');
+        bar.innerHTML = TABBAR.map((item) => `<a href="${item.href}" class="${item.match(path) ? 'active' : ''}">
+                <span class="ico">${ICONS[item.icon]}</span>
+                <span data-i18n="${item.key}">${esc(t(item.key))}</span>
+            </a>`).join('');
+        document.body.appendChild(bar);
+    }
+
     function mountHeader() {
         const host = $('[data-header]');
         if (!host) return;
         host.className = 'site-header';
         host.innerHTML = headerMarkup();
+        mountTabbar();
 
         $$('.lang-switch button', host).forEach((b) => {
             b.addEventListener('click', () => setLang(b.dataset.lang));
@@ -224,7 +247,7 @@
 
         const sellerRow = !opts.hideSeller && listing.seller
             ? `<a class="card-seller" href="/store/${esc(listing.seller.username)}">
-                   <span class="avatar">${esc((listing.seller.displayName || '?').charAt(0).toUpperCase())}</span>
+                   <span class="avatar">${listing.seller.avatar ? `<img src="${esc(listing.seller.avatar)}" alt="">` : esc((listing.seller.displayName || '?').charAt(0).toUpperCase())}</span>
                    <span class="name">${esc(truncate(listing.seller.displayName, 22))}</span>
                    ${listing.seller.verified ? `<span class="verified" title="${esc(t('verifiedSeller'))}">${ICONS.verified}</span>` : ''}
                </a>`
@@ -308,7 +331,7 @@
     function sellerCard(seller) {
         const games = (seller.games || []).map((g) => `<span class="spec">${esc(gameName(g))}</span>`).join('');
         return `<a class="seller-card" href="/store/${esc(seller.username)}">
-            <span class="avatar lg">${esc((seller.displayName || seller.username || '?').charAt(0).toUpperCase())}</span>
+            <span class="avatar lg">${seller.avatar ? `<img src="${esc(seller.avatar)}" alt="">` : esc((seller.displayName || seller.username || '?').charAt(0).toUpperCase())}</span>
             <span class="seller-meta">
                 <b>${esc(seller.displayName || seller.username)}
                    ${seller.verified ? `<span class="verified">${ICONS.verified}</span>` : ''}</b>

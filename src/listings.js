@@ -105,6 +105,7 @@ function withSeller(listing, sellerById) {
                 contacts: seller.contacts || {},
                 bio_en: seller.bio_en || '',
                 bio_mm: seller.bio_mm || '',
+                avatar: seller.avatar || null,
                 since: seller.createdAt,
                 verified: seller.role === 'admin' || Boolean(seller.verified),
             }

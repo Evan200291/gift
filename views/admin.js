@@ -20,7 +20,7 @@
     'use strict';
 
     const EX = window.EX;
-    const { api, token, esc, money, t, toast, statusPill, ICONS, fieldLabel, gameName } = EX;
+    const { api, token, esc, money, t, toast, statusPill, ICONS, fieldLabel, gameName, shortDate, truncate } = EX;
     const $ = (sel, root) => (root || document).querySelector(sel);
     const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
 
@@ -135,6 +135,7 @@
     const TAB_LOADERS = {
         listings: () => Listings.load(),
         sellers: () => Sellers.load(),
+        posts: () => Posts.load(),
         store: () => Store.load(),
         security: () => Security.load(),
     };
@@ -696,7 +697,7 @@
             const verified = s.verified
                 ? '<span class="plan-badge" style="color:#22d3ee;background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.3);">✓ Verified</span>'
                 : '';
-            const listingCount = (s.subscriptionState && s.subscriptionState.listingCount);
+            const listingCount = s.listingCount;
             const listingsBadge = Number.isFinite(listingCount)
                 ? '<span class="plan-badge none">' + listingCount + ' listings</span>'
                 : '';
@@ -859,6 +860,7 @@
                 setVal('s_status', 'active');
                 const must = $('#s_mustChange'); if (must) must.checked = true;
                 const ver = $('#s_verified'); if (ver) ver.checked = false;
+                const feat = $('#s_featured'); if (feat) feat.checked = false;
                 const paid = $('#s_paid'); if (paid) paid.checked = true;
                 const ex = $('#s_expiresAt'); if (ex) ex.value = '';
             }
@@ -884,6 +886,7 @@
                 setCheck('s_mustChange', found.mustChangePassword);
                 setVal('s_status', found.status || 'active');
                 setCheck('s_verified', found.verified);
+                setCheck('s_featured', found.featured);
                 setVal('s_bio_en', found.bio_en || '');
                 setVal('s_bio_mm', found.bio_mm || '');
                 setVal('s_notes', found.notes || '');
@@ -938,15 +941,16 @@
                 notes: getVal('s_notes'),
                 status: getVal('s_status'),
                 verified: getVal('s_verified'),
+                featured: getVal('s_featured'),
                 mustChangePassword: getVal('s_mustChange'),
                 telegram: getVal('s_telegram'),
                 facebook: getVal('s_facebook'),
                 email: getVal('s_email'),
                 phone: getVal('s_phone'),
                 viber: getVal('s_viber'),
-                planId: getVal('s_planId') || undefined,
+                planId: getVal('s_planId'),
                 paid: getVal('s_paid'),
-                subscriptionNote: getVal('s_subNote') || undefined,
+                subscriptionNote: getVal('s_subNote'),
             };
             const password = getVal('s_password');
             if (password) body.password = password;
@@ -1207,6 +1211,307 @@
     };
 
     /* =============================================================
+       Blog / posts tab
+       Backend exposes GET/POST/PUT/DELETE /api/admin/posts.
+       ============================================================= */
+    const PostState = { q: '', status: '', page: 1, limit: 20, total: 0, totalPages: 1 };
+    const PostEditor = { open: false, editing: null, file: null, removeCover: false, existingCover: '' };
+
+    const Posts = {
+        async load() {
+            await Posts.loadRows();
+        },
+
+        async loadRows() {
+            const host = $('#postRows');
+            if (!host) return;
+            host.innerHTML = '<div class="rowcard"><div class="shot">⏳</div><div class="info"><div class="name">Loading…</div></div><div class="acts"></div></div>';
+            try {
+                const params = new URLSearchParams();
+                params.set('page', String(PostState.page));
+                params.set('limit', String(PostState.limit));
+                const data = await api('/api/admin/posts?' + params.toString());
+                let rows = data.items || [];
+                if (PostState.status) rows = rows.filter((p) => p.status === PostState.status);
+                if (PostState.q) {
+                    const q = PostState.q.toLowerCase();
+                    rows = rows.filter((p) => (p.title_en || '').toLowerCase().includes(q) || (p.title_mm || '').includes(PostState.q));
+                }
+                PostState.total = data.total || 0;
+                PostState.totalPages = data.totalPages || 1;
+                host.innerHTML = rows.length
+                    ? rows.map(Posts.rowCard).join('')
+                    : '<div class="rowcard" style="grid-template-columns:1fr;"><div class="info" style="text-align:center;padding:32px;color:var(--text-3);">No posts yet — click <b>+ New post</b> to add one.</div></div>';
+                Posts.wireRows(host);
+                Posts.renderPagination();
+            } catch (err) {
+                host.innerHTML = '<div class="rowcard" style="grid-template-columns:1fr;"><div class="info" style="padding:24px;color:var(--danger);">' + esc(err.message || 'Load failed') + '</div></div>';
+            }
+        },
+
+        rowCard(p) {
+            const title = p.title_en || p.title_mm || 'Untitled post';
+            const statusBadge = '<span class="pill ' + (p.status === 'published' ? 'pill-available' : 'pill-reserved') + '">' + esc(p.status) + '</span>';
+            const meta = [
+                p.tag ? '<span>' + esc(p.tag) + '</span><span>·</span>' : '',
+                '<span>' + esc(shortDate(p.publishedAt || p.createdAt)) + '</span>',
+            ].join('');
+            return '<div class="rowcard" data-id="' + esc(p.id) + '">'
+                + '<div class="shot">' + (p.cover ? '<img src="' + esc(p.cover) + '" alt="" loading="lazy">' : '📰') + '</div>'
+                + '<div class="info">'
+                +   '<div class="name">' + esc(truncate(title, 60)) + '</div>'
+                +   '<div class="meta">' + statusBadge + ' ' + meta + '</div>'
+                + '</div>'
+                + '<div class="acts">'
+                +   '<button type="button" class="btn btn-ghost btn-sm" data-act="edit">Edit</button>'
+                +   '<button type="button" class="btn btn-ghost btn-sm" data-act="del">Delete</button>'
+                + '</div>'
+                + '</div>';
+        },
+
+        wireRows(host) {
+            $$('.rowcard', host).forEach((card) => {
+                const id = card.dataset.id;
+                const edit = card.querySelector('[data-act="edit"]');
+                const del = card.querySelector('[data-act="del"]');
+                if (edit) edit.addEventListener('click', () => Posts.openEditor(id));
+                if (del) del.addEventListener('click', () => Posts.confirmDelete(id, card));
+            });
+        },
+
+        renderPagination() {
+            const host = $('#postPagination');
+            if (!host) return;
+            const state = { page: PostState.page, totalPages: PostState.totalPages };
+            const UI = window.UI;
+            if (UI && UI.pagination) {
+                UI.pagination(host, state, (p) => { PostState.page = p; Posts.loadRows(); });
+            } else {
+                host.innerHTML = '';
+            }
+        },
+
+        bind() {
+            if (Posts._bound) return;
+            Posts._bound = true;
+
+            const search = $('#postSearch');
+            const searchClear = $('#postSearchClear');
+            if (search) {
+                let timer = null;
+                const run = () => { PostState.q = search.value.trim(); PostState.page = 1; Posts.loadRows(); };
+                search.addEventListener('input', () => {
+                    if (searchClear) searchClear.style.display = search.value ? '' : 'none';
+                    clearTimeout(timer);
+                    timer = setTimeout(run, 250);
+                });
+            }
+            if (searchClear) {
+                searchClear.innerHTML = ICONS.close;
+                searchClear.addEventListener('click', () => {
+                    if (search) search.value = '';
+                    searchClear.style.display = 'none';
+                    PostState.q = '';
+                    PostState.page = 1;
+                    Posts.loadRows();
+                });
+            }
+            const searchIcon = $('#postSearchIcon');
+            if (searchIcon) searchIcon.innerHTML = ICONS.search;
+
+            const statusFilter = $('#postStatusFilter');
+            if (statusFilter) statusFilter.addEventListener('change', (e) => {
+                PostState.status = e.target.value;
+                PostState.page = 1;
+                Posts.loadRows();
+            });
+
+            const newBtn = $('#newPostBtn');
+            if (newBtn) newBtn.addEventListener('click', () => Posts.openEditor(null));
+
+            Posts.bindEditor();
+            Posts.bindConfirm();
+        },
+
+        /* ---- editor modal ---- */
+
+        openEditor(id) {
+            PostEditor.editing = id;
+            PostEditor.file = null;
+            PostEditor.removeCover = false;
+            PostEditor.existingCover = '';
+            PostEditor.open = true;
+
+            const form = $('#postForm');
+            if (form) form.reset();
+            Posts.renderCoverPreview();
+
+            const title = $('#postEditorTitle');
+            if (title) title.textContent = id ? 'Edit post' : 'New post';
+
+            if (id) {
+                Posts.populateEditor(id);
+            } else {
+                const status = $('#pt_status'); if (status) status.value = 'draft';
+            }
+
+            const scrim = $('#postEditor');
+            if (scrim) scrim.classList.add('open');
+        },
+
+        async populateEditor(id) {
+            try {
+                const all = await api('/api/admin/posts?limit=999');
+                const found = (all.items || []).find((p) => p.id === id);
+                if (!found) { toast('Post not found', 'error'); Posts.closeEditor(); return; }
+                const setVal = (fid, v) => { const el = $('#' + fid); if (el) el.value = v == null ? '' : v; };
+                setVal('pt_title_en', found.title_en);
+                setVal('pt_title_mm', found.title_mm);
+                setVal('pt_slug', found.slug);
+                setVal('pt_tag', found.tag);
+                setVal('pt_status', found.status || 'draft');
+                setVal('pt_excerpt_en', found.excerpt_en);
+                setVal('pt_excerpt_mm', found.excerpt_mm);
+                setVal('pt_body_en', found.body_en);
+                setVal('pt_body_mm', found.body_mm);
+                PostEditor.existingCover = found.cover || '';
+                Posts.renderCoverPreview();
+            } catch (err) {
+                toast(err.message || 'Could not load post', 'error');
+            }
+        },
+
+        closeEditor() {
+            const scrim = $('#postEditor');
+            if (scrim) scrim.classList.remove('open');
+            PostEditor.open = false;
+            PostEditor.editing = null;
+            PostEditor.file = null;
+            PostEditor.removeCover = false;
+            PostEditor.existingCover = '';
+        },
+
+        renderCoverPreview() {
+            const host = $('#postShots');
+            if (!host) return;
+            if (PostEditor.file) {
+                const url = URL.createObjectURL(PostEditor.file);
+                host.innerHTML = '<div class="shot-item" data-new="0"><img src="' + esc(url) + '" alt=""><button type="button" class="kill" data-rm-new title="Remove">×</button><span class="tag">NEW</span></div>';
+            } else if (PostEditor.existingCover && !PostEditor.removeCover) {
+                host.innerHTML = '<div class="shot-item" data-existing="' + esc(PostEditor.existingCover) + '"><img src="' + esc(PostEditor.existingCover) + '" alt=""><button type="button" class="kill" data-rm-existing title="Remove">×</button></div>';
+            } else {
+                host.innerHTML = '';
+            }
+            const rmNew = host.querySelector('[data-rm-new]');
+            if (rmNew) rmNew.addEventListener('click', () => { PostEditor.file = null; Posts.renderCoverPreview(); });
+            const rmExisting = host.querySelector('[data-rm-existing]');
+            if (rmExisting) rmExisting.addEventListener('click', () => { PostEditor.removeCover = true; Posts.renderCoverPreview(); });
+        },
+
+        bindEditor() {
+            const close = $('#postEditorClose');
+            const cancel = $('#postEditorCancel');
+            const scrim = $('#postEditor');
+            if (close) close.addEventListener('click', Posts.closeEditor);
+            if (cancel) cancel.addEventListener('click', Posts.closeEditor);
+            if (scrim) scrim.addEventListener('click', (e) => { if (e.target === scrim) Posts.closeEditor(); });
+
+            const dz = $('#postDropzone');
+            const input = $('#postFileInput');
+            if (dz && input) {
+                dz.addEventListener('click', () => input.click());
+                dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('over'); });
+                dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+                dz.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dz.classList.remove('over');
+                    const f = (e.dataTransfer.files || [])[0];
+                    if (f) { PostEditor.file = f; PostEditor.removeCover = false; Posts.renderCoverPreview(); }
+                });
+                input.addEventListener('change', (e) => {
+                    const f = (e.target.files || [])[0];
+                    if (f) { PostEditor.file = f; PostEditor.removeCover = false; Posts.renderCoverPreview(); }
+                    input.value = '';
+                });
+            }
+
+            const form = $('#postForm');
+            if (form) form.addEventListener('submit', Posts.saveEditor);
+        },
+
+        async saveEditor(e) {
+            e.preventDefault();
+            const id = PostEditor.editing;
+            const btn = $('#postEditorSave');
+            btn.disabled = true;
+            const restore = btn.textContent;
+            btn.textContent = 'Saving…';
+
+            try {
+                const v = (fid) => { const el = $('#' + fid); return el ? el.value : ''; };
+                const fd = new FormData();
+                fd.append('title_en', v('pt_title_en'));
+                fd.append('title_mm', v('pt_title_mm'));
+                fd.append('slug', v('pt_slug'));
+                fd.append('tag', v('pt_tag'));
+                fd.append('status', v('pt_status') || 'draft');
+                fd.append('excerpt_en', v('pt_excerpt_en'));
+                fd.append('excerpt_mm', v('pt_excerpt_mm'));
+                fd.append('body_en', v('pt_body_en'));
+                fd.append('body_mm', v('pt_body_mm'));
+                if (PostEditor.file) fd.append('cover', PostEditor.file, PostEditor.file.name);
+                if (PostEditor.removeCover) fd.append('removeCover', 'true');
+
+                if (id) {
+                    await api('/api/admin/posts/' + id, { method: 'PUT', body: fd });
+                    toast('Post updated', 'success');
+                } else {
+                    await api('/api/admin/posts', { method: 'POST', body: fd });
+                    toast('Post created', 'success');
+                }
+                Posts.closeEditor();
+                await Posts.load();
+            } catch (err) {
+                toast(err.message || 'Save failed', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = restore;
+            }
+        },
+
+        confirmDelete(id, cardEl) {
+            const title = (cardEl && cardEl.querySelector('.name') || {}).textContent || 'this post';
+            const heading = $('#confirmTitle');
+            if (heading) heading.textContent = 'Delete post?';
+            const body = $('#confirmBody');
+            if (body) body.textContent = '"' + title.trim() + '" will be removed permanently.';
+            const scrim = $('#confirm');
+            if (scrim) scrim.classList.add('open');
+            const yes = $('#confirmYes');
+            const no = $('#confirmNo');
+            const off = () => { scrim.classList.remove('open'); yes.removeEventListener('click', onYes); no.removeEventListener('click', off); };
+            const onYes = async () => {
+                off();
+                try {
+                    await api('/api/admin/posts/' + id, { method: 'DELETE' });
+                    toast('Post deleted', 'success');
+                    await Posts.load();
+                } catch (err) {
+                    toast(err.message || 'Delete failed', 'error');
+                }
+            };
+            yes.addEventListener('click', onYes);
+            no.addEventListener('click', off);
+        },
+
+        bindConfirm() {
+            const scrim = $('#confirm');
+            if (!scrim) return;
+            scrim.addEventListener('click', (e) => { if (e.target === scrim) scrim.classList.remove('open'); });
+        },
+    };
+
+    /* =============================================================
        Boot
        ============================================================= */
 
@@ -1215,6 +1520,7 @@
         Security.bind();
         Listings.bind();
         Sellers.bind();
+        Posts.bind();
         await Listings.load(); // listings is the default tab
     }
 

@@ -119,7 +119,7 @@ router.get('/sellers', (req, res) => {
             const games = [...new Set(mine.map((l) => l.game))];
             return { ...store.publicUser(u), listingCount: mine.length, games };
         })
-        .sort((a, b) => b.listingCount - a.listingCount);
+        .sort((a, b) => (b.featured - a.featured) || (b.listingCount - a.listingCount));
 
     res.json({ items: rows, total: rows.length });
 });

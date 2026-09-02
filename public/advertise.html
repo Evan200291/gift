@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/components.css">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -19,14 +19,22 @@
 <header data-header></header>
 
 <main>
-    <section class="hero" style="padding-block:56px 30px;">
+    <div class="page-head">
         <div class="shell">
-            <span class="hero-badge"><span class="dot"></span><span data-i18n="navAdvertise">Advertise</span></span>
-            <h1 class="display" style="font-size:clamp(1.9rem,4.6vw,3rem);margin-bottom:16px;" data-i18n="advertiseTitle">Advertise on the marketplace</h1>
-            <p class="hero-sub" id="adsNote" data-i18n="advertiseSub"></p>
-            <div class="hero-actions" id="adsCta"></div>
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="/" data-i18n="navHome">Home</a>
+                <span class="sep">/</span>
+                <span class="dim" data-i18n="navAdvertise">Advertise</span>
+            </nav>
+            <div class="row">
+                <div>
+                    <h1 data-i18n="advertiseTitle">Advertise on the marketplace</h1>
+                    <p id="adsNote" data-i18n="advertiseSub"></p>
+                </div>
+                <div class="actions" id="adsCta"></div>
+            </div>
         </div>
-    </section>
+    </div>
 
     <section class="section">
         <div class="shell">

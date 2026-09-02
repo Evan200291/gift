@@ -81,8 +81,8 @@ const DEFAULT_ADMIN_PATH = '/control-8f3a2c';
 const DEFAULT_SETTINGS = {
     brand: 'EXABYTE',
     tagline: 'Game Account Marketplace',
-    currency: 'USD',
-    currencySymbol: '$',
+    currency: 'MMK',
+    currencySymbol: 'Ks',
     pageSize: 12,
 
     heroTitleEn: 'Buy Game Accounts From Verified Sellers',
@@ -259,6 +259,9 @@ function publicUser(user) {
         bio_en: user.bio_en || '',
         bio_mm: user.bio_mm || '',
         contacts: user.contacts || {},
+        avatar: user.avatar || null,
+        verified: Boolean(user.verified),
+        featured: Boolean(user.featured),
         createdAt: user.createdAt,
     };
 }

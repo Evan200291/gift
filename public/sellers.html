@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/components.css">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -33,6 +33,13 @@
                 <p data-i18n="sellersSub">Every seller here holds an active subscription.</p>
             </div>
             <a class="btn btn-primary btn-sm" href="/sell" data-i18n="navSell">Sell with us</a>
+        </div>
+        <div class="search" id="searchWrap" style="max-width:360px;margin-bottom:16px;">
+            <span class="ico" id="searchIcon"></span>
+            <input type="search" id="sellerSearch" autocomplete="off"
+                   data-i18n-ph="searchSellersPlaceholder" placeholder="Search sellers…"
+                   data-i18n-aria="searchSellersPlaceholder" aria-label="Search sellers">
+            <button type="button" class="clear" id="searchClear" data-i18n-aria="clearSearch" aria-label="Clear"></button>
         </div>
         <div class="seller-grid" id="sellerGrid"></div>
     </section>

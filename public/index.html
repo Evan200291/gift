@@ -9,7 +9,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/components.css">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -53,20 +53,15 @@
                 </div>
             </div>
 
-            <div class="hero-visual" aria-hidden="true">
-                <div class="hero-card">
-                    <div class="hero-card-top"><span class="glyph">🎮</span></div>
-                    <div class="hero-card-body">
-                        <div class="bar w1"></div>
-                        <div class="bar w2"></div>
-                        <div class="row">
-                            <span class="pill pill-available"><span class="dot"></span>Available</span>
-                            <span class="price-tag">$—</span>
-                        </div>
+            <div class="hero-visual">
+                <div class="hud" id="heroHud">
+                    <div class="hud-top">
+                        <b data-i18n="trustedSellers">TRUSTED SELLERS</b>
+                        <span class="hud-live"><span class="dot"></span>LIVE</span>
                     </div>
+                    <div class="hud-grid" id="heroHudGrid"></div>
+                    <div class="hud-foot"><span data-i18n="allSubsActive">ALL SUBSCRIPTIONS ACTIVE</span><span id="heroHudUpdated"></span></div>
                 </div>
-                <div class="hero-float a"><i>🛡️</i> Verified seller</div>
-                <div class="hero-float b"><i>⚡</i> Direct contact</div>
             </div>
         </div>
     </section>
@@ -113,10 +108,10 @@
                         <button type="button" class="clear" id="searchClear" data-i18n-aria="clearSearch" aria-label="Clear"></button>
                     </div>
 
-                    <div class="chips" id="statusChips" role="group">
-                        <button type="button" class="chip active" data-status="" data-i18n="filterAll">All</button>
-                        <button type="button" class="chip" data-status="available" data-i18n="filterAvailable">Available</button>
-                        <button type="button" class="chip" data-status="reserved" data-i18n="filterReserved">Reserved</button>
+                    <div class="price-range" id="priceRange">
+                        <input type="number" id="priceMin" min="0" step="1" inputmode="numeric" data-i18n-ph="priceMin" placeholder="Min $" aria-label="Minimum price">
+                        <span class="to">–</span>
+                        <input type="number" id="priceMax" min="0" step="1" inputmode="numeric" data-i18n-ph="priceMax" placeholder="Max $" aria-label="Maximum price">
                     </div>
 
                     <div class="select-wrap">

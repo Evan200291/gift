@@ -9,7 +9,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
 
@@ -60,7 +60,7 @@
 .admin-badge {
     padding: 4px 11px;
     border: 1px solid var(--neon-deep);
-    border-radius: var(--r-pill);
+    border-radius: var(--r-xs);
     background: var(--neon-faint);
     font-size: .68rem; font-weight: 700;
     letter-spacing: .12em; text-transform: uppercase;
@@ -73,7 +73,7 @@
 .tab {
     padding: 9px 17px;
     border: 1px solid var(--line);
-    border-radius: var(--r-pill);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
     background: var(--surface);
     color: var(--text-2);
     font-size: .86rem; font-weight: 600;
@@ -378,6 +378,7 @@
         <div class="tabs" role="tablist">
             <button type="button" class="tab active" data-tab="listings">Listings</button>
             <button type="button" class="tab" data-tab="sellers">Sellers</button>
+            <button type="button" class="tab" data-tab="posts">Blog</button>
             <button type="button" class="tab" data-tab="store">Store &amp; contact</button>
             <button type="button" class="tab" data-tab="security">Security</button>
         </div>
@@ -447,6 +448,28 @@
 
             <div class="rows" id="sellerRows"></div>
             <div class="pagination" id="sellerPagination"></div>
+        </section>
+
+        <!-- ---- Blog ---- -->
+        <section id="tab-posts" class="hidden">
+            <div class="bar">
+                <div class="search" id="postSearchWrap">
+                    <span class="ico" id="postSearchIcon"></span>
+                    <input type="search" id="postSearch" placeholder="Search posts…" autocomplete="off">
+                    <button type="button" class="clear" id="postSearchClear" aria-label="Clear"></button>
+                </div>
+                <div class="select-wrap">
+                    <select id="postStatusFilter" aria-label="Status filter">
+                        <option value="">All statuses</option>
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" id="newPostBtn">+ New post</button>
+            </div>
+
+            <div class="rows" id="postRows"></div>
+            <div class="pagination" id="postPagination"></div>
         </section>
 
         <!-- ---- Store & contact ---- -->
@@ -742,6 +765,13 @@
                                 <span>Show as verified seller</span>
                             </label>
                         </div>
+                        <div class="field">
+                            <label class="switch" style="margin-top:24px;">
+                                <input type="checkbox" id="s_featured">
+                                <span class="track"></span>
+                                <span>Feature on homepage hero (trusted sellers)</span>
+                            </label>
+                        </div>
 
                         <div class="field full">
                             <label for="s_bio_en">Bio <span class="lang-tag">EN</span></label>
@@ -835,10 +865,83 @@
     </div>
 </div>
 
+<!-- ================= Post editor ================= -->
+<div class="modal-scrim" id="postEditor">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="postEditorTitle" style="max-width:680px;">
+        <div class="modal-head">
+            <h2 id="postEditorTitle" class="display">New post</h2>
+            <button type="button" class="btn btn-ghost btn-icon" id="postEditorClose" aria-label="Close">×</button>
+        </div>
+        <form id="postForm">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="pt_title_en">Title <span class="lang-tag">EN</span></label>
+                        <input type="text" id="pt_title_en" maxlength="160" placeholder="How to trade safely">
+                    </div>
+                    <div class="field full">
+                        <label for="pt_title_mm">Title <span class="lang-tag">MM</span></label>
+                        <input type="text" id="pt_title_mm" maxlength="160" lang="my" class="mm">
+                    </div>
+
+                    <div class="field">
+                        <label for="pt_slug">URL slug <span class="dim">(optional)</span></label>
+                        <input type="text" id="pt_slug" maxlength="140" placeholder="auto from title">
+                    </div>
+                    <div class="field">
+                        <label for="pt_tag">Tag</label>
+                        <input type="text" id="pt_tag" maxlength="40" placeholder="e.g. Guide">
+                    </div>
+                    <div class="field">
+                        <label for="pt_status">Status</label>
+                        <select id="pt_status">
+                            <option value="draft">Draft</option>
+                            <option value="published">Published</option>
+                        </select>
+                    </div>
+
+                    <div class="field full">
+                        <label for="pt_excerpt_en">Excerpt <span class="lang-tag">EN</span></label>
+                        <textarea id="pt_excerpt_en" rows="2" maxlength="300"></textarea>
+                    </div>
+                    <div class="field full">
+                        <label for="pt_excerpt_mm">Excerpt <span class="lang-tag">MM</span></label>
+                        <textarea id="pt_excerpt_mm" rows="2" maxlength="300" lang="my" class="mm"></textarea>
+                    </div>
+
+                    <div class="field full">
+                        <label for="pt_body_en">Body <span class="lang-tag">EN</span></label>
+                        <textarea id="pt_body_en" rows="8" maxlength="20000"></textarea>
+                    </div>
+                    <div class="field full">
+                        <label for="pt_body_mm">Body <span class="lang-tag">MM</span></label>
+                        <textarea id="pt_body_mm" rows="8" maxlength="20000" lang="my" class="mm"></textarea>
+                    </div>
+
+                    <div class="field full">
+                        <label>Cover image</label>
+                        <div class="dropzone" id="postDropzone">
+                            <div class="glyph">🖼️</div>
+                            <p>Click or drop an image here</p>
+                            <small>Cropped to 16:9 and converted to WebP automatically.</small>
+                            <input type="file" id="postFileInput" accept="image/*">
+                        </div>
+                        <div class="shots" id="postShots"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button type="button" class="btn btn-ghost" id="postEditorCancel">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="postEditorSave">Save post</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- ================= Confirm modal ================= -->
 <div class="modal-scrim" id="confirm">
     <div class="modal" style="max-width:420px;" role="alertdialog" aria-modal="true">
-        <div class="modal-head"><h2 class="display">Delete listing?</h2></div>
+        <div class="modal-head"><h2 class="display" id="confirmTitle">Delete listing?</h2></div>
         <div class="modal-body">
             <p class="muted" id="confirmBody">This permanently removes the listing and its images.</p>
         </div>

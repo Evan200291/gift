@@ -23,6 +23,7 @@ function sessionPayload(user) {
         contacts: user.contacts || {},
         bio_en: user.bio_en || '',
         bio_mm: user.bio_mm || '',
+        avatar: user.avatar || null,
         subscription: store.subscriptionState(user),
         mustChangePassword: Boolean(user.mustChangePassword),
     };

@@ -204,36 +204,50 @@ async function mergeImages(req, current, updated) {
 /* ------------------------------------------------------------------ *
  * Profile — the contact details buyers see on every listing
  * ------------------------------------------------------------------ */
-router.put('/profile', (req, res) => {
-    const users = store.readUsers();
-    const idx = users.findIndex((u) => u.id === req.user.id);
-    if (idx === -1) return res.status(404).json({ error: 'Account not found' });
+router.put(
+    '/profile',
+    images.uploader.single('avatar'),
+    wrap(async (req, res) => {
+        const users = store.readUsers();
+        const idx = users.findIndex((u) => u.id === req.user.id);
+        if (idx === -1) return res.status(404).json({ error: 'Account not found' });
 
-    const user = users[idx];
-    const body = req.body || {};
+        const user = users[idx];
+        const body = req.body || {};
 
-    if (body.displayName !== undefined) {
-        const name = text(body.displayName, 60);
-        if (name.length < 2) return res.status(400).json({ error: 'Display name is too short.' });
-        user.displayName = name;
-    }
-    if (body.bio_en !== undefined) user.bio_en = text(body.bio_en, 400);
-    if (body.bio_mm !== undefined) user.bio_mm = text(body.bio_mm, 400);
+        if (body.displayName !== undefined) {
+            const name = text(body.displayName, 60);
+            if (name.length < 2) return res.status(400).json({ error: 'Display name is too short.' });
+            user.displayName = name;
+        }
+        if (body.bio_en !== undefined) user.bio_en = text(body.bio_en, 400);
+        if (body.bio_mm !== undefined) user.bio_mm = text(body.bio_mm, 400);
 
-    user.contacts = user.contacts || {};
-    ['telegram', 'facebook', 'email', 'phone', 'viber'].forEach((key) => {
-        if (body[key] !== undefined) user.contacts[key] = text(body[key], 200);
-    });
+        user.contacts = user.contacts || {};
+        ['telegram', 'facebook', 'email', 'phone', 'viber'].forEach((key) => {
+            if (body[key] !== undefined) user.contacts[key] = text(body[key], 200);
+        });
 
-    const hasContact = Object.values(user.contacts).some((v) => v);
-    if (!hasContact) {
-        return res.status(400).json({ error: 'Add at least one contact channel — buyers reach you directly.' });
-    }
+        const hasContact = Object.values(user.contacts).some((v) => v);
+        if (!hasContact) {
+            return res.status(400).json({ error: 'Add at least one contact channel — buyers reach you directly.' });
+        }
 
-    users[idx] = user;
-    store.writeUsers(users);
-    return res.json({ user: store.publicUser(user) });
-});
+        if (req.file) {
+            const previous = user.avatar;
+            const stored = await images.store(req.file.buffer, 'avatar');
+            user.avatar = stored.full;
+            if (previous) await images.remove([previous]);
+        } else if (body.removeAvatar === 'true' || body.removeAvatar === true) {
+            if (user.avatar) await images.remove([user.avatar]);
+            user.avatar = null;
+        }
+
+        users[idx] = user;
+        store.writeUsers(users);
+        return res.json({ user: store.publicUser(user) });
+    })
+);
 
 router.put('/password', (req, res) => {
     const { currentPassword, newPassword } = req.body || {};

@@ -25,7 +25,7 @@
         const bio = field(s, 'bio');
 
         $('#storeHead').innerHTML = `<div class="store-head">
-            <span class="avatar" style="width:68px;height:68px;font-size:1.7rem;border-radius:18px;">${esc((s.displayName || s.username).charAt(0).toUpperCase())}</span>
+            <span class="avatar" style="width:68px;height:68px;font-size:1.7rem;border-radius:18px;">${s.avatar ? `<img src="${esc(s.avatar)}" alt="">` : esc((s.displayName || s.username).charAt(0).toUpperCase())}</span>
             <div class="store-head-meta">
                 <h1 class="display">${esc(s.displayName || s.username)}
                     ${s.verified ? `<span class="verified" title="${esc(t('verifiedSeller'))}">${ICONS.verified}</span>` : ''}</h1>

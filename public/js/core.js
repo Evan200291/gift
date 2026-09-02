@@ -80,7 +80,9 @@
 
     function money(value) {
         const n = Number(value) || 0;
-        return (SITE.currencySymbol || '$') + n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        const sym = SITE.currencySymbol || 'Ks';
+        const decimals = sym === 'Ks' || SITE.currency === 'MMK' ? 0 : 2;
+        return sym + ' ' + n.toLocaleString('en-US', { maximumFractionDigits: decimals });
     }
 
     function shortDate(ts) {
@@ -116,6 +118,18 @@
         return key ? t(`game${key}`) : (gameById(id).short || id);
     }
 
+    /* Custom line-icon glyphs per game — not trademarked logo art, just a
+       shield / ball / crosshair / flame in each game's own accent. Swap the
+       markup here (or override .game-glyph[data-game] background-image in
+       CSS) if licensed logo art becomes available. */
+    const GAME_ICON_SVG = {
+        efootball: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7.5 15.8 10l-1.4 4.5H9.6L8.2 10Z"/><path d="M12 3v4.5M4.8 8.2l3.4 1.8M19.2 8.2l-3.4 1.8M7.5 20l2.1-5.5M16.5 20l-2.1-5.5"/></svg>',
+        mlbb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V5z"/><path d="m9 12.5 2 2 4-4.5"/></svg>',
+        pubg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".7" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>',
+        freefire: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1.5-.8-2.3-1.3-3 .6 2-.7 3-1.7 3 .6-1.6-.3-2.8-1-4-.8-1.4-1.3-2-2-3Z"/><path d="M8.5 13a6 6 0 1 0 11.8-1.6C19.6 16 17 19 12 20c-4 .8-7-1.6-7-5 0-1.3.5-2.3 1-3 .3 1 1.3 1.6 2.5 1Z"/></svg>',
+    };
+    function gameIcon(gameId) { return GAME_ICON_SVG[gameId] || GAME_ICON_SVG.efootball; }
+
     /** Field labels change per game: "Team overall" vs "Rank" vs "Tier". */
     function fieldLabel(gameId, slot) {
         const key = GAME_KEY[gameId];
@@ -137,6 +151,10 @@
         share: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.4 10.8 15.6 6.6M8.4 13.2l7.2 4.2"/></svg>',
         check: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg>',
         menu: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+        home: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 10.5 8-6.5 8 6.5"/><path d="M6 9.5V20h12V9.5"/></svg>',
+        grid: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7"/><rect x="13.5" y="3.5" width="7" height="7"/><rect x="3.5" y="13.5" width="7" height="7"/><rect x="13.5" y="13.5" width="7" height="7"/></svg>',
+        users: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19c.9-3.4 3.3-5.2 6.2-5.2s5.3 1.8 6.2 5.2"/><path d="M15.8 5.2A3.4 3.4 0 0 1 16.5 12M18.3 13.8c2.2.6 3.7 2.2 4.3 4.6"/></svg>',
+        tag: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 3.4h6v6L8.4 19.6a1.5 1.5 0 0 1-2.1 0l-3.9-3.9a1.5 1.5 0 0 1 0-2.1z"/><circle cx="16.6" cy="7.4" r="1.3" fill="currentColor" stroke="none"/></svg>',
         verified: '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="m12 1.8 2.5 2 3.2-.3 1 3 2.6 1.9-1.2 3 1.2 3-2.6 1.9-1 3-3.2-.3-2.5 2-2.5-2-3.2.3-1-3L3.7 18.3l1.2-3-1.2-3L6.3 6.5l1-3 3.2.3z"/><path d="m10.6 15.4-2.9-2.9 1.3-1.3 1.6 1.6 4-4 1.3 1.3z" fill="#07080d"/></svg>',
         telegram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.7 19.5c-.24 1.06-.87 1.32-1.76.82l-4.86-3.58-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.94 9-8.13c.39-.35-.09-.54-.6-.19L6.4 13.1 1.6 11.6c-1.04-.33-1.06-1.04.22-1.54L20.55 2.8c.87-.32 1.63.2 1.35 1.5z"/></svg>',
         facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.45 2.91h-2.33V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>',
@@ -370,7 +388,7 @@
         // formatting
         esc, truncate, money, shortDate, monthYear,
         // games
-        games, gameById, gameName, fieldLabel,
+        games, gameById, gameName, fieldLabel, gameIcon,
         // ui
         ICONS, statusPill, channelsFrom, channelList,
         toast, copyText, skeletonCards, emptyState,

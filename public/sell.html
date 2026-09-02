@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/components.css">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -19,17 +19,25 @@
 <header data-header></header>
 
 <main>
-    <section class="hero" style="padding-block:56px 30px;">
+    <div class="page-head">
         <div class="shell">
-            <span class="hero-badge"><span class="dot"></span><span data-i18n="navSell">Sell with us</span></span>
-            <h1 class="display" style="font-size:clamp(1.9rem,4.6vw,3rem);margin-bottom:16px;" data-i18n="sellTitle">Sell your accounts here</h1>
-            <p class="hero-sub" id="sellPitch" data-i18n="sellSub">Get your stock in front of buyers already looking for it.</p>
-            <div class="hero-actions">
-                <a class="btn btn-primary btn-lg" href="#plans" data-i18n="plansTitle">Subscription plans</a>
-                <a class="btn btn-outline btn-lg" href="/seller" data-i18n="sellerLoginCta">I already have a seller account</a>
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="/" data-i18n="navHome">Home</a>
+                <span class="sep">/</span>
+                <span class="dim" data-i18n="navSell">Sell with us</span>
+            </nav>
+            <div class="row">
+                <div>
+                    <h1 data-i18n="sellTitle">Sell your accounts here</h1>
+                    <p id="sellPitch" data-i18n="sellSub">Get your stock in front of buyers already looking for it.</p>
+                </div>
+                <div class="actions">
+                    <a class="btn btn-primary" href="#plans" data-i18n="plansTitle">Subscription plans</a>
+                    <a class="btn btn-outline" href="/seller" data-i18n="sellerLoginCta">I already have a seller account</a>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <section class="section-sm">
         <div class="shell">

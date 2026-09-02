@@ -5,12 +5,12 @@
     'use strict';
 
     const {
-        t, esc, api, site, siteText, games, gameName, gameById,
+        t, esc, api, site, siteText, games, gameName, gameById, gameIcon,
         ICONS, toast, skeletonCards, emptyState, applyTranslations,
         getLang, $, $$, debounce, shortDate, truncate,
     } = window.EX;
 
-    const state = { page: 1, totalPages: 1, total: 0, q: '', status: '', game: '', sort: 'newest', busy: false };
+    const state = { page: 1, totalPages: 1, total: 0, q: '', game: '', sort: 'newest', minPrice: '', maxPrice: '', busy: false };
 
     /* ---------------- categories ---------------- */
 
@@ -19,7 +19,7 @@
         rail.innerHTML = games().map((g) => `
             <button type="button" class="cat-card${state.game === g.id ? ' active' : ''}"
                     data-game="${esc(g.id)}" style="--cat:${esc(g.accent || '#7c5cff')}">
-                <span class="cat-glyph">${esc(g.icon || '🎮')}</span>
+                <span class="cat-glyph">${gameIcon(g.id)}</span>
                 <span class="cat-meta">
                     <b>${esc(gameName(g.id))}</b>
                     <span>${(counts && counts[g.id]) || 0} ${esc(t('accountsAvailable'))}</span>
@@ -48,7 +48,7 @@
     function renderGrid(items) {
         const grid = $('#grid');
         if (!items.length) {
-            grid.innerHTML = (state.q || state.status || state.game)
+            grid.innerHTML = (state.q || state.game || state.minPrice || state.maxPrice)
                 ? emptyState('noResultsTitle', 'noResultsBody', '🔍')
                 : emptyState('emptyTitle', 'emptyBody', '🎮');
             return;
@@ -76,8 +76,9 @@
         try {
             const params = new URLSearchParams();
             if (state.q) params.set('q', state.q);
-            if (state.status) params.set('status', state.status);
             if (state.game) params.set('game', state.game);
+            if (state.minPrice) params.set('minPrice', state.minPrice);
+            if (state.maxPrice) params.set('maxPrice', state.maxPrice);
             if (state.sort !== 'newest') params.set('sort', state.sort);
             params.set('page', String(state.page));
 
@@ -103,16 +104,45 @@
 
     /* ---------------- sellers + blog ---------------- */
 
+    function hudSellerCard(s) {
+        const accent = (gameById((s.games || [])[0]) || {}).accent || 'var(--neon-deep)';
+        const av = s.avatar
+            ? `<img src="${esc(s.avatar)}" alt="">`
+            : esc((s.displayName || s.username || '?').charAt(0).toUpperCase());
+        return `<a class="hud-sel" href="/store/${esc(s.username)}">
+            <div class="hud-sel-top">
+                <span class="hud-av" style="background:${esc(accent)}">${av}</span>
+                <span>
+                    <span class="hud-name">${esc(truncate(s.displayName || s.username, 16))}${s.verified ? ` ${ICONS.verified}` : ''}</span>
+                    <span class="hud-game">${esc(gameName((s.games || [])[0]) || '')}</span>
+                </span>
+            </div>
+            <div class="hud-sel-bot"><span><b>${s.listingCount || 0}</b> ${esc(t('sellerListings'))}</span><span class="go">${esc(t('viewDetails'))} →</span></div>
+        </a>`;
+    }
+
+    function renderHeroHud(rows) {
+        const grid = $('#heroHudGrid');
+        if (!grid) return;
+        const updated = $('#heroHudUpdated');
+        if (updated) updated.textContent = t('updatedNow') || '';
+        grid.innerHTML = rows.length
+            ? rows.slice(0, 4).map(hudSellerCard).join('')
+            : `<div class="hud-empty" style="grid-column:1/-1;">${esc(t('emptyTitle'))}</div>`;
+    }
+
     async function loadSellers() {
         try {
             const data = await api('/api/sellers');
-            const rows = (data.items || []).slice(0, 6);
-            $('#sellerGrid').innerHTML = rows.length
-                ? rows.map(window.UI.sellerCard).join('')
+            const rows = data.items || [];
+            $('#sellerGrid').innerHTML = rows.slice(0, 6).length
+                ? rows.slice(0, 6).map(window.UI.sellerCard).join('')
                 : emptyState('emptyTitle', 'emptyBody', '🛡️');
             $('#statSellers').textContent = String(data.total || 0);
+            renderHeroHud(rows);
         } catch {
             $('#sellerGrid').innerHTML = '';
+            renderHeroHud([]);
         }
     }
 
@@ -192,13 +222,16 @@
             input.value = ''; sync(); state.q = ''; input.focus(); load(1);
         });
 
-        $$('#statusChips .chip').forEach((chip) => {
-            chip.addEventListener('click', () => {
-                $$('#statusChips .chip').forEach((c) => c.classList.remove('active'));
-                chip.classList.add('active');
-                state.status = chip.dataset.status || '';
-                load(1);
-            });
+        const priceMin = $('#priceMin');
+        const priceMax = $('#priceMax');
+        const runPrice = debounce(() => {
+            state.minPrice = priceMin.value.trim();
+            state.maxPrice = priceMax.value.trim();
+            load(1);
+        }, 400);
+        [priceMin, priceMax].forEach((el) => {
+            el.addEventListener('input', runPrice);
+            el.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); runPrice(); } });
         });
 
         $('#gameSelect').addEventListener('change', (e) => {

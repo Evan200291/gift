@@ -1,0 +1,24 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# App data and uploads (generated at runtime; do not commit)
+data/
+uploads/*
+!uploads/.gitkeep
+logs/
+
+# Environment overrides
+.env
+.env.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# PM2 state on dev machines (the VPS keeps its own)
+.pm2/

@@ -95,48 +95,55 @@
 .cat-rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
 .cat-card {
     position: relative;
-    display: flex; align-items: center; gap: 15px;
-    padding: 16px 17px 17px;
-    border: 1px solid var(--line);
-    border-top: 2px solid var(--cat, var(--neon-deep));
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.08);
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
-    background: var(--surface);
+    background: linear-gradient(160deg, #12294B, #0A1830);
     overflow: hidden;
     transition: transform var(--t), border-color var(--t), box-shadow var(--t);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cat, var(--neon)) 30%, transparent) inset;
+}
+.cat-card::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 24px);
 }
 .cat-card:hover, .cat-card.active {
     transform: translateY(-3px);
     border-color: var(--cat, var(--neon));
     box-shadow:
         0 0 0 1px var(--cat, var(--neon)),
-        0 0 22px -4px var(--cat, var(--neon)),
-        0 12px 24px -14px rgba(10,20,40,.35);
+        0 0 26px -3px var(--cat, var(--neon)),
+        0 12px 24px -14px rgba(0,0,0,.5);
 }
 .cat-glyph {
-    width: 54px; height: 54px;
+    width: 58px; height: 58px;
+    aspect-ratio: 1 / 1;
     clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 11px 100%, 0 calc(100% - 11px));
     display: grid; place-items: center;
-    background: #fff;
-    border: 1px solid var(--line);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat, var(--neon)) 10%, transparent);
+    background: color-mix(in srgb, var(--cat, var(--neon)) 16%, #0C1830);
+    border: 1px solid color-mix(in srgb, var(--cat, var(--neon)) 45%, transparent);
+    box-shadow: 0 0 14px -3px var(--cat, var(--neon));
     flex-shrink: 0;
     position: relative; z-index: 1;
-    color: var(--cat, var(--neon-deep));
+    color: var(--cat, var(--neon));
+    overflow: hidden;
     transition: box-shadow var(--t);
 }
 .cat-card:hover .cat-glyph, .cat-card.active .cat-glyph {
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat, var(--neon)) 22%, transparent),
-        0 0 16px -2px var(--cat, var(--neon));
+    box-shadow: 0 0 22px -1px var(--cat, var(--neon));
 }
-.cat-glyph svg { width: 24px; height: 24px; }
-.cat-glyph img { width: 76%; height: 76%; object-fit: contain; }
+.cat-glyph svg { width: 26px; height: 26px; }
+.cat-glyph img { width: 82%; height: 82%; object-fit: contain; }
 .cat-meta { position: relative; z-index: 1; min-width: 0; flex: 1 1 auto; }
 .cat-meta b {
     display: block; font-family: var(--font-display);
-    font-size: .98rem; font-weight: 600; color: var(--neon-deep);
+    font-size: .98rem; font-weight: 700; color: #fff;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.cat-meta span { font-size: .76rem; color: var(--text-3); }
+.cat-meta span { font-size: .76rem; color: #8FA3C7; }
 .cat-go {
     position: relative; z-index: 1; flex-shrink: 0;
     display: grid; place-items: center;
@@ -179,20 +186,27 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
     backdrop-filter: blur(6px);
 }
 .ad.is-empty {
-    border-style: dashed;
-    border-color: var(--line-strong);
-    background: var(--bg-soft);
+    border: 1px solid rgba(120,170,255,.28);
+    background: linear-gradient(160deg, #12294B, #0A1830);
+    box-shadow: 0 0 0 1px rgba(24,86,232,.18) inset, 0 0 26px -8px var(--neon);
+}
+.ad.is-empty::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 24px);
 }
 .ad-empty {
-    height: 100%;
+    position: relative; z-index: 1; height: 100%;
     display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center;
     gap: 6px 14px; padding: 12px 16px; text-align: center;
 }
-.ad-empty b { font-family: var(--font-display); font-size: .92rem; color: var(--neon-deep); }
-.ad-empty span { font-size: .8rem; color: var(--text-3); max-width: 46ch; flex: 0 1 auto; }
+.ad-empty b { font-family: var(--font-display); font-size: .92rem; color: #fff; }
+.ad-empty span { font-size: .8rem; color: #A9BBDD; max-width: 46ch; flex: 0 1 auto; }
 .ad-empty .btn { margin-top: 0; }
 .ad-empty .btn svg { width: 14px; height: 14px; }
 .ad-card .ad-empty, .ad-portrait .ad-empty { flex-direction: column; }
+.ad.is-empty .ad-flag { background: rgba(24,86,232,.35); color: #DCE6FF; }
 
 /* ---------- 5. Seller cards & storefront -------------------------------- */
 .seller-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
@@ -364,10 +378,9 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
 }
 .portal-top-inner { min-height: 62px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-block: 10px; }
 .portal-top .brand-name b, .portal-top .brand-name span { color: #fff; }
-.portal-top .lang-switch { border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.06); }
+.portal-top .lang-switch { background: rgba(255,255,255,.08); }
 .portal-top .lang-switch button { color: rgba(255,255,255,.6); }
 .portal-top .lang-switch button:hover { color: #fff; }
-.portal-top .lang-switch button.active { background: var(--neon); color: #fff; }
 .portal-top .who { display: flex; align-items: center; gap: 9px; font-size: .84rem; color: rgba(255,255,255,.8); }
 .portal-top .who b { color: #fff; font-family: var(--font-display); }
 .portal-top .btn-outline { --btn-bd: rgba(255,255,255,.3); --btn-fg: #fff; --btn-bg: transparent; }

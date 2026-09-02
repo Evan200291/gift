@@ -112,7 +112,7 @@
     const GAME_LOGO = {
         efootball: '/img/games/efootball.svg',
         mlbb: '/img/games/mlbb.svg',
-        pubg: '/img/games/pubg.png',
+        pubg: '/img/games/pubg.jpg',
         freefire: '/img/games/freefire.png',
     };
     function gameLogo(id) { return GAME_LOGO[id] || ''; }

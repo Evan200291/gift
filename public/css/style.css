@@ -170,6 +170,16 @@ body.lang-mm input[data-i18n-ph] {
 }
 .section-head h2 { font-size: clamp(1.3rem, 2.2vw, 1.65rem); }
 .section-head p { color: var(--text-2); font-size: .9rem; margin-top: 4px; }
+.section-title-sm {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: clamp(1.15rem, 2vw, 1.4rem); color: var(--neon-deep);
+    margin-bottom: 14px;
+}
+.section-head-sm {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.section-head-sm .section-title-sm { margin-bottom: 0; }
 .divider { height: 1px; background: var(--line); }
 
 /* ---------- 5. Header ---------------------------------------------------- */
@@ -213,32 +223,34 @@ body.lang-mm input[data-i18n-ph] {
 .nav-links a:hover { color: var(--neon); background: var(--neon-faint); }
 .nav-links a.active { color: var(--neon); background: var(--neon-faint); }
 .nav-tools { display: flex; align-items: center; gap: 10px; }
-/* Sliding segmented toggle — a floating track with a solid chip behind
-   whichever language is active, rather than two adjoining bordered boxes. */
+/* Pill toggle switch — a rounded track with a solid circular knob that
+   slides behind whichever language button is active, iOS-switch style. */
 .lang-switch {
     position: relative;
     display: inline-flex; align-items: center;
-    gap: 2px; padding: 3px;
-    border: 1px solid var(--line-strong);
-    clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
-    background: var(--bg-soft);
+    gap: 0; padding: 3px;
+    border-radius: 999px;
+    background: linear-gradient(160deg, #12294B, #0A1830);
+    box-shadow: 0 0 10px -4px var(--neon), inset 0 0 0 1px rgba(24,86,232,.35);
     font-size: .66rem; font-weight: 700;
 }
 .lang-switch button {
     position: relative; z-index: 1;
     display: inline-flex; align-items: center; justify-content: center;
-    height: 26px; min-width: 34px; padding: 0 12px;
-    color: var(--text-3); background: transparent;
-    letter-spacing: .03em; white-space: nowrap; line-height: 1;
+    width: 46px; height: 26px; padding: 0;
+    border-radius: 999px;
+    color: #7C90B4; background: transparent;
+    letter-spacing: 0; white-space: nowrap; line-height: 1;
+    font-size: .62rem;
     transition: color var(--t-fast);
 }
-.lang-switch button[data-lang="mm"] { font-family: var(--font-mm); }
-.lang-switch button:hover { color: var(--text-2); }
+.lang-switch button[data-lang="mm"] { font-family: var(--font-mm); font-size: .58rem; }
+.lang-switch button:hover { color: #DCE6FF; }
 .lang-switch button.active {
-    color: #fff;
-    clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
-    background: var(--neon-deep);
-    box-shadow: 0 0 10px 1px rgba(24,86,232,.55), inset 0 0 8px rgba(120,170,255,.6);
+    color: var(--neon-deep);
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 0 12px 1px rgba(120,170,255,.55), 0 1px 3px rgba(0,0,0,.35);
 }
 /* ---------- 6. Buttons --------------------------------------------------- */
 .btn {
@@ -263,6 +275,12 @@ body.lang-mm input[data-i18n-ph] {
 .btn-lg  { padding: 13px 22px; font-size: .93rem; }
 .btn-block { width: 100%; }
 .btn-icon { padding: 8px; width: 36px; height: 36px; }
+.nav-burger {
+    --btn-bg: linear-gradient(160deg, #12294B, #0A1830);
+    --btn-fg: #fff; --btn-bd: rgba(24,86,232,.4);
+    box-shadow: 0 0 10px -4px var(--neon);
+}
+.nav-burger:hover { --btn-fg: #fff; box-shadow: 0 0 14px -2px var(--neon); border-color: var(--neon); }
 .btn-primary {
     --btn-bd: transparent;
     background: var(--neon); color: #fff;
@@ -762,7 +780,13 @@ select option { background: var(--surface); color: var(--text); }
     .section-sm { padding-block: 18px; }
     .nav-links { display: none; }
     .brand-name span { display: none; }
-    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .page-head .actions { flex-wrap: nowrap; gap: 8px; }
+    .page-head .actions .btn { flex: 1 1 0; min-width: 0; padding: 10px 8px; font-size: .76rem; white-space: normal; line-height: 1.25; text-align: center; }
+    .empty { padding: 26px 16px; }
+    .empty .glyph { font-size: 1.5rem; margin-bottom: 8px; }
+    .empty h3 { font-size: .92rem; }
+    .empty p { font-size: .8rem; }
     .toolbar { top: var(--nav-h); }
     .toolbar-inner { padding: 9px; gap: 8px; }
     .search { flex: 1 1 100%; }
@@ -772,13 +796,39 @@ select option { background: var(--surface); color: var(--text); }
     .result-count { margin-left: 0; width: 100%; }
     .chips { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
     .chips::-webkit-scrollbar { display: none; }
-    .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; padding-block: 26px 20px; }
-    .footer-bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
+    /* Minimalist dark "gaming" footer on mobile — brand + condensed link
+       row + copyright only; the full 3-column link lists stay for desktop. */
+    .site-footer {
+        background: linear-gradient(160deg, #12294B, #0A1830);
+        border-top: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-grid { grid-template-columns: 1fr; gap: 14px; padding-block: 22px 14px; }
+    .footer-about .brand-name b { color: #fff; }
+    .footer-about .brand-div { background: rgba(255,255,255,.22); }
+    .footer-about p { display: none; }
+    .footer-grid > div:not(.footer-about) h4 { display: none; }
+    .footer-grid > div:not(.footer-about) { display: contents; }
+    .footer-list { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: 12px 16px; }
+    .footer-list a, .footer-list span { color: #A9BBDD; font-size: .8rem; }
+    .footer-list a:hover { color: var(--neon); }
+    .footer-bottom {
+        flex-direction: column; align-items: flex-start; gap: 4px;
+        border-top-color: rgba(255,255,255,.1); color: #7C90B4;
+    }
+    .footer-bottom span { color: #7C90B4; }
     .toast-stack { left: 16px; right: 16px; bottom: calc(58px + env(safe-area-inset-bottom, 0px)); max-width: none; }
     .hero-actions .btn { flex: 1 1 auto; }
-    .card-body { padding: 10px 11px 11px; }
-    .card-title { font-size: .84rem; }
-    .price-tag { font-size: 1.05rem; }
+    .card-body { padding: 8px 8px 9px; gap: 6px; }
+    .card-title { font-size: .74rem; }
+    .card-title-mm { font-size: .74rem; }
+    .price-tag { font-size: .78rem; }
+    .media-bottom { flex-direction: column; align-items: flex-start; gap: 4px; bottom: 8px; left: 8px; right: 8px; }
+    .media-top { left: 8px; right: 8px; top: 8px; }
+    .pill { font-size: .56rem; padding: 3px 7px; }
+    .spec { font-size: .6rem; padding: 3px 6px; }
+    .card-seller { font-size: .66rem; }
+    .card-cta { font-size: .66rem; }
+    .card-foot { padding-top: 7px; }
 
     .mtabbar { display: grid; grid-template-columns: repeat(4, 1fr); }
     body { padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)); }

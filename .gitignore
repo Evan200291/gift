@@ -22,3 +22,13 @@ Thumbs.db
 
 # PM2 state on dev machines (the VPS keeps its own)
 .pm2/
+
+# Local backups (operator copies, not part of the project)
+backups/
+
+# Local agent state (Claude / Cline session memory)
+.claude/
+
+# Operator-only logs of project history
+BOOT_REPORT.txt
+CHANGES.txt

@@ -186,3 +186,72 @@ curl http://localhost:3000/api/accounts
 - Tokens are in-memory only (re-login required after server restart).
 - Image uploads are validated by file extension **and** aspect ratio (16:9, server-side via `sharp`).
 - For production, place this behind HTTPS (nginx + Let's Encrypt) and consider replacing the in-memory token store with JWTs or session cookies.
+
+
+## ?? Deploying to a VPS
+
+Two scripts in `deploy/`. Both are idempotent and safe to re-run.
+
+### One-time bootstrap (fresh VPS, run as root)
+
+```bash
+# 1. SSH in as root
+ssh root@your.server
+
+# 2. Upload the project somewhere first, then run:
+REPO_URL=https://github.com/Evan200291/gift.git \
+DOMAIN=shop.example.com \
+bash ./deploy/vps-bootstrap.sh
+```
+
+What it does:
+- Installs Node 20.x, nginx, pm2, and ufw.
+- Creates an unprivileged `app` user.
+- Clones the repo into `/var/www/gift_website`.
+- Writes an nginx site that reverse-proxies `127.0.0.1:3000` and caches static assets.
+- Configures `pm2 startup` so the app comes back on reboot.
+- Opens SSH + HTTP(S) in ufw.
+
+### Every deploy after that
+
+```bash
+# As the `app` user (or with sudo):
+APP_DIR=/var/www/gift_website ./deploy/vps-deploy.sh
+```
+
+What it does:
+- `git pull --ff-only origin main`
+- `npm ci --omit=dev`
+- `pm2 start ecosystem.config.cjs` (or `server.js` if no ecosystem file)
+- Polls `/api/health` until 200, then prints the URLs.
+
+### Useful pm2 commands
+
+```bash
+pm2 status                          # process list
+pm2 logs gift-storefront            # tail logs
+pm2 logs gift-storefront --lines 200 --nostream  # snapshot
+pm2 restart gift-storefront         # restart without redeploy
+pm2 stop gift-storefront            # stop
+pm2 monit                           # live CPU / RAM
+```
+
+### TLS
+
+After DNS is pointed at the server:
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d shop.example.com
+```
+
+### Environment variables
+
+Create `/etc/gift-storefront.env` and source it before deploy, or pass inline:
+
+```bash
+PORT=3000 HOST=0.0.0.0 APP_DIR=/var/www/gift_website \
+  ./deploy/vps-deploy.sh
+```
+
+The store auto-seeds on first run, so no DB is needed.

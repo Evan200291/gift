@@ -15,7 +15,7 @@
 module.exports = {
     apps: [
         {
-            name: 'efootball-reseller',
+            name: 'gift-storefront',
             script: 'server.js',
             cwd: __dirname,
             // Production defaults — no watch, no cluster (single instance is fine
@@ -25,7 +25,7 @@ module.exports = {
             autorestart: true,
             watch: false,
             // Memory cap: restart the worker if it grows past 300 MB.
-            max_memory_restart: '300M',
+            max_memory_restart: '512M',
             // Crash backoff: wait up to 5 s before restarting a crashed process.
             restart_delay: 2000,
             max_restarts: 10,

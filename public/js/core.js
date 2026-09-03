@@ -423,6 +423,147 @@
         </div>`;
     }
 
+    /* ================= custom select dropdowns =================
+       A native <select>'s CLOSED box can be fully restyled, but its
+       OPENED options list is an OS-level popup no browser lets CSS
+       touch. So every <select> is progressively enhanced into a
+       themed trigger + menu; the original <select> stays in the DOM
+       (visually hidden) as the real source of truth for its value,
+       so every other line of code that reads/sets `select.value` or
+       listens for its 'change' event keeps working untouched. */
+    function enhanceSelect(select) {
+        if (!select || select.dataset.cselDone) return;
+        select.dataset.cselDone = '1';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'csel';
+        select.parentNode.insertBefore(wrap, select);
+        wrap.appendChild(select);
+        select.classList.add('csel-native');
+        select.tabIndex = -1;
+
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'csel-trigger';
+        trigger.disabled = select.disabled;
+        trigger.innerHTML = '<span class="lbl"></span><span class="chev">' + ICONS.chevronDown + '</span>';
+        wrap.appendChild(trigger);
+
+        // The menu is appended to <body>, not `wrap` — almost every container
+        // on this site (.toolbar-inner, .panel, .card-block…) uses clip-path
+        // for the cut-corner look, and clip-path always clips overflowing
+        // absolutely-positioned descendants (unlike plain overflow:visible).
+        // Portaling past all of that is the only way the menu can render.
+        const menu = document.createElement('div');
+        menu.className = 'csel-menu';
+        menu.setAttribute('role', 'listbox');
+        menu.hidden = true;
+        document.body.appendChild(menu);
+
+        const label = trigger.querySelector('.lbl');
+
+        function place() {
+            const r = trigger.getBoundingClientRect();
+            const vh = window.innerHeight;
+            menu.style.left = r.left + 'px';
+            menu.style.width = r.width + 'px';
+            const below = vh - r.bottom;
+            if (below < 200 && r.top > below) {
+                menu.style.top = '';
+                menu.style.bottom = (vh - r.top + 4) + 'px';
+                menu.style.maxHeight = Math.min(260, r.top - 10) + 'px';
+            } else {
+                menu.style.bottom = '';
+                menu.style.top = (r.bottom + 4) + 'px';
+                menu.style.maxHeight = Math.min(260, below - 10) + 'px';
+            }
+        }
+
+        function buildMenu() {
+            menu.innerHTML = '';
+            Array.from(select.options).forEach((opt) => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'csel-opt';
+                item.setAttribute('role', 'option');
+                item.textContent = opt.textContent;
+                item.dataset.value = opt.value;
+                if (opt.disabled) item.disabled = true;
+                item.addEventListener('click', () => {
+                    const changed = select.value !== opt.value;
+                    select.value = opt.value;
+                    if (changed) select.dispatchEvent(new Event('change', { bubbles: true }));
+                    close();
+                });
+                menu.appendChild(item);
+            });
+        }
+
+        function sync() {
+            const opt = select.options[select.selectedIndex];
+            label.textContent = opt ? opt.textContent : '';
+            Array.from(menu.children).forEach((el2) => {
+                el2.classList.toggle('active', el2.dataset.value === select.value);
+            });
+        }
+
+        function open() {
+            if (select.disabled) return;
+            buildMenu();
+            sync();
+            place();
+            menu.hidden = false;
+            wrap.classList.add('is-open');
+            document.addEventListener('click', onDocClick, true);
+            window.addEventListener('scroll', onScrollResize, true);
+            window.addEventListener('resize', onScrollResize);
+        }
+        function close() {
+            menu.hidden = true;
+            wrap.classList.remove('is-open');
+            document.removeEventListener('click', onDocClick, true);
+            window.removeEventListener('scroll', onScrollResize, true);
+            window.removeEventListener('resize', onScrollResize);
+        }
+        function onDocClick(e) {
+            if (!wrap.contains(e.target) && !menu.contains(e.target)) close();
+        }
+        function onScrollResize(e) {
+            if (menu.contains(e.target)) return;
+            close();
+        }
+
+        trigger.addEventListener('click', () => { (menu.hidden ? open : close)(); });
+        wrap.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') close();
+        });
+
+        // Keep the visible trigger correct no matter how select.value changes
+        // elsewhere in the app (programmatic assignment fires no 'change').
+        const proto = Object.getPrototypeOf(select);
+        const desc = Object.getOwnPropertyDescriptor(proto, 'value')
+            || Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value');
+        Object.defineProperty(select, 'value', {
+            configurable: true,
+            get() { return desc.get.call(select); },
+            set(v) { desc.set.call(select, v); sync(); },
+        });
+        select.addEventListener('change', sync);
+
+        buildMenu();
+        sync();
+    }
+
+    function enhanceSelects(root) {
+        (root || document).querySelectorAll('select').forEach(enhanceSelect);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => enhanceSelects(document));
+    } else {
+        enhanceSelects(document);
+    }
+
     window.EX = {
         // language
         t, getLang, setLang, pick, field, applyTranslations, langSelectMarkup, bindLangSelect,
@@ -432,7 +573,7 @@
         games, gameById, gameName, fieldLabel, gameIcon, gameLogo,
         // ui
         ICONS, statusPill, channelsFrom, channelList,
-        toast, copyText, skeletonCards, emptyState,
+        toast, copyText, skeletonCards, emptyState, enhanceSelects,
         // data
         api, token, loadSite, site, siteText,
         // dom

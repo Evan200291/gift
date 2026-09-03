@@ -390,6 +390,7 @@
                 sel.appendChild(opt);
             });
             sel.addEventListener('change', () => Listings.refreshGameLabels());
+            if (EX.enhanceSelects) EX.enhanceSelects(field);
         },
 
         refreshGameLabels() {

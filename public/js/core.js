@@ -101,6 +101,11 @@
         return s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s;
     }
 
+    /** Short, human-referenceable code derived from a listing's id (e.g. for support chats). */
+    function productCode(id) {
+        return String(id || '').slice(0, 8).toUpperCase();
+    }
+
     let SITE = {};
     const site = () => SITE;
 
@@ -422,7 +427,7 @@
         // language
         t, getLang, setLang, pick, field, applyTranslations, langSelectMarkup, bindLangSelect,
         // formatting
-        esc, truncate, money, shortDate, monthYear,
+        esc, truncate, money, shortDate, monthYear, productCode,
         // games
         games, gameById, gameName, fieldLabel, gameIcon, gameLogo,
         // ui

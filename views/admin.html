@@ -84,6 +84,22 @@
 .tab:hover { color: var(--text); border-color: var(--line-strong); }
 .tab.active { background: var(--grad); border-color: transparent; color: #0a0a12; }
 
+.admin-tabbar {
+    display: none;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
+    padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px));
+    background: rgba(244, 246, 250, .96); backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line);
+}
+.admin-tabbar button {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 5px 2px; border: 0; background: transparent;
+    color: var(--text-3); font: inherit; font-size: .6rem; font-weight: 600;
+}
+.admin-tabbar .ico { display: grid; place-items: center; width: 18px; height: 18px; }
+.admin-tabbar button.active { color: var(--neon); }
+.admin-tabbar button.active .ico { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--neon) 65%, transparent)); }
+
 .tiles {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -177,7 +193,7 @@
     z-index: 2;
 }
 .modal-head h2 { font-size: 1.1rem; }
-.modal-body { padding: 24px; }
+.modal-body { padding: 24px; background: var(--surface); }
 .modal-foot {
     display: flex; justify-content: flex-end; gap: 10px;
     padding: 16px 24px;
@@ -255,6 +271,8 @@
 @media (max-width: 760px) {
     .rowcard { grid-template-columns: 96px minmax(0,1fr); }
     .rowcard .acts { grid-column: 1 / -1; justify-content: flex-end; }
+    #tab-sellers .rowcard { grid-template-columns: 44px minmax(0,1fr); }
+    #tab-sellers .rowcard .avatar-lg { width: 44px; height: 44px; }
     .modal-body { padding: 18px; }
 
     .admin-top-inner { height: auto; min-height: 58px; flex-wrap: wrap; gap: 8px 12px; padding-block: 10px; }
@@ -263,14 +281,14 @@
     .nav-spacer { flex-basis: 100%; height: 0; order: 3; }
     #logoutBtn { order: 4; margin-left: auto; }
 
-    main.shell { padding-inline: 14px; }
-    .tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; margin-bottom: 4px; -webkit-overflow-scrolling: touch; }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tab { flex-shrink: 0; white-space: nowrap; padding: 8px 13px; font-size: .8rem; }
+    main.shell { padding-inline: 14px; padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+    .tabs { display: none; }
+    .admin-tabbar { display: grid; grid-template-columns: repeat(5, 1fr); }
 
-    .tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .tile { padding: 13px; }
-    .tile b { font-size: 1.3rem; }
+    .tiles { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .tile { padding: 8px 6px; }
+    .tile label { font-size: .56rem; letter-spacing: .06em; margin-bottom: 4px; }
+    .tile b { font-size: 1.02rem; }
 
     .bar { gap: 8px; }
     .bar .search { flex: 1 1 100%; }
@@ -353,13 +371,17 @@
 .exp-pill.suspended { background: rgba(120,120,140,.15); color: #a8a8b8; border-color: rgba(120,120,140,.3); }
 
 .rowcard .avatar-lg {
-    width: 48px; height: 48px;
+    width: 48px; height: 48px; flex-shrink: 0;
     display: grid; place-items: center;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(124,92,255,.3), rgba(34,211,238,.2));
+    border-radius: 12px; overflow: hidden;
+    background: var(--neon-deep);
     color: #fff; font-weight: 700; font-size: 1.1rem;
+    font-family: var(--font-display);
     border: 1px solid var(--line);
 }
+.rowcard .avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+#tab-sellers .rowcard { grid-template-columns: 48px minmax(0,1fr) auto; align-items: center; }
+#tab-sellers .rowcard .info { gap: 4px; }
 </style>
 </head>
 
@@ -650,6 +672,29 @@
             </div>
         </section>
     </main>
+
+    <nav class="admin-tabbar" id="adminTabbar" aria-label="Sections">
+        <button type="button" class="active" data-tab="listings">
+            <span class="ico"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7"/><rect x="13.5" y="3.5" width="7" height="7"/><rect x="3.5" y="13.5" width="7" height="7"/><rect x="13.5" y="13.5" width="7" height="7"/></svg></span>
+            <span>Listings</span>
+        </button>
+        <button type="button" data-tab="sellers">
+            <span class="ico"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19c.9-3.4 3.3-5.2 6.2-5.2s5.3 1.8 6.2 5.2"/><path d="M15.8 5.2A3.4 3.4 0 0 1 16.5 12M18.3 13.8c2.2.6 3.7 2.2 4.3 4.6"/></svg></span>
+            <span>Sellers</span>
+        </button>
+        <button type="button" data-tab="posts">
+            <span class="ico"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5Z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></span>
+            <span>Blog</span>
+        </button>
+        <button type="button" data-tab="store">
+            <span class="ico"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5 5 4h14l1.5 5.5"/><path d="M3.5 9.5a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"/><path d="M5 10v10h14V10"/></svg></span>
+            <span>Store</span>
+        </button>
+        <button type="button" data-tab="security">
+            <span class="ico"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v6c0 4.4 3.2 7.8 7.5 9 4.3-1.2 7.5-4.6 7.5-9V6Z"/></svg></span>
+            <span>Security</span>
+        </button>
+    </nav>
 </div>
 
 <!-- ================= Editor modal ================= -->
@@ -758,11 +803,13 @@
             <div class="modal-body">
                 <div class="tabbed-form" role="tablist">
                     <button type="button" class="pane-tab active" data-pane="account" role="tab">Account</button>
-                    <button type="button" class="pane-tab" data-pane="contacts" role="tab">Contacts &amp; bio</button>
                     <button type="button" class="pane-tab" data-pane="subscription" role="tab">Subscription</button>
                 </div>
 
                 <div class="pane active" data-pane="account">
+                    <p class="sub" style="margin-bottom:14px;color:var(--text-3);font-size:.84rem;">
+                        Bio, contact links and avatar are managed by the seller from their own portal.
+                    </p>
                     <div class="form-grid">
                         <div class="field">
                             <label for="s_username">Username <span class="dim">(letters, numbers, . _ -)</span></label>
@@ -813,45 +860,8 @@
                         </div>
 
                         <div class="field full">
-                            <label for="s_bio_en">Bio <span class="lang-tag">EN</span></label>
-                            <textarea id="s_bio_en" rows="2" maxlength="400" placeholder="Short seller description (English)"></textarea>
-                        </div>
-                        <div class="field full">
-                            <label for="s_bio_mm">Bio <span class="lang-tag">MM</span></label>
-                            <textarea id="s_bio_mm" rows="2" maxlength="400" lang="my" class="mm" placeholder="မြန်မာလို ဖော်ပြချက်"></textarea>
-                        </div>
-
-                        <div class="field full">
                             <label for="s_notes">Internal notes <span class="dim">(admin only, not shown publicly)</span></label>
                             <textarea id="s_notes" rows="2" maxlength="500" placeholder="Payment terms, source, reminders…"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pane" data-pane="contacts">
-                    <p class="sub" style="margin-bottom:14px;color:var(--text-3);font-size:.84rem;">
-                        Contact channels shown on the seller's public storefront and on every one of their listings.
-                    </p>
-                    <div class="form-grid">
-                        <div class="field">
-                            <label for="s_telegram">Telegram</label>
-                            <input type="text" id="s_telegram" maxlength="200" placeholder="@handle or https://t.me/…">
-                        </div>
-                        <div class="field">
-                            <label for="s_viber">Viber</label>
-                            <input type="text" id="s_viber" maxlength="200" placeholder="+95 9…">
-                        </div>
-                        <div class="field">
-                            <label for="s_phone">Phone</label>
-                            <input type="text" id="s_phone" maxlength="200" placeholder="+95 9…">
-                        </div>
-                        <div class="field">
-                            <label for="s_email">Email</label>
-                            <input type="email" id="s_email" maxlength="200" placeholder="seller@example.com">
-                        </div>
-                        <div class="field full">
-                            <label for="s_facebook">Facebook</label>
-                            <input type="text" id="s_facebook" maxlength="200" placeholder="https://facebook.com/… or @username">
                         </div>
                     </div>
                 </div>
@@ -992,6 +1002,7 @@
 </div>
 
 <script src="/js/core.js"></script>
+<script src="/js/ui.js"></script>
 <script src="__ADMIN_BASE__/admin.js"></script>
 </body>
 </html>

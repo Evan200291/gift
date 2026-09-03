@@ -610,6 +610,8 @@ select option { background: var(--surface); color: var(--text); }
 .buy-panel { position: sticky; top: calc(var(--nav-h) + 16px); }
 .detail-title { font-size: clamp(1.35rem, 3vw, 1.85rem); letter-spacing: -0.02em; margin-bottom: 5px; }
 .detail-title-mm { font-size: .92rem; line-height: 1.4; color: var(--text-2); margin-bottom: 12px; }
+.product-code { font-size: .76rem; margin-bottom: 12px; }
+.product-code .tabular { font-family: var(--font-mono); letter-spacing: .04em; color: var(--text-2); }
 .price-block { display: flex; align-items: baseline; gap: 10px; padding: 14px 0; margin: 14px 0; border-block: 1px solid var(--line-soft); }
 .price-block .amount { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.35rem); font-weight: 700; letter-spacing: -0.03em; color: var(--neon-deep); }
 .price-block .cur { font-size: .78rem; font-weight: 700; color: var(--text-3); letter-spacing: .08em; }

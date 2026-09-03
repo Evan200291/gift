@@ -6,7 +6,7 @@
 
     const {
         t, esc, api, money, statusPill, ICONS, gameName, fieldLabel,
-        channelsFrom, channelList, toast, copyText, getLang, field,
+        channelsFrom, channelList, toast, copyText, getLang, field, productCode,
         $, $$, monthYear,
     } = window.EX;
 
@@ -152,6 +152,7 @@
 
             ${listing.title_en ? `<h1 class="detail-title display mt-16">${esc(listing.title_en)}</h1>` : ''}
             ${listing.title_mm ? `<div class="detail-title-mm" lang="my">${esc(listing.title_mm)}</div>` : ''}
+            <div class="product-code dim">${esc(t('productCode'))}: <span class="tabular">${esc(productCode(listing.id))}</span></div>
 
             <div class="price-block">
                 <span class="amount">${esc(money(listing.price))}</span>

@@ -20,7 +20,7 @@
     'use strict';
 
     const EX = window.EX;
-    const { api, token, esc, money, t, toast, statusPill, ICONS, fieldLabel, gameName, shortDate, truncate } = EX;
+    const { api, token, esc, money, t, toast, statusPill, ICONS, fieldLabel, gameName, shortDate, truncate, productCode } = EX;
     const $ = (sel, root) => (root || document).querySelector(sel);
     const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
 
@@ -139,13 +139,13 @@
        ============================================================= */
 
     function bindTabs() {
-        $$('.tab').forEach((btn) => {
+        $$('.tab, .admin-tabbar [data-tab]').forEach((btn) => {
             btn.addEventListener('click', () => activateTab(btn.dataset.tab));
         });
     }
 
     function activateTab(name) {
-        $$('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
+        $$('.tab, .admin-tabbar [data-tab]').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
         $$('main > section').forEach((s) => {
             s.classList.toggle('hidden', s.id !== 'tab-' + name);
         });
@@ -225,7 +225,8 @@
             const title = l.title_en || l.title_mm || ('Listing ' + l.id.slice(0, 6));
             const game = gameName(l.game);
             const meta = [
-                '<span>' + esc(game) + '</span>',
+                '<span style="font-family:var(--font-mono);">' + esc(productCode(l.id)) + '</span>',
+                '<span>·</span><span>' + esc(game) + '</span>',
                 l.level ? '<span>·</span><span>' + esc(l.level) + '</span>' : '',
                 l.currency_amount ? '<span>·</span><span>' + esc(l.currency_amount) + '</span>' : '',
                 '<span>·</span><b>' + esc(money(l.price)) + '</b>',
@@ -699,8 +700,9 @@
             const listingsBadge = Number.isFinite(listingCount)
                 ? '<span class="plan-badge none">' + listingCount + ' listings</span>'
                 : '';
+            const avatarInner = s.avatar ? '<img src="' + esc(s.avatar) + '" alt="">' : esc(initial);
             return '<div class="rowcard" data-id="' + esc(s.id) + '">'
-                + '<div class="avatar-lg">' + esc(initial) + '</div>'
+                + '<div class="avatar-lg">' + avatarInner + '</div>'
                 + '<div class="info">'
                 +   '<div class="name-en">' + esc(name) + '</div>'
                 +   '<div class="name-sub">@' + esc(s.username) + ' · ' + planBadge + ' ' + verified + ' ' + expPill + ' ' + listingsBadge + '</div>'
@@ -885,16 +887,7 @@
                 setVal('s_status', found.status || 'active');
                 setCheck('s_verified', found.verified);
                 setCheck('s_featured', found.featured);
-                setVal('s_bio_en', found.bio_en || '');
-                setVal('s_bio_mm', found.bio_mm || '');
                 setVal('s_notes', found.notes || '');
-
-                const c = found.contacts || {};
-                setVal('s_telegram', c.telegram || '');
-                setVal('s_facebook', c.facebook || '');
-                setVal('s_email', c.email || '');
-                setVal('s_phone', c.phone || '');
-                setVal('s_viber', c.viber || '');
 
                 const sub = found.subscription || {};
                 setVal('s_planId', sub.planId || '');
@@ -934,18 +927,11 @@
 
             const body = {
                 displayName: getVal('s_displayName'),
-                bio_en: getVal('s_bio_en'),
-                bio_mm: getVal('s_bio_mm'),
                 notes: getVal('s_notes'),
                 status: getVal('s_status'),
                 verified: getVal('s_verified'),
                 featured: getVal('s_featured'),
                 mustChangePassword: getVal('s_mustChange'),
-                telegram: getVal('s_telegram'),
-                facebook: getVal('s_facebook'),
-                email: getVal('s_email'),
-                phone: getVal('s_phone'),
-                viber: getVal('s_viber'),
                 planId: getVal('s_planId'),
                 paid: getVal('s_paid'),
                 subscriptionNote: getVal('s_subNote'),

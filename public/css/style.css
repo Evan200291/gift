@@ -237,18 +237,18 @@ body.lang-mm input[data-i18n-ph] {
 .lang-switch button {
     position: relative; z-index: 1;
     display: inline-flex; align-items: center; justify-content: center;
-    width: 46px; height: 26px; padding: 0;
-    border-radius: 999px;
+    width: 40px; height: 40px; padding: 2px;
+    border-radius: 50%;
     color: #7C90B4; background: transparent;
     letter-spacing: 0; white-space: nowrap; line-height: 1;
-    font-size: .62rem;
+    font-size: .6rem;
     transition: color var(--t-fast);
 }
-.lang-switch button[data-lang="mm"] { font-family: var(--font-mm); font-size: .58rem; }
+.lang-switch button[data-lang="mm"] { font-family: var(--font-mm); font-size: .54rem; }
 .lang-switch button:hover { color: #DCE6FF; }
 .lang-switch button.active {
     color: var(--neon-deep);
-    border-radius: 999px;
+    border-radius: 50%;
     background: #fff;
     box-shadow: 0 0 12px 1px rgba(120,170,255,.55), 0 1px 3px rgba(0,0,0,.35);
 }

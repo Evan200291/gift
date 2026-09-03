@@ -11,6 +11,7 @@
     const {
         t, esc, money, truncate, statusPill, ICONS, gameName, site, siteText,
         channelsFrom, channelList, api, setLang, getLang, applyTranslations,
+        langSelectMarkup, bindLangSelect,
         $, $$, monthYear,
     } = window.EX;
 
@@ -46,10 +47,7 @@
             <span class="nav-spacer"></span>
             <nav class="nav-links">${links}</nav>
             <div class="nav-tools">
-                <div class="lang-switch" role="group" aria-label="Language">
-                    <button type="button" data-lang="en" class="${getLang() === 'en' ? 'active' : ''}">EN</button>
-                    <button type="button" data-lang="mm" class="${getLang() === 'mm' ? 'active' : ''}">မြန်မာ</button>
-                </div>
+                ${langSelectMarkup()}
                 <a class="btn btn-outline btn-sm nav-portal" href="/seller" data-i18n="navSellerLogin">${esc(t('navSellerLogin'))}</a>
                 <button type="button" class="btn btn-ghost btn-icon nav-burger" data-i18n-aria="menu" aria-label="Menu">${ICONS.menu}</button>
             </div>
@@ -91,9 +89,7 @@
         host.innerHTML = headerMarkup();
         mountTabbar();
 
-        $$('.lang-switch button', host).forEach((b) => {
-            b.addEventListener('click', () => setLang(b.dataset.lang));
-        });
+        bindLangSelect(host);
 
         const burger = $('.nav-burger', host);
         const drawer = $('.mobile-nav', host);

@@ -378,9 +378,8 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
 }
 .portal-top-inner { min-height: 62px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-block: 10px; }
 .portal-top .brand-name b, .portal-top .brand-name span { color: #fff; }
-.portal-top .lang-switch { background: rgba(255,255,255,.08); }
-.portal-top .lang-switch button { color: rgba(255,255,255,.6); }
-.portal-top .lang-switch button:hover { color: #fff; }
+.portal-top .lang-trigger { background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+.portal-top .lang-trigger:hover { box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); }
 .portal-top .who { display: flex; align-items: center; gap: 9px; font-size: .84rem; color: rgba(255,255,255,.8); }
 .portal-top .who b { color: #fff; font-family: var(--font-display); }
 .portal-top .btn-outline { --btn-bd: rgba(255,255,255,.3); --btn-fg: #fff; --btn-bg: transparent; }
@@ -460,5 +459,5 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
     .avatar-upload { gap: 11px; }
     .avatar-upload .preview { width: 56px; height: 56px; border-radius: 14px; font-size: 1.2rem; }
     .portal-top .who b { display: none; }
-    .portal-top .lang-switch { display: none; }
+    .portal-top .lang-trigger { display: none; }
 }

@@ -24,6 +24,7 @@
         $, $$, t, esc, money, statusPill,
         games, gameName,
         ICONS, api, token, setLang, getLang, applyTranslations, loadSite, site,
+        langSelectMarkup, bindLangSelect,
         toast, copyText, debounce,
     } = window.EX;
 
@@ -49,7 +50,9 @@
 
         applyTranslations();
 
-        $$(".lang-switch button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+        const langSlot = $("#portalLangSlot");
+        if (langSlot) langSlot.outerHTML = langSelectMarkup();
+        bindLangSelect();
         setLang(getLang());
         document.addEventListener("langchange", () => {
             applyTranslations();

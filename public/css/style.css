@@ -150,7 +150,7 @@ body.lang-mm [data-i18n] {
 /* Inside small components (buttons/inputs/labels) opt out of the size
    shrink so control dimensions stay stable across languages — only the
    font-family changes there, so Myanmar glyphs still render correctly. */
-.mm.btn, .mm.input, .mm label, .lang-switch button.mm,
+.mm.btn, .mm.input, .mm label,
 .btn .mm, .input .mm, label .mm,
 body.lang-mm .btn[data-i18n], body.lang-mm .btn [data-i18n],
 body.lang-mm label[data-i18n], body.lang-mm label [data-i18n],
@@ -223,35 +223,29 @@ body.lang-mm input[data-i18n-ph] {
 .nav-links a:hover { color: var(--neon); background: var(--neon-faint); }
 .nav-links a.active { color: var(--neon); background: var(--neon-faint); }
 .nav-tools { display: flex; align-items: center; gap: 10px; }
-/* Pill toggle switch — a rounded track with a solid circular knob that
-   slides behind whichever language button is active, iOS-switch style. */
-.lang-switch {
+/* Language toggle — a single cut-corner HUD button: globe + current
+   language name + chevron. Clicking flips straight to the other language. */
+.lang-trigger {
     position: relative;
-    display: inline-flex; align-items: center;
-    gap: 0; padding: 3px;
-    border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 38px; padding: 0 13px 0 11px;
     background: linear-gradient(160deg, #12294B, #0A1830);
+    color: #DCE6FF;
+    border: none;
+    clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
     box-shadow: 0 0 10px -4px var(--neon), inset 0 0 0 1px rgba(24,86,232,.35);
-    font-size: .66rem; font-weight: 700;
+    font-family: var(--font-display);
+    font-size: .78rem; font-weight: 600; letter-spacing: .01em;
+    cursor: pointer;
+    transition: box-shadow var(--t-fast), color var(--t-fast);
 }
-.lang-switch button {
-    position: relative; z-index: 1;
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 40px; height: 40px; padding: 2px;
-    border-radius: 50%;
-    color: #7C90B4; background: transparent;
-    letter-spacing: 0; white-space: nowrap; line-height: 1;
-    font-size: .6rem;
-    transition: color var(--t-fast);
-}
-.lang-switch button[data-lang="mm"] { font-family: var(--font-mm); font-size: .54rem; }
-.lang-switch button:hover { color: #DCE6FF; }
-.lang-switch button.active {
-    color: var(--neon-deep);
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 12px 1px rgba(120,170,255,.55), 0 1px 3px rgba(0,0,0,.35);
-}
+.lang-trigger:hover { box-shadow: 0 0 14px -2px var(--neon), inset 0 0 0 1px rgba(24,86,232,.6); }
+.lang-trigger .ico { display: flex; color: var(--neon); }
+.lang-trigger .lang-cur { min-width: 58px; text-align: left; }
+.lang-trigger.is-mm .lang-full { font-family: var(--font-mm); font-size: .74rem; letter-spacing: normal; }
+.lang-trigger .lang-abbr { display: none; }
+.lang-trigger .chev { display: flex; color: #7C90B4; transition: transform var(--t-fast); }
+.lang-trigger:hover .chev { transform: translateY(1px); }
 /* ---------- 6. Buttons --------------------------------------------------- */
 .btn {
     --btn-bg: var(--surface);
@@ -780,6 +774,13 @@ select option { background: var(--surface); color: var(--text); }
     .section-sm { padding-block: 18px; }
     .nav-links { display: none; }
     .brand-name span { display: none; }
+    .lang-trigger { height: 32px; padding: 0 9px 0 8px; gap: 5px; }
+    .lang-trigger .ico svg { width: 13px; height: 13px; }
+    .lang-trigger .chev svg { width: 10px; height: 10px; }
+    .lang-trigger .lang-cur { min-width: 20px; font-size: .72rem; }
+    .lang-trigger .lang-full { display: none; }
+    .lang-trigger .lang-abbr { display: inline; }
+    .lang-trigger.is-mm .lang-abbr { font-family: var(--font-mm); }
     .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .page-head .actions { flex-wrap: nowrap; gap: 8px; }
     .page-head .actions .btn { flex: 1 1 0; min-width: 0; padding: 10px 8px; font-size: .76rem; white-space: normal; line-height: 1.25; text-align: center; }
@@ -818,6 +819,15 @@ select option { background: var(--surface); color: var(--text); }
     .footer-bottom span { color: #7C90B4; }
     .toast-stack { left: 16px; right: 16px; bottom: calc(58px + env(safe-area-inset-bottom, 0px)); max-width: none; }
     .hero-actions .btn { flex: 1 1 auto; }
+    .hero-stats {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 0; margin-top: 18px;
+    }
+    .stat-chip {
+        padding: 0 8px 0 0; margin-right: 8px; min-width: 0;
+    }
+    .stat-chip b { font-size: 1.1rem; }
+    .stat-chip span { font-size: .58rem; letter-spacing: .03em; white-space: normal; line-height: 1.25; }
     .card-body { padding: 8px 8px 9px; gap: 6px; }
     .card-title { font-size: .74rem; }
     .card-title-mm { font-size: .74rem; }
@@ -835,7 +845,6 @@ select option { background: var(--surface); color: var(--text); }
     .site-footer { margin-bottom: 0; }
 }
 @media (max-width: 420px) {
-    .stat-chip { flex-basis: calc(50% - 6px); }
     .footer-grid { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {

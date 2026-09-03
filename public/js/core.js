@@ -46,10 +46,36 @@
         document.body.classList.toggle('lang-mm', next === 'mm');
         document.body.classList.toggle('lang-en', next === 'en');
         applyTranslations();
-        document.querySelectorAll('.lang-switch button').forEach((b) => {
-            b.classList.toggle('active', b.dataset.lang === next);
+        document.querySelectorAll('[data-lang-select]').forEach((wrap) => {
+            wrap.classList.toggle('is-mm', next === 'mm');
+            wrap.setAttribute('aria-label', next === 'mm' ? 'ဘာသာစကား' : 'Language');
+            const full = wrap.querySelector('.lang-full');
+            if (full) full.textContent = next === 'mm' ? 'မြန်မာ' : 'English';
+            const abbr = wrap.querySelector('.lang-abbr');
+            if (abbr) abbr.textContent = next === 'mm' ? 'MM' : 'EN';
         });
         document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: next } }));
+    }
+
+    /** Single-button language toggle: globe icon, current language name, chevron. */
+    function langSelectMarkup() {
+        const mm = getLang() === 'mm';
+        return `<button type="button" class="lang-trigger${mm ? ' is-mm' : ''}" data-lang-select aria-label="${mm ? 'ဘာသာစကား' : 'Language'}">
+            <span class="ico">${ICONS.globe}</span>
+            <span class="lang-cur" data-lang-cur>
+                <span class="lang-full">${mm ? 'မြန်မာ' : 'English'}</span>
+                <span class="lang-abbr">${mm ? 'MM' : 'EN'}</span>
+            </span>
+            <span class="chev">${ICONS.chevronDown}</span>
+        </button>`;
+    }
+
+    function bindLangSelect(root) {
+        (root || document).querySelectorAll('[data-lang-select]').forEach((btn) => {
+            if (btn.dataset.bound) return;
+            btn.dataset.bound = '1';
+            btn.addEventListener('click', () => setLang(getLang() === 'mm' ? 'en' : 'mm'));
+        });
     }
 
     /** Choose the field for the active language, falling back to the other. */
@@ -159,6 +185,8 @@
         share: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.4 10.8 15.6 6.6M8.4 13.2l7.2 4.2"/></svg>',
         check: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg>',
         menu: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+        globe: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.4 4 5.6 4 9s-1.4 6.6-4 9c-2.6-2.4-4-5.6-4-9s1.4-6.6 4-9Z"/></svg>',
+        chevronDown: '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
         home: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 10.5 8-6.5 8 6.5"/><path d="M6 9.5V20h12V9.5"/></svg>',
         grid: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7"/><rect x="13.5" y="3.5" width="7" height="7"/><rect x="3.5" y="13.5" width="7" height="7"/><rect x="13.5" y="13.5" width="7" height="7"/></svg>',
         users: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19c.9-3.4 3.3-5.2 6.2-5.2s5.3 1.8 6.2 5.2"/><path d="M15.8 5.2A3.4 3.4 0 0 1 16.5 12M18.3 13.8c2.2.6 3.7 2.2 4.3 4.6"/></svg>',
@@ -392,7 +420,7 @@
 
     window.EX = {
         // language
-        t, getLang, setLang, pick, field, applyTranslations,
+        t, getLang, setLang, pick, field, applyTranslations, langSelectMarkup, bindLangSelect,
         // formatting
         esc, truncate, money, shortDate, monthYear,
         // games

@@ -24,6 +24,35 @@
     const $ = (sel, root) => (root || document).querySelector(sel);
     const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
 
+    const BRAND_MARK_SVG = '<svg viewBox="0 0 83.12 86.58" fill="currentColor" aria-hidden="true">'
+        + '<path d="M0 0h19.91v86.58H0Z"/>'
+        + '<path d="M26.84 0h56.28L69.26 19.91H26.84Z"/>'
+        + '<path d="M26.84 33.33h35.5L48.49 53.25H26.84Z"/>'
+        + '<path d="M26.84 66.67h56.28L69.26 86.58H26.84Z"/>'
+        + '</svg>';
+
+    function paintBrand() {
+        const site = EX.site ? EX.site() : null;
+        const brand = (site && site.brand) || 'EXABYTE';
+        const tagline = (site && site.tagline) || 'Digital Store';
+        const initial = brand.trim().charAt(0).toUpperCase() || 'E';
+        const markHtml = initial === 'E' ? BRAND_MARK_SVG : esc(initial);
+
+        const authMark = $('[data-auth-mark]');
+        if (authMark) authMark.innerHTML = markHtml;
+        const authName = $('[data-auth-brand-name]');
+        if (authName) authName.textContent = brand;
+        const authTag = $('[data-auth-brand-tagline]');
+        if (authTag) authTag.textContent = tagline;
+
+        const mark = $('[data-brand-mark]');
+        if (mark) mark.innerHTML = markHtml;
+        const name = $('[data-brand-name]');
+        if (name) name.textContent = brand;
+        const tag = $('[data-brand-tagline]');
+        if (tag) tag.textContent = tagline;
+    }
+
     /* =============================================================
        Auth flow
        ============================================================= */
@@ -63,15 +92,7 @@
         const who = $('#whoUser');
         if (who) who.textContent = user.displayName || user.username;
 
-        const site = EX.site();
-        if (site && site.brand) {
-            const mark = $('[data-brand-mark]');
-            const name = $('[data-brand-name]');
-            const tag = $('[data-brand-tagline]');
-            if (mark) mark.textContent = (site.brand || 'E').trim().charAt(0).toUpperCase();
-            if (name) name.textContent = site.brand;
-            if (tag) tag.textContent = site.tagline || '';
-        }
+        paintBrand();
     }
 
     function bindLogin() {
@@ -191,7 +212,7 @@
                 const rows = data.items || [];
                 host.innerHTML = rows.length
                     ? rows.map(Listings.rowCard).join('')
-                    : '<div class="rowcard" style="grid-template-columns:1fr;"><div class="info" style="text-align:center;padding:32px;color:var(--text-3);">No listings yet — click <b>+ New listing</b> to add one.</div></div>';
+                    : '<div class="rowcard" style="grid-template-columns:1fr;"><div class="info" style="text-align:center;padding:32px;color:var(--text-3);">No listings match this filter yet. Sellers publish listings from their own portal.</div></div>';
                 Listings.wireRows(host);
                 Listings.renderPagination();
             } catch (err) {
@@ -288,8 +309,6 @@
                 ListEntries.page = 1;
                 Listings.loadRows();
             });
-            const newBtn = $('#newBtn');
-            if (newBtn) newBtn.addEventListener('click', () => Listings.openEditor(null));
             const searchIcon = $('#adminSearchIcon');
             if (searchIcon) searchIcon.innerHTML = ICONS.search;
 
@@ -312,26 +331,10 @@
             Listings.renderShots();
 
             const title = $('#editorTitle');
-            if (title) title.textContent = id ? 'Edit listing' : 'New listing';
+            if (title) title.textContent = 'Edit listing';
 
             Listings.ensureGameSelect();
-
-            if (id) {
-                Listings.populateEditor(id);
-            } else {
-                Listings.setField('f_game', 'efootball');
-                Listings.setField('f_status', 'available');
-                Listings.setField('f_price', '');
-                Listings.setField('f_title_en', '');
-                Listings.setField('f_title_mm', '');
-                Listings.setField('f_overall_rating', '');
-                Listings.setField('f_coins', '');
-                Listings.setField('f_featured_players', '');
-                Listings.setField('f_description_en', '');
-                Listings.setField('f_description_mm', '');
-                Listings.setField('f_contact_info', '');
-                const feat = $('#f_featured'); if (feat) feat.checked = false;
-            }
+            Listings.populateEditor(id);
 
             Listings.refreshGameLabels();
             Listings.refreshPriceSymbol();
@@ -537,15 +540,10 @@
 
                 ListEditor.files.forEach((f) => fd.append('images', f, f.name));
 
-                if (id) {
-                    const existing = (ListEditor.existing || []).filter((u) => !ListEditor.removed.has(u));
-                    existing.forEach((u) => fd.append('keepImages', u));
-                    await api('/api/admin/listings/' + id, { method: 'PUT', body: fd });
-                    toast('Listing updated', 'success');
-                } else {
-                    await api('/api/admin/listings', { method: 'POST', body: fd });
-                    toast('Listing published', 'success');
-                }
+                const existing = (ListEditor.existing || []).filter((u) => !ListEditor.removed.has(u));
+                existing.forEach((u) => fd.append('keepImages', u));
+                await api('/api/admin/listings/' + id, { method: 'PUT', body: fd });
+                toast('Listing updated', 'success');
                 Listings.closeEditor();
                 await Listings.load();
             } catch (err) {
@@ -1534,6 +1532,9 @@
         bindLogin();
         bindLogout();
         bindTabs();
+
+        if (EX.loadSite) { try { await EX.loadSite(); } catch { /* site defaults are fine */ } }
+        paintBrand();
 
         // Try to skip the login screen if a valid token is already stored.
         const user = await tryAutoLogin();

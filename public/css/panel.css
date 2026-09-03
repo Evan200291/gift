@@ -75,7 +75,7 @@
    via `classList.add('open')` / `.remove('open')`.
    Shapes match what views/admin.html inlines for the admin page. */
 .modal-scrim {
-    position: fixed; inset: 0; z-index: 150;
+    position: fixed; inset: 0; z-index: 220;
     display: none; align-items: flex-start; justify-content: center;
     background: rgba(0,0,0,.72); backdrop-filter: blur(6px);
     padding: 48px 16px 32px; overflow-y: auto;

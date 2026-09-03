@@ -62,7 +62,7 @@
         const brand = (site() && site().brand) || "EXABYTE";
         const tmpl = document.documentElement.getAttribute("data-title") || "%s";
         document.title = tmpl.replace("%s", brand);
-        const mark = $("#authMark"); if (mark) mark.textContent = brand.trim().charAt(0).toUpperCase();
+        const mark = $("#authMark"); if (mark) mark.innerHTML = window.UI.brandMark(brand.trim().charAt(0).toUpperCase());
         const name = $("#authBrand"); if (name) name.textContent = brand;
         const tagline = $("#authTagline"); if (tagline) tagline.textContent = (site() && site().tagline) || "Digital Store";
 
@@ -174,7 +174,7 @@
         paintAvatar($("#meAvatar"), name, ME.avatar);
         const brand = (site() && site().brand) || "EXABYTE";
         const pb = $("#portalBrand"); if (pb) pb.textContent = brand;
-        const pm = $("#portalMark"); if (pm) pm.textContent = brand.trim().charAt(0).toUpperCase();
+        const pm = $("#portalMark"); if (pm) pm.innerHTML = window.UI.brandMark(brand.trim().charAt(0).toUpperCase());
     }
 
     /* =============================================================

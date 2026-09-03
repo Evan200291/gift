@@ -26,11 +26,23 @@
         { href: '/advertise', key: 'navAdvertise', match: (p) => p === '/advertise' },
     ];
 
+    const BRAND_MARK_SVG = '<svg viewBox="0 0 83.12 86.58" fill="currentColor" aria-hidden="true">'
+        + '<path d="M0 0h19.91v86.58H0Z"/>'
+        + '<path d="M26.84 0h56.28L69.26 19.91H26.84Z"/>'
+        + '<path d="M26.84 33.33h35.5L48.49 53.25H26.84Z"/>'
+        + '<path d="M26.84 66.67h56.28L69.26 86.58H26.84Z"/>'
+        + '</svg>';
+
+    function brandMark(initial) {
+        return initial === 'E' ? BRAND_MARK_SVG : esc(initial);
+    }
+
     function brandBlock() {
         const brand = site().brand || 'EXABYTE';
         const tagline = site().tagline || 'Digital Store';
+        const initial = brand.trim().charAt(0).toUpperCase() || 'E';
         return `<a class="brand" href="/">
-            <span class="brand-mark">${esc(brand.trim().charAt(0).toUpperCase() || 'E')}</span>
+            <span class="brand-mark">${brandMark(initial)}</span>
             <span class="brand-div"></span>
             <span class="brand-name"><b>${esc(brand)}</b><span>${esc(tagline)}</span></span>
         </a>`;
@@ -368,6 +380,6 @@
 
     window.UI = {
         boot, mountHeader, mountFooter, mountAds, loadAds, adMarkup, adTelegramUrl,
-        listingCard, listingHref, wireCards, pagination, sellerCard, brandBlock,
+        listingCard, listingHref, wireCards, pagination, sellerCard, brandBlock, brandMark,
     };
 })();

@@ -450,15 +450,9 @@
                 const setVal = (id2, v) => { const el = $("#" + id2); if (el) el.value = v == null ? "" : v; };
                 setVal("f_game",     found.game || "efootball");
                 setVal("f_status",   found.status || "available");
-                setVal("f_title_en", found.title_en || "");
-                setVal("f_title_mm", found.title_mm || "");
+                setVal("f_title_en", found.title_en || found.title_mm || "");
                 setVal("f_price",    String(found.price || 0));
-                setVal("f_level",    found.level || "");
-                setVal("f_currency_amount", found.currency_amount || "");
-                setVal("f_server",   found.server || "");
-                setVal("f_highlights", found.highlights || "");
-                setVal("f_description_en", found.description_en || "");
-                setVal("f_description_mm", found.description_mm || "");
+                setVal("f_description_en", found.description_en || found.description_mm || "");
                 setVal("f_contact_note",   found.contact_note || "");
                 Editor.existing = (found.images || []).slice();
                 Editor.existingThumbs = (found.thumbs || []).slice();
@@ -543,15 +537,9 @@
                 const v = (i) => { const el = $("#" + i); return el ? el.value : ""; };
                 fd.append("game",             v("f_game") || "efootball");
                 fd.append("title_en",         v("f_title_en"));
-                fd.append("title_mm",         v("f_title_mm"));
                 fd.append("description_en",   v("f_description_en"));
-                fd.append("description_mm",   v("f_description_mm"));
                 fd.append("price",            v("f_price") || "0");
                 fd.append("status",           v("f_status") || "available");
-                fd.append("level",            v("f_level"));
-                fd.append("currency_amount",  v("f_currency_amount"));
-                fd.append("highlights",       v("f_highlights"));
-                fd.append("server",           v("f_server"));
                 fd.append("contact_note",     v("f_contact_note"));
                 Editor.files.forEach((f) => fd.append("images", f, f.name));
 

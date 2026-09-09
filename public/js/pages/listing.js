@@ -249,6 +249,18 @@
         document.body.style.overflow = '';
     }
 
+    // Dismissing the lightbox via the browser's own back gesture/button
+    // never runs closeLightbox() — it navigates away with the scroll lock
+    // still applied. If bfcache later restores this exact page (a very
+    // common outcome for a back gesture on mobile), the lock comes back
+    // with it: the page looks stuck non-scrolling with its top content
+    // unreachable. Clearing it unconditionally whenever the page becomes
+    // visible again — bfcache restore or a normal load — closes that gap.
+    window.addEventListener('pageshow', () => {
+        $('#lightbox').classList.remove('open');
+        document.body.style.overflow = '';
+    });
+
     document.addEventListener('keydown', (e) => {
         if (!listing) return;
         if (e.key === 'Escape' && $('#lightbox').classList.contains('open')) { closeLightbox(); return; }

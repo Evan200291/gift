@@ -9,7 +9,7 @@
     'use strict';
 
     const {
-        t, esc, money, truncate, statusPill, ICONS, gameName, site, siteText,
+        t, esc, money, truncate, statusPill, ICONS, gameName, gameById, site, siteText,
         channelsFrom, channelList, api, setLang, getLang, applyTranslations,
         langSelectMarkup, bindLangSelect,
         $, $$, monthYear,
@@ -236,11 +236,26 @@
         return `/listing/${encodeURIComponent(listing.id)}`;
     }
 
+    // Card tags stay English regardless of site language: "Available"/
+    // "Reserved"/"Sold" and the game's short name are both meaningfully
+    // shorter than their Myanmar translations, and the tag row only has
+    // room for two tags side by side before it wraps.
+    const CARD_STATUS_EN = {
+        available: ['pill-available', 'Available'],
+        reserved: ['pill-reserved', 'Reserved'],
+        sold: ['pill-sold', 'Sold'],
+    };
+    function cardStatusTag(status) {
+        const [cls, label] = CARD_STATUS_EN[status] || CARD_STATUS_EN.available;
+        return `<span class="pill ${cls}"><span class="dot"></span>${label}</span>`;
+    }
+
     function listingCard(listing, options) {
         const opts = options || {};
         const thumb = (listing.thumbs && listing.thumbs[0]) || (listing.images && listing.images[0]) || '';
         const count = (listing.images || []).length;
         const game = gameName(listing.game);
+        const gameTag = gameById(listing.game).short || game;
 
         const media = thumb
             ? `<img src="${esc(thumb)}" alt="${esc(listing.title_en || game)}" loading="lazy" decoding="async" width="640" height="360">`
@@ -264,8 +279,8 @@
             </div>
             <div class="card-body">
                 <div class="card-tags">
-                    <span class="pill pill-game" data-game="${esc(listing.game)}">${esc(game)}</span>
-                    ${statusPill(listing.status)}
+                    <span class="pill pill-game" data-game="${esc(listing.game)}">${esc(gameTag)}</span>
+                    ${cardStatusTag(listing.status)}
                 </div>
                 ${listing.title_en ? `<div class="card-title">${esc(listing.title_en)}</div>` : ''}
                 ${listing.title_mm ? `<div class="card-title-mm" lang="my">${esc(listing.title_mm)}</div>` : ''}

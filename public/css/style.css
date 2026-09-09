@@ -718,7 +718,17 @@ select option { background: var(--surface); color: var(--text); }
 .lightbox { position: fixed; inset: 0; z-index: 220; display: none; place-items: center; padding: 4vw; background: rgba(6,10,20,.94); backdrop-filter: blur(8px); animation: fade var(--t) both; }
 .lightbox.open { display: grid; }
 .lightbox img { max-width: 100%; max-height: 88vh; border-radius: var(--r); box-shadow: var(--sh-3); transition: transform var(--t); }
-.lightbox img.rot-90, .lightbox img.rot-270 { max-width: 88vh; max-height: 100%; }
+/* transform:rotate() is paint-only — it never touches layout, so the box
+   the image is laid out into keeps its PRE-rotation width/height. A wide
+   landscape image rotated 90° visually swaps to portrait, but its box was
+   sized against the normal (max-width:100%, max-height:88vh) constraint
+   for a *landscape* fit, so the now-portrait result overflowed the screen
+   entirely — exactly what was reported. Fixed by swapping which viewport
+   axis each pre-rotation dimension is capped against: the pre-rotation
+   width becomes the post-rotation height (cap it to the vh limit), and
+   the pre-rotation height becomes the post-rotation width (cap it to the
+   lightbox's actual available width, ~92vw after its 4vw padding). */
+.lightbox img.rot-90, .lightbox img.rot-270 { max-width: 88vh; max-height: 90vw; }
 .lightbox img.rot-90 { transform: rotate(90deg); }
 .lightbox img.rot-180 { transform: rotate(180deg); }
 .lightbox img.rot-270 { transform: rotate(270deg); }

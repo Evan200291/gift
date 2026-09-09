@@ -257,21 +257,20 @@
         return `<article class="card${listing.status === 'sold' ? ' is-sold' : ''}" data-href="${esc(listingHref(listing))}" tabindex="0" role="link">
             <div class="card-media">
                 ${media}
-                <div class="media-top">
-                    <span class="pill pill-game" data-game="${esc(listing.game)}">${esc(game)}</span>
-                    ${count > 1 ? `<span class="pill pill-count">${count} ${esc(t('images'))}</span>` : ''}
-                </div>
+                ${count > 1 ? `<div class="media-top"><span class="pill pill-count">${count} ${esc(t('images'))}</span></div>` : ''}
                 <div class="media-bottom">
-                    ${statusPill(listing.status)}
                     <span class="price-tag">${esc(money(listing.price))}</span>
                 </div>
             </div>
             <div class="card-body">
+                <div class="card-tags">
+                    <span class="pill pill-game" data-game="${esc(listing.game)}">${esc(game)}</span>
+                    ${statusPill(listing.status)}
+                </div>
                 ${listing.title_en ? `<div class="card-title">${esc(listing.title_en)}</div>` : ''}
                 ${listing.title_mm ? `<div class="card-title-mm" lang="my">${esc(listing.title_mm)}</div>` : ''}
                 <div class="card-foot">
-                    ${sellerRow || '<span></span>'}
-                    <span class="card-cta"><span class="cta-label">${esc(t('viewDetails'))}</span> ${ICONS.arrow}</span>
+                    ${sellerRow}
                 </div>
             </div>
         </article>`;

@@ -516,8 +516,9 @@ select option { background: var(--surface); color: var(--text); }
     width: 100%; height: 100%; display: grid; place-items: center;
     font-size: 2.2rem; opacity: .3; background: var(--surface-3);
 }
-.media-top { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; z-index: 2; }
-.media-bottom { position: absolute; left: 12px; right: 12px; bottom: 11px; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; z-index: 2; }
+.media-top { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; align-items: flex-start; justify-content: flex-end; gap: 8px; z-index: 2; }
+.media-bottom { position: absolute; left: 12px; right: 12px; bottom: 11px; display: flex; align-items: flex-end; justify-content: flex-end; gap: 10px; z-index: 2; }
+.card-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .pill {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 4px 10px; border-radius: var(--r-xs);
@@ -531,6 +532,13 @@ select option { background: var(--surface); color: var(--text); }
 .pill-reserved  { background: rgba(255,255,255,.94); color: var(--warn); border-color: transparent; }
 .pill-sold      { background: rgba(255,255,255,.9); color: var(--danger); border-color: transparent; }
 .pill-hot       { background: var(--neon); color: #fff; border-color: transparent; }
+/* .pill-available/-reserved/-sold default to a translucent-white chip meant
+   to sit on a photo (see .media-bottom); on a plain white .card-tags row
+   that reads as bare colored text with no visible chip at all. Give them a
+   real tinted background there, same language as .pill-game's per-game tint. */
+.card-tags .pill-available { background: rgba(14,124,74,.1); }
+.card-tags .pill-reserved  { background: rgba(154,107,16,.12); }
+.card-tags .pill-sold      { background: rgba(200,50,63,.1); }
 .pill-count     { background: rgba(11,18,32,.55); color: #fff; border-color: transparent; text-transform: none; letter-spacing: 0; }
 .price-tag {
     font-family: var(--font-display); font-size: 1.25rem; font-weight: 700;
@@ -563,15 +571,10 @@ select option { background: var(--surface); color: var(--text); }
 .card-foot {
     margin-top: auto; padding-top: 10px;
     border-top: 1px solid var(--line-soft);
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center;
     flex-wrap: wrap; gap: 6px 10px;
 }
-.card-cta {
-    display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
-    font-size: .8rem; font-weight: 700; color: var(--neon);
-    transition: gap var(--t-fast), color var(--t-fast);
-}
-.card:hover .card-cta { gap: 10px; color: var(--neon-dim); }
+.card-foot:empty { display: none; }
 .card.is-sold .card-media img { filter: grayscale(.75) brightness(.85); }
 
 /* Skeletons */
@@ -899,17 +902,11 @@ select option { background: var(--surface); color: var(--text); }
     .card-title { font-size: .74rem; }
     .card-title-mm { font-size: .74rem; }
     .price-tag { font-size: .78rem; }
-    .media-bottom { flex-direction: column; align-items: flex-start; gap: 4px; bottom: 8px; left: 8px; right: 8px; }
+    .media-bottom { bottom: 8px; left: 8px; right: 8px; }
     .media-top { left: 8px; right: 8px; top: 8px; }
     .pill { font-size: .56rem; padding: 3px 7px; }
-    .spec { font-size: .6rem; padding: 3px 6px; }
+    .card-tags { gap: 4px; }
     .card-seller { font-size: .66rem; flex: 1 1 auto; }
-    .card-cta { font-size: .66rem; }
-    /* At 3-across, .card-foot has ~90px total for seller name + CTA combined —
-       "View details" eats most of it and crushes the name to a few letters.
-       The whole card is already a click target, so the label is redundant
-       here; drop it and keep just the arrow, freeing that width for the name. */
-    .card-cta .cta-label { display: none; }
     .card-foot { padding-top: 7px; }
 
     .mtabbar { display: grid; grid-template-columns: repeat(4, 1fr); }

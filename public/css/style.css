@@ -323,7 +323,15 @@ body.lang-mm input[data-i18n-ph] {
 .hero-copy { max-width: 580px; }
 .hero h1 { font-size: clamp(1.9rem, 4vw, 2.85rem); line-height: 1.1; margin-bottom: 12px; }
 .hero h1 .accent { color: var(--neon); }
+/* .hero h1's own line-height:1.1 (tuned for the large Latin display face)
+   otherwise beats .mm's line-height:1.5 on specificity, so Myanmar's taller
+   stacked glyph clusters had no room and visibly clipped into .hero-sub
+   right below. Also sized down a step — Myanmar reads bigger than Latin
+   at an identical font-size, and the Latin clamp() max was tuned without
+   that in mind. */
+.hero h1.mm { font-size: clamp(1.5rem, 3.4vw, 2.3rem); line-height: 1.5; margin-bottom: 16px; }
 .hero-sub { color: var(--text-2); font-size: 1rem; max-width: 54ch; margin-bottom: 20px; }
+.hero-sub.mm { font-size: .88rem; }
 .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .hero-stats { display: flex; flex-wrap: wrap; gap: 0; margin-top: 22px; }
 .stat-chip {
@@ -385,8 +393,17 @@ body.lang-mm input[data-i18n-ph] {
     padding: 12px 0; background: rgba(244, 246, 250, .9);
     backdrop-filter: blur(10px);
 }
-body.lang-mm .toolbar-inner .search input,
-body.lang-mm .toolbar-inner .csel-trigger { font-size: .78rem; }
+/* Myanmar glyphs render visibly larger than Latin at an identical declared
+   font-size (taller stacked diacritics/clusters), which made every compact
+   control — not just toolbar ones — look mismatched next to plain-text
+   siblings once MM was active: search boxes, price min/max, and the custom
+   dropdown trigger all read bigger than their neighbours. Sized down
+   uniformly, everywhere these appear, not just inside one container. */
+body.lang-mm .search input,
+body.lang-mm .search input::placeholder,
+body.lang-mm .csel-trigger,
+body.lang-mm .price-range input,
+body.lang-mm .price-range input::placeholder { font-size: .78rem; }
 .toolbar-inner {
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     padding: 11px; border: 1px solid var(--line);

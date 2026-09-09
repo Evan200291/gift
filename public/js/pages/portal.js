@@ -193,6 +193,40 @@
         if (name === "profile")  Profile.load();
     }
 
+    /**
+     * Re-encode an uploaded screenshot down to a sane size *before* it
+     * ever leaves the browser. Phone screenshots routinely land at
+     * 3000px+ and several MB; a listing only ever displays at 1600px
+     * wide, so shipping the original does nothing but slow the upload
+     * (and, on a tight reverse-proxy body-size limit, risk a 413)
+     * with zero visible quality gain. Falls back to the original file
+     * untouched if the browser can't do canvas re-encoding, if the
+     * image is animated (GIF — canvas would flatten it to one frame),
+     * or if compression somehow doesn't come out smaller.
+     */
+    const MAX_UPLOAD_DIM = 1920;
+    async function compressImage(file) {
+        if (file.type === "image/gif" || !window.createImageBitmap) return file;
+        try {
+            const bitmap = await createImageBitmap(file);
+            const scale = Math.min(1, MAX_UPLOAD_DIM / Math.max(bitmap.width, bitmap.height));
+            const w = Math.round(bitmap.width * scale);
+            const h = Math.round(bitmap.height * scale);
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext("2d").drawImage(bitmap, 0, 0, w, h);
+            bitmap.close();
+
+            const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", 0.85));
+            if (!blob || blob.size >= file.size) return file;
+            const name = file.name.replace(/\.\w+$/, "") + ".webp";
+            return new File([blob], name, { type: "image/webp" });
+        } catch {
+            return file;
+        }
+    }
+
     /* =============================================================
        Listings tab
        ============================================================= */
@@ -511,16 +545,19 @@
             });
         },
 
-        addFiles(fileList) {
+        async addFiles(fileList) {
             const keptExisting = (Editor.existing || []).filter((u) => !Editor.removed.has(u)).length;
             const remaining = 6 - (keptExisting + Editor.files.length);
             if (remaining <= 0) { toast("Maximum 6 images", "error"); return; }
             const incoming = Array.from(fileList).slice(0, remaining);
-            incoming.forEach((f) => {
-                if (!/^image\//.test(f.type)) { toast("\"" + f.name + "\" is not an image", "error"); return; }
-                if (f.size > 8 * 1024 * 1024) { toast("\"" + f.name + "\" exceeds 8 MB", "error"); return; }
-                Editor.files.push(f);
-            });
+            const dz = $("#dropzone");
+            if (dz) dz.classList.add("busy");
+            for (const f of incoming) {
+                if (!/^image\//.test(f.type)) { toast("\"" + f.name + "\" is not an image", "error"); continue; }
+                if (f.size > 8 * 1024 * 1024) { toast("\"" + f.name + "\" exceeds 8 MB", "error"); continue; }
+                Editor.files.push(await compressImage(f));
+            }
+            if (dz) dz.classList.remove("busy");
             Listings.renderShots();
         },
 

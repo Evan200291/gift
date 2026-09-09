@@ -75,6 +75,8 @@ main.shell { padding-top: 20px; }
 .dropzone p { font-size: .85rem; font-weight: 600; color: var(--text-2); }
 .dropzone small { display: block; margin-top: 4px; font-size: .74rem; color: var(--text-3); line-height: 1.5; }
 .dropzone input { display: none; }
+.dropzone.busy { opacity: .6; pointer-events: none; }
+.dropzone.busy p::after { content: " — compressing…"; font-weight: 400; color: var(--text-3); }
 
 /* ---- modal scrims (editor + confirm) ----
    The HTML also carries `hidden` as a defensive default;

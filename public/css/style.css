@@ -699,8 +699,22 @@ select option { background: var(--surface); color: var(--text); }
 /* Lightbox */
 .lightbox { position: fixed; inset: 0; z-index: 220; display: none; place-items: center; padding: 4vw; background: rgba(6,10,20,.94); backdrop-filter: blur(8px); animation: fade var(--t) both; }
 .lightbox.open { display: grid; }
-.lightbox img { max-width: 100%; max-height: 88vh; border-radius: var(--r); box-shadow: var(--sh-3); }
-.lightbox .close { position: absolute; top: 18px; right: 18px; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.3); color: #fff; font-size: 1.4rem; cursor: pointer; }
+.lightbox img { max-width: 100%; max-height: 88vh; border-radius: var(--r); box-shadow: var(--sh-3); transition: transform var(--t); }
+.lightbox img.rot-90, .lightbox img.rot-270 { max-width: 88vh; max-height: 100%; }
+.lightbox img.rot-90 { transform: rotate(90deg); }
+.lightbox img.rot-180 { transform: rotate(180deg); }
+.lightbox img.rot-270 { transform: rotate(270deg); }
+.lightbox .close, .lightbox .rotate {
+    position: absolute; top: 18px;
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.3);
+    color: #fff; font-size: 1.4rem; cursor: pointer;
+    transition: background var(--t-fast);
+}
+.lightbox .close:hover, .lightbox .rotate:hover { background: rgba(255,255,255,.22); }
+.lightbox .close { right: 18px; }
+.lightbox .rotate { right: 68px; font-size: 1.15rem; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 /* ---------- 13. Footer --------------------------------------------------- */
 .site-footer { margin-top: 30px; border-top: 1px solid var(--line); background: var(--surface); }

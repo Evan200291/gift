@@ -27,10 +27,18 @@ try {
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
 const MAX_LISTING_IMAGES = 6;
 
-/** Presets keyed by usage, so every surface has predictable geometry. */
+/**
+ * Presets keyed by usage, so every surface has predictable geometry.
+ * `fit: 'contain'` letterboxes onto LETTERBOX_BG instead of cropping —
+ * used for anything a seller/buyer needs to see in full (a screenshot's
+ * edges can be the actual proof — level, stats, squad list). Admin-placed
+ * ad creative and avatars are designed to exactly fill their slot, so
+ * they keep the default 'cover' crop.
+ */
+const LETTERBOX_BG = { r: 250, g: 251, b: 253, alpha: 1 }; // matches --surface-2
 const PRESETS = {
-    listing: { width: 1600, height: 900, thumb: { width: 640, height: 360 } },
-    cover: { width: 1600, height: 900, thumb: { width: 640, height: 360 } },
+    listing: { width: 1600, height: 900, thumb: { width: 640, height: 360 }, fit: 'contain' },
+    cover: { width: 1600, height: 900, thumb: { width: 640, height: 360 }, fit: 'contain' },
     'ad-wide': { width: 1440, height: 240, thumb: null },
     'ad-card': { width: 1280, height: 720, thumb: null },
     'ad-portrait': { width: 800, height: 600, thumb: null },
@@ -58,16 +66,19 @@ async function store(buffer, presetName) {
     const preset = PRESETS[presetName] || PRESETS.listing;
     const id = uploadId();
     const pipeline = sharp(buffer, { animated: false }).rotate();
+    const resizeOpts = preset.fit === 'contain'
+        ? { fit: 'contain', background: LETTERBOX_BG }
+        : { fit: 'cover', position: 'centre' };
 
     await pipeline.clone()
-        .resize(preset.width, preset.height, { fit: 'cover', position: 'centre' })
+        .resize(preset.width, preset.height, resizeOpts)
         .webp({ quality: 82, effort: 4 })
         .toFile(path.join(UPLOADS_DIR, `${id}.webp`));
 
     let thumbUrl = `/uploads/${id}.webp`;
     if (preset.thumb) {
         await pipeline.clone()
-            .resize(preset.thumb.width, preset.thumb.height, { fit: 'cover', position: 'centre' })
+            .resize(preset.thumb.width, preset.thumb.height, resizeOpts)
             .webp({ quality: 72, effort: 4 })
             .toFile(path.join(UPLOADS_DIR, `${id}-t.webp`));
         thumbUrl = `/uploads/${id}-t.webp`;

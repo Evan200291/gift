@@ -218,11 +218,21 @@
         const stage = $('#stageImg');
         if (stage) {
             stage.addEventListener('click', () => {
-                $('#lightboxImg').src = stage.src;
+                const img = $('#lightboxImg');
+                img.src = stage.src;
+                img.className = '';
+                img.dataset.rot = '0';
                 $('#lightbox').classList.add('open');
                 document.body.style.overflow = 'hidden';
             });
         }
+
+        $('#lightboxRotate').addEventListener('click', () => {
+            const img = $('#lightboxImg');
+            const next = ((parseInt(img.dataset.rot, 10) || 0) + 90) % 360;
+            img.dataset.rot = String(next);
+            img.className = next ? `rot-${next}` : '';
+        });
 
         const url = window.location.origin + window.UI.listingHref(listing);
 

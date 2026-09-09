@@ -8,6 +8,13 @@
    label switching, and the responsive collapses used only here.
    ============================================================= */
 
+/* ---- dashboard body ----
+   .shell has zero vertical padding by design (public pages add their own
+   section spacing), so the dashboard content sat flush against .portal-top's
+   bottom border with no gap — its cards' cut-corner top edge read as
+   colliding with the header right above it. */
+main.shell { padding-top: 20px; }
+
 /* ---- sign-in screen ----
    Compact, centered card — not a full dashboard mockup. A small ad slot
    sits below it so the page still earns its keep before anyone signs in. */
@@ -82,6 +89,55 @@
 }
 .modal-scrim.open { display: flex; }
 .modal-scrim[hidden] { display: none !important; }
+
+/* The scrim only draws the dark backdrop — the card itself (.modal and its
+   head/body/foot regions) was never given a background here, so the editor
+   and delete-confirm dialogs rendered as unstyled form fields floating on
+   the backdrop with no visible card behind them. */
+.modal {
+    width: 100%; max-width: 860px;
+    border: 1px solid var(--line-strong);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
+    background: var(--surface);
+    box-shadow: var(--sh-3);
+    animation: modalIn var(--t-slow) both;
+}
+@keyframes modalIn { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+.modal-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0;
+    background: var(--surface);
+    z-index: 2;
+}
+.modal-head h2 { font-size: 1.1rem; }
+.modal-body { padding: 24px; background: var(--surface); }
+.modal-foot {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--line);
+    position: sticky; bottom: 0;
+    background: var(--surface);
+}
+.shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 10px; margin-top: 12px; }
+.shot-item { position: relative; aspect-ratio: 16/9; border: 1px solid var(--line); clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm))); overflow: hidden; }
+.shot-item img { width: 100%; height: 100%; object-fit: cover; }
+.shot-item .kill {
+    position: absolute; top: 5px; right: 5px;
+    width: 24px; height: 24px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: rgba(7,8,13,.85);
+    border: 1px solid var(--line-strong);
+    color: #fff; font-size: .9rem; line-height: 1;
+}
+.shot-item .kill:hover { background: var(--danger); border-color: var(--danger); }
+.shot-item .tag {
+    position: absolute; left: 5px; bottom: 5px;
+    padding: 2px 7px; border-radius: 5px;
+    background: var(--grad); color: #0a0a12;
+    font-size: .6rem; font-weight: 800; letter-spacing: .08em;
+}
 
 /* ---- subscription banner states ---- */
 .sub-banner .ring.warn  { border-color: var(--warn,  #ffd028); }

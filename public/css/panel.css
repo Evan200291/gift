@@ -141,16 +141,6 @@ main.shell { padding-top: 20px; }
     font-size: .6rem; font-weight: 800; letter-spacing: .08em;
 }
 
-/* ---- subscription banner states ---- */
-.sub-banner .ring.warn  { border-color: var(--warn,  #ffd028); }
-.sub-banner .ring.warn  b { color:        var(--warn,  #ffd028); }
-.sub-banner .ring.bad   { border-color: var(--danger,#ff3a55); }
-.sub-banner .ring.bad   b { color:        var(--danger,#ff3a55); }
-
-.sub-banner .sub-actions {
-    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-}
-
 /* ---- portal rows: tighten so they read well on small screens ---- */
 .portal-row .info .meta .game-tag {
     display: inline-flex; align-items: center; gap: 4px;
@@ -207,6 +197,14 @@ main.shell { padding-top: 20px; }
 /* the language-aware label of "level" / "currency" / "highlights" */
 #lbl_level, #lbl_currency, #lbl_highlights { color: var(--text-2); }
 
+/* ---- toolbar row (search + filters + New listing) ----
+   Shares the .bar class with views/admin.html's own inline styles,
+   which is where this was actually defined — the portal never had
+   its own copy, so the row sat flush against .portal-rows below it
+   with zero gap on mobile once #newBtn wrapped onto its own line. */
+.bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.bar .search { flex: 1 1 240px; }
+
 /* ---- search box: clear button ---- */
 .search .clear {
     border: 0; background: transparent; color: var(--text-3);
@@ -220,9 +218,7 @@ main.shell { padding-top: 20px; }
     #tab-listings .bar .select-wrap { flex: 1 1 calc(50% - 6px); min-width: 0; }
     #tab-listings .bar #newBtn { width: 100%; }
     .modal { max-width: 100% !important; margin: 8px; }
-    .sub-banner { flex-direction: column; align-items: flex-start; }
-    .sub-banner .sub-meta { flex-basis: auto; width: 100%; }
-    .sub-banner .sub-actions { width: 100%; }
+    .sub-banner .sub-status { font-size: .74rem; }
     /* On short mobile viewports, vertical centering leaves large equal
        gaps above and below the login card — start near the top instead
        so the page reads as content, not an oversized empty screen. */

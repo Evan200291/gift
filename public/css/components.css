@@ -64,10 +64,10 @@
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
 }
 
-.verified { color: var(--ok); display: inline-flex; vertical-align: middle; margin-left: 4px; }
+.verified { color: var(--neon); display: inline-flex; vertical-align: middle; margin-left: 4px; }
 
 .card-seller {
-    display: inline-flex; align-items: center; gap: 7px;
+    display: inline-flex; align-items: center; gap: 6px;
     min-width: 0;
     font-size: .78rem;
     font-weight: 600;
@@ -75,7 +75,8 @@
     transition: color var(--t-fast);
 }
 .card-seller:hover { color: var(--neon); }
-.card-seller .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 42px; }
+.card-seller .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 42px; flex: 1 1 auto; }
+.card-seller .avatar { width: 18px; height: 18px; font-size: .58rem; }
 .card-seller .avatar, .card-seller .verified { flex-shrink: 0; }
 
 /* game glyph badges — custom marks (not trademarked assets), one class
@@ -386,30 +387,20 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
 .portal-top .btn-outline:hover { --btn-bd: #fff; --btn-bg: rgba(255,255,255,.1); }
 
 .sub-banner {
-    display: flex; align-items: center; gap: 15px; flex-wrap: wrap;
-    padding: 15px 18px;
-    border: 1px solid var(--line); clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 12px 16px;
+    border: 1px solid var(--line); clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
     background: var(--surface);
     margin-bottom: 18px;
     border-left: 3px solid var(--ok);
 }
 .sub-banner.is-warn { background: #FBEFD8; border-color: #E8CE97; border-left-color: var(--warn); }
 .sub-banner.is-danger { background: #FBE6E8; border-color: #EFC0C5; border-left-color: var(--danger); }
-.sub-banner .ring {
-    width: 56px; height: 56px; border-radius: 50%;
-    display: grid; place-items: center;
-    background: var(--surface);
-    flex-shrink: 0; position: relative;
-    border: 2px solid var(--ok);
+.sub-banner .sub-days {
+    font-family: var(--font-display); font-size: .96rem; font-weight: 700;
+    color: var(--neon-deep); font-variant-numeric: tabular-nums;
 }
-.sub-banner .ring b {
-    font-family: var(--font-display); font-size: 1.1rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--ok);
-}
-.sub-banner .sub-meta { flex: 1 1 220px; min-width: 0; }
-.sub-banner .sub-meta b { display: block; font-size: .96rem; font-family: var(--font-display); color: var(--neon-deep); }
-.sub-banner .sub-meta span { font-size: .82rem; color: var(--text-3); }
+.sub-banner .sub-status { flex: 1 1 auto; min-width: 0; font-size: .82rem; color: var(--text-3); }
 
 .portal-rows { display: flex; flex-direction: column; gap: 9px; }
 .portal-row {

@@ -979,7 +979,7 @@
                     const price = (p.price != null) ? (' · ' + p.price + '/' + (p.interval || 'mo')) : '';
                     return '<option value="' + esc(p.id) + '">' + esc(p.name || p.id) + esc(price) + '</option>';
                 }).join('');
-            if (current) sel.value = current;
+            sel.value = current || '';
         },
 
         async extendSubscription() {

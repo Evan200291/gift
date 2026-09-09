@@ -246,14 +246,6 @@
             ? `<img src="${esc(thumb)}" alt="${esc(listing.title_en || game)}" loading="lazy" decoding="async" width="640" height="360">`
             : '<div class="fallback">🎮</div>';
 
-        const specs = [];
-        if (listing.level) specs.push(`<span class="spec"><i>🏆</i><b>${esc(truncate(listing.level, 18))}</b></span>`);
-        if (listing.currency_amount) specs.push(`<span class="spec"><i>💎</i><b>${esc(truncate(listing.currency_amount, 14))}</b></span>`);
-        if (listing.highlights) {
-            const first = listing.highlights.split(',')[0].trim();
-            if (first) specs.push(`<span class="spec"><i>⭐</i><b>${esc(truncate(first, 18))}</b></span>`);
-        }
-
         const sellerRow = !opts.hideSeller && listing.seller
             ? `<a class="card-seller" href="/store/${esc(listing.seller.username)}">
                    <span class="avatar">${listing.seller.avatar ? `<img src="${esc(listing.seller.avatar)}" alt="">` : esc((listing.seller.displayName || '?').charAt(0).toUpperCase())}</span>
@@ -277,10 +269,9 @@
             <div class="card-body">
                 ${listing.title_en ? `<div class="card-title">${esc(listing.title_en)}</div>` : ''}
                 ${listing.title_mm ? `<div class="card-title-mm" lang="my">${esc(listing.title_mm)}</div>` : ''}
-                ${specs.length ? `<div class="spec-row">${specs.join('')}</div>` : ''}
                 <div class="card-foot">
                     ${sellerRow || '<span></span>'}
-                    <span class="card-cta">${esc(t('viewDetails'))} ${ICONS.arrow}</span>
+                    <span class="card-cta"><span class="cta-label">${esc(t('viewDetails'))}</span> ${ICONS.arrow}</span>
                 </div>
             </div>
         </article>`;

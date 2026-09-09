@@ -245,36 +245,17 @@
                 STORE_URL = o.storeUrl || "";
 
                 const sub = o.subscription || {};
-                const ringCls = sub.active ? "" : (sub.expired ? "bad" : "warn");
-                const ringLabel = sub.unlimited ? "∞" : (sub.daysLeft || 0);
-                const planName = sub.planName || t("subscription");
+                const daysLabel = sub.unlimited ? "∞" : (String(sub.daysLeft || 0) + " " + t("daysLeft"));
                 let statusKey = "subActive";
                 if (!sub.active) statusKey = sub.expired ? "subExpired" : "subUnpaid";
                 else if (sub.expiringSoon) statusKey = "subExpiringSoon";
                 const statusLabel = t(statusKey);
-                const expiresLine = sub.expiresAt
-                    ? (t("expiresOn") + " " + new Date(sub.expiresAt).toLocaleDateString(getLang() === "mm" ? "my-MM" : "en-GB", { year: "numeric", month: "short", day: "numeric" }))
-                    : "";
-                const renewLine = sub.active ? "" : t("renewPrompt");
-                const counts = o.counts || {};
-                const limit = o.limit || 0;
-                const remaining = (counts.remaining === null || counts.remaining === undefined) ? null : counts.remaining;
 
                 host.innerHTML = ""
                     + "<div class=\"sub-banner " + (sub.active ? (sub.expiringSoon ? "is-warn" : "") : "is-danger") + "\">"
-                    +   "<div class=\"ring " + ringCls + "\"><b>" + esc(ringLabel) + "</b></div>"
-                    +   "<div class=\"sub-meta\">"
-                    +     "<b>" + esc(planName) + " · " + esc(statusLabel) + "</b>"
-                    +     "<span>" + esc(expiresLine) + (renewLine ? " · " + esc(renewLine) : "") + "</span>"
-                    +   "</div>"
-                    +   "<div class=\"sub-actions\">"
-                    +     (limit
-                        ? ("<span class=\"dim\">" + esc(counts.total) + " / " + esc(limit) + " " + esc(t("listingsTitle").toLowerCase())
-                            + (remaining !== null ? " · " + esc(remaining) + " " + esc(t("listingsIncluded").toLowerCase()) : "")
-                            + "</span>")
-                        : "")
-                    +     "<a class=\"btn btn-outline btn-sm\" href=\"/sell#plans\" data-i18n=\"plansTitle\">" + esc(t("plansTitle")) + "</a>"
-                    +   "</div>"
+                    +   "<span class=\"sub-days\">" + esc(daysLabel) + "</span>"
+                    +   "<span class=\"sub-status\">" + esc(statusLabel) + "</span>"
+                    +   "<a class=\"btn btn-outline btn-sm\" href=\"/sell#plans\" data-i18n=\"plansTitle\">" + esc(t("plansTitle")) + "</a>"
                     + "</div>";
             } catch (err) {
                 host.innerHTML = "";
@@ -775,6 +756,12 @@
         if (gameSel) {
             gameSel.innerHTML = "<option value=\"\">" + esc(t("allGames") || "All games") + "</option>"
                 + games().map((g) => "<option value=\"" + esc(g.id) + "\">" + esc(g.name) + "</option>").join("");
+            // Repopulating options via innerHTML doesn't fire 'change', which is
+            // the only thing that resyncs the custom dropdown's visible label
+            // (see core.js enhanceSelect) — without this the trigger keeps
+            // showing whatever it captured at enhancement time (nothing, since
+            // these options didn't exist yet) and collapses to just its chevron.
+            gameSel.value = "";
             gameSel.addEventListener("change", () => { ListState.game = gameSel.value; ListState.page = 1; Listings.loadRows(); });
         }
         const statusSel = $("#statusFilter");

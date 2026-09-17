@@ -131,10 +131,10 @@
     /* ================= games ================= */
 
     const GAME_FALLBACK = [
-        { id: 'efootball', short: 'eFootball', icon: '⚽', accent: '#22d3ee' },
-        { id: 'mlbb', short: 'Mobile Legends', icon: '🛡️', accent: '#7c5cff' },
-        { id: 'pubg', short: 'PUBG Mobile', icon: '🎯', accent: '#ffb020' },
-        { id: 'freefire', short: 'Free Fire', icon: '🔥', accent: '#ff5f6d' },
+        { id: 'efootball', short: 'eFootball', icon: '⚽', accent: '#0FB5A9' },
+        { id: 'mlbb', short: 'Mobile Legends', icon: '🛡️', accent: '#7C5CFF' },
+        { id: 'pubg', short: 'PUBG Mobile', icon: '🎯', accent: '#F2A017' },
+        { id: 'freefire', short: 'Free Fire', icon: '🔥', accent: '#F03E55' },
     ];
 
     const games = () => (SITE.games && SITE.games.length ? SITE.games : GAME_FALLBACK);

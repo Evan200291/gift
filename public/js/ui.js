@@ -58,6 +58,7 @@
             <span class="nav-spacer"></span>
             <nav class="nav-links">${links}</nav>
             <div class="nav-tools">
+                ${window.EXTheme ? window.EXTheme.markup() : ''}
                 ${langSelectMarkup()}
                 <a class="btn btn-outline btn-sm nav-portal" href="/seller" data-i18n="navSellerLogin">${esc(t('navSellerLogin'))}</a>
                 <button type="button" class="btn btn-ghost btn-icon nav-burger" data-i18n-aria="menu" aria-label="Menu">${ICONS.menu}</button>
@@ -101,6 +102,7 @@
         mountTabbar();
 
         bindLangSelect(host);
+        if (window.EXTheme) window.EXTheme.bind(host);
 
         const burger = $('.nav-burger', host);
         const drawer = $('.mobile-nav', host);

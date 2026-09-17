@@ -38,7 +38,7 @@
                 : gameIcon(g.id);
             return `
             <button type="button" class="cat-card${state.game === g.id ? ' active' : ''}"
-                    data-game="${esc(g.id)}" style="--cat:${esc(g.accent || '#7c5cff')}">
+                    data-game="${esc(g.id)}">
                 <span class="cat-glyph">${glyph}</span>
                 <span class="cat-meta">
                     <b>${esc(gameName(g.id))}</b>
@@ -84,7 +84,7 @@
             + `<div class="game-menu" id="gameMenu" role="listbox" aria-label="${esc(t('allGames'))}" hidden>
                    ${options.map((o) => `
                    <button type="button" class="game-menu-opt" role="option" data-game="${esc(o.id)}"
-                           aria-selected="${state.game === o.id}"${o.g ? ` style="--cat:${esc(o.g.accent || '#7c5cff')}"` : ''}>
+                           aria-selected="${state.game === o.id}">
                        <span class="gm-glyph">${menuGlyph(o.g)}</span>
                        <span class="gm-name">${esc(o.name)}</span>
                        <span class="gm-count tabular">${o.count}</span>
@@ -269,12 +269,11 @@
 
     function hudSellerCard(s) {
         const firstGame = (s.games || [])[0];
-        const accent = (gameById(firstGame) || {}).accent || 'var(--neon-deep)';
         const av = s.avatar
             ? `<img src="${esc(s.avatar)}" alt="">`
             : esc((s.displayName || s.username || '?').charAt(0).toUpperCase());
         return `<a class="ts-item" href="/store/${esc(s.username)}">
-            <span class="ts-av" style="background:${esc(accent)}">${av}</span>
+            <span class="ts-av" data-game="${esc(firstGame || '')}">${av}</span>
             <span class="ts-info">
                 <span class="ts-name"><span class="ts-name-text">${esc(s.displayName || s.username)}</span>${s.verified ? ICONS.verified : ''}</span>
                 <span class="ts-meta"><b>${s.listingCount || 0}</b> ${esc(t('sellerListings'))}</span>

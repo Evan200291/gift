@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#07080d">
+<meta name="theme-color" content="#F6F4FC">
+<script src="/js/theme.js"></script>
 <title>Control Panel</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +35,7 @@
 .auth-brand .brand-mark {
     width: 42px; height: 42px; padding: 9px;
     clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
-    display: grid; place-items: center; background: var(--neon-deep);
+    display: grid; place-items: center; background: var(--grad);
     color: #fff; flex-shrink: 0;
 }
 .auth-brand .brand-mark svg { width: 100%; height: 100%; display: block; }
@@ -53,7 +54,7 @@
 
 .admin-top {
     position: sticky; top: 0; z-index: 60;
-    background: rgba(244, 246, 250, .92);
+    background: var(--header-bg);
     backdrop-filter: blur(14px) saturate(140%);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
     border-bottom: 1px solid var(--line);
@@ -61,7 +62,7 @@
 .admin-top-inner { height: 64px; display: flex; align-items: center; gap: 14px; }
 .admin-badge {
     padding: 4px 11px;
-    border: 1px solid var(--neon-deep);
+    border: 1px solid var(--neon);
     border-radius: var(--r-xs);
     background: var(--neon-faint);
     font-size: .68rem; font-weight: 700;
@@ -83,13 +84,13 @@
     transition: all var(--t-fast);
 }
 .tab:hover { color: var(--text); border-color: var(--line-strong); }
-.tab.active { background: var(--grad); border-color: transparent; color: #0a0a12; }
+.tab.active { background: var(--grad); border-color: transparent; color: #fff; }
 
 .admin-tabbar {
     display: none;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
     padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px));
-    background: rgba(244, 246, 250, .96); backdrop-filter: blur(14px);
+    background: var(--header-bg-solid); backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
 }
 .admin-tabbar button {
@@ -171,7 +172,7 @@
     position: fixed; inset: 0; z-index: 220;
     display: none; align-items: flex-start; justify-content: center;
     padding: 24px 16px;
-    background: rgba(4,5,9,.82);
+    background: rgba(10,6,20,.82);
     backdrop-filter: blur(7px);
     overflow-y: auto;
 }
@@ -233,7 +234,7 @@
 .shot-item .tag {
     position: absolute; left: 5px; bottom: 5px;
     padding: 2px 7px; border-radius: 5px;
-    background: var(--grad); color: #0a0a12;
+    background: var(--grad); color: #fff;
     font-size: .6rem; font-weight: 800; letter-spacing: .08em;
 }
 
@@ -251,10 +252,10 @@
 .callout {
     display: flex; gap: 11px;
     padding: 13px 15px;
-    border: 1px solid rgba(255,176,32,.3);
+    border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
     border-radius: var(--r);
-    background: rgba(255,176,32,.08);
-    font-size: .83rem; color: #ffcf7d; line-height: 1.6;
+    background: var(--warn-bg);
+    font-size: .83rem; color: var(--text); line-height: 1.6;
     margin-bottom: 18px;
 }
 .copyline {
@@ -350,9 +351,9 @@
     display: inline-flex; align-items: center;
     padding: 2px 8px;
     font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-    color: var(--accent, #7c5cff);
-    background: rgba(124,92,255,.12);
-    border: 1px solid rgba(124,92,255,.3);
+    color: var(--neon);
+    background: var(--neon-faint);
+    border: 1px solid var(--neon-soft);
     border-radius: var(--r-xs);
 }
 .plan-badge.none { color: var(--text-3); background: transparent; border-color: var(--line); text-transform: none; letter-spacing: 0; font-weight: 500; }
@@ -362,20 +363,20 @@
     padding: 2px 8px;
     font-size: .74rem; font-weight: 600;
     border-radius: var(--r-xs);
-    background: rgba(34,211,238,.1);
-    color: #22d3ee;
-    border: 1px solid rgba(34,211,238,.3);
+    background: color-mix(in srgb, var(--cyan) 12%, transparent);
+    color: var(--cyan);
+    border: 1px solid color-mix(in srgb, var(--cyan) 35%, transparent);
 }
-.exp-pill.expired { background: rgba(255,95,109,.12); color: #ff8b95; border-color: rgba(255,95,109,.4); }
-.exp-pill.expiring { background: rgba(255,176,32,.12); color: #ffcf7d; border-color: rgba(255,176,32,.4); }
-.exp-pill.lifetime { background: rgba(124,92,255,.12); color: #b6a3ff; border-color: rgba(124,92,255,.3); }
-.exp-pill.suspended { background: rgba(120,120,140,.15); color: #a8a8b8; border-color: rgba(120,120,140,.3); }
+.exp-pill.expired { background: var(--danger-bg); color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
+.exp-pill.expiring { background: var(--warn-bg); color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+.exp-pill.lifetime { background: var(--neon-faint); color: var(--neon); border-color: var(--neon-soft); }
+.exp-pill.suspended { background: var(--surface-3); color: var(--text-3); border-color: var(--line-strong); }
 
 .rowcard .avatar-lg {
     width: 48px; height: 48px; flex-shrink: 0;
     display: grid; place-items: center;
     border-radius: 12px; overflow: hidden;
-    background: var(--neon-deep);
+    background: var(--grad);
     color: #fff; font-weight: 700; font-size: 1.1rem;
     font-family: var(--font-display);
     border: 1px solid var(--line);
@@ -433,6 +434,7 @@
             <span class="admin-badge">Admin</span>
             <span class="nav-spacer"></span>
             <span class="who">Signed in as <b id="whoUser">—</b></span>
+            <button type="button" class="theme-toggle" data-theme-toggle></button>
             <button type="button" class="btn btn-outline btn-sm" id="logoutBtn">Sign out</button>
         </div>
     </header>

@@ -1,42 +1,71 @@
 /* ==========================================================================
    EXABYTE — storefront design system
-   Light canvas · navy brand · royal-blue accent
-   Theme: clean, colorful, professional gaming marketplace
+   Arcade palette: electric violet + hot magenta brand, per-game colours,
+   light and dark themes.
    ========================================================================== */
 
-/* ---------- 1. Tokens ---------------------------------------------------- */
+/* ---------- 1. Tokens ----------------------------------------------------
+   Three theme states (see /js/theme.js):
+   - no data-theme ("system"): light below, dark via prefers-color-scheme
+   - [data-theme="light"] / [data-theme="dark"]: explicit choice wins.
+   Components only ever read these tokens — never a literal that only works
+   on one ground.
+   Naming: --neon* is the brand accent (kept for history), --ink is heading
+   text, --arcade is the always-dark "HUD" panel used for the header controls,
+   game menu, category tiles and footer strip, --grad the brand gradient fill
+   for solid emphasis (logo tile, active tab/page, step numbers). */
 :root {
-    --bg:            #F4F6FA;
-    --bg-soft:       #EDF0F6;
+    color-scheme: light;
+    --bg:            #F6F4FC;
+    --bg-soft:       #EEEAF8;
     --surface:       #FFFFFF;
-    --surface-2:     #FAFBFD;
-    --surface-3:     #EDF0F6;
-    --line:          #E1E6F0;
-    --line-soft:     #EAEDF4;
-    --line-strong:   #CCD4E3;
-    --text:          #0B1220;
-    --text-2:        #47536B;
-    --text-3:        #8492AC;
-    --neon:          #1856E8;
-    --neon-bright:   #4B85FF;
-    --neon-dim:      #123FB0;
-    --neon-deep:     #14305A;
-    --neon-soft:     rgba(24,86,232,.14);
-    --neon-glow:     rgba(24,86,232,.35);
-    --neon-faint:    rgba(24,86,232,.08);
-    --grad:          #1856E8;
-    --grad-soft:     rgba(24,86,232,.14);
+    --surface-2:     #FBFAFE;
+    --surface-3:     #EEEAF8;
+    --line:          #E4DFF1;
+    --line-soft:     #ECE8F6;
+    --line-strong:   #CFC7E4;
+    --text:          #140E24;
+    --text-2:        #4E4668;
+    --text-3:        #8A82A6;
+    --ink:           #1E1238;
+    --neon:          #7B3FF2;
+    --neon-bright:   #A57BFF;
+    --neon-dim:      #6127D6;
+    --neon-deep:     #1E1238;
+    --neon-soft:     rgba(123,63,242,.16);
+    --neon-glow:     rgba(123,63,242,.38);
+    --neon-faint:    rgba(123,63,242,.08);
+    --pink:          #F0359A;
+    --cyan:          #00B8C8;
+    --yellow:        #FFB81F;
+    --grad:          linear-gradient(120deg, #7B3FF2 0%, #C43BE0 55%, #F0359A 100%);
+    --grad-soft:     rgba(123,63,242,.14);
+    --arcade:        linear-gradient(150deg, #2A1650 0%, #170C30 100%);
+    --arcade-solid:  #1B0F38;
+    --arcade-line:   rgba(190,160,255,.22);
+    --arcade-text:   #ECE4FF;
+    --arcade-dim:    #A99BD0;
+    --header-bg:     rgba(246,244,252,.88);
+    --header-bg-solid: rgba(246,244,252,.97);
     --violet:        #7C5CFF;
     --violet-soft:   #EAE5FF;
-    --cyan:          #0FA7A0;
-    --ok:            #0E7C4A;
-    --warn:          #9A6B10;
-    --danger:        #C8323F;
+    --ok:            #0E8A52;
+    --warn:          #A36F05;
+    --danger:        #D22F4A;
     --amber:         #C9860E;
-    --sh-1:          0 1px 2px rgba(11,18,32,.05);
-    --sh-2:          0 10px 26px -12px rgba(11,18,32,.18);
-    --sh-3:          0 26px 60px -22px rgba(11,18,32,.30);
-    --glow:          0 0 0 1px rgba(24,86,232,.35), 0 0 22px -4px rgba(24,86,232,.28);
+    --ok-bg:         #E3F6EC;
+    --warn-bg:       #FDF1D8;
+    --danger-bg:     #FCE6EA;
+    /* Per-game colours: -c is the vivid mark, -ink the readable text shade
+       on the current ground. */
+    --g-efootball:   #0FB5A9;  --g-efootball-ink: #08756D;
+    --g-mlbb:        #7C5CFF;  --g-mlbb-ink:      #5B3ED6;
+    --g-pubg:        #F2A017;  --g-pubg-ink:      #96600A;
+    --g-freefire:    #F03E55;  --g-freefire-ink:  #B32A38;
+    --sh-1:          0 1px 2px rgba(30,18,56,.06);
+    --sh-2:          0 10px 26px -12px rgba(30,18,56,.2);
+    --sh-3:          0 26px 60px -22px rgba(30,18,56,.34);
+    --glow:          0 0 0 1px rgba(123,63,242,.35), 0 0 22px -4px rgba(123,63,242,.3);
     --r-xs:          7px;
     --r-sm:          9px;
     --r:             12px;
@@ -55,6 +84,43 @@
     --font-display:  'Chakra Petch', 'Noto Sans Myanmar', var(--font-ui);
     --font-mm:       'Noto Sans Myanmar', 'Padauk', 'Myanmar Text', var(--font-ui);
     --font-mono:     'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+/* Dark theme tokens — duplicated for the two ways dark can be active. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #0D0A17; --bg-soft: #151024; --surface: #161127; --surface-2: #1A142D; --surface-3: #221B39;
+        --line: #2A2240; --line-soft: #221B36; --line-strong: #3B3158;
+        --text: #EEEAF9; --text-2: #BDB3D8; --text-3: #8C81AD; --ink: #F5F1FF;
+        --neon: #9C6BFF; --neon-bright: #BE9BFF; --neon-dim: #B88FFF; --neon-deep: #F5F1FF;
+        --neon-soft: rgba(156,107,255,.24); --neon-glow: rgba(156,107,255,.45); --neon-faint: rgba(156,107,255,.12);
+        --grad-soft: rgba(156,107,255,.2);
+        --arcade: linear-gradient(150deg, #24133F 0%, #120A24 100%); --arcade-solid: #1A0F33;
+        --header-bg: rgba(13,10,23,.86); --header-bg-solid: rgba(13,10,23,.97);
+        --violet-soft: #2A2050;
+        --ok: #3DD68C; --warn: #F5B73B; --danger: #FF6B81;
+        --ok-bg: rgba(61,214,140,.12); --warn-bg: rgba(245,183,59,.12); --danger-bg: rgba(255,107,129,.12);
+        --g-efootball-ink: #4FE0D3; --g-mlbb-ink: #B3A0FF; --g-pubg-ink: #FFC45C; --g-freefire-ink: #FF8A99;
+        --sh-1: 0 1px 2px rgba(0,0,0,.4); --sh-2: 0 10px 26px -12px rgba(0,0,0,.6); --sh-3: 0 26px 60px -22px rgba(0,0,0,.75);
+        --glow: 0 0 0 1px rgba(156,107,255,.45), 0 0 24px -4px rgba(156,107,255,.4);
+    }
+}
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0D0A17; --bg-soft: #151024; --surface: #161127; --surface-2: #1A142D; --surface-3: #221B39;
+    --line: #2A2240; --line-soft: #221B36; --line-strong: #3B3158;
+    --text: #EEEAF9; --text-2: #BDB3D8; --text-3: #8C81AD; --ink: #F5F1FF;
+    --neon: #9C6BFF; --neon-bright: #BE9BFF; --neon-dim: #B88FFF; --neon-deep: #F5F1FF;
+    --neon-soft: rgba(156,107,255,.24); --neon-glow: rgba(156,107,255,.45); --neon-faint: rgba(156,107,255,.12);
+    --grad-soft: rgba(156,107,255,.2);
+    --arcade: linear-gradient(150deg, #24133F 0%, #120A24 100%); --arcade-solid: #1A0F33;
+    --header-bg: rgba(13,10,23,.86); --header-bg-solid: rgba(13,10,23,.97);
+    --violet-soft: #2A2050;
+    --ok: #3DD68C; --warn: #F5B73B; --danger: #FF6B81;
+    --ok-bg: rgba(61,214,140,.12); --warn-bg: rgba(245,183,59,.12); --danger-bg: rgba(255,107,129,.12);
+    --g-efootball-ink: #4FE0D3; --g-mlbb-ink: #B3A0FF; --g-pubg-ink: #FFC45C; --g-freefire-ink: #FF8A99;
+    --sh-1: 0 1px 2px rgba(0,0,0,.4); --sh-2: 0 10px 26px -12px rgba(0,0,0,.6); --sh-3: 0 26px 60px -22px rgba(0,0,0,.75);
+    --glow: 0 0 0 1px rgba(156,107,255,.45), 0 0 24px -4px rgba(156,107,255,.4);
 }
 
 /* corner language — the logo's sheared bars, echoed on every solid/interactive shape */
@@ -79,8 +145,8 @@ body {
 body::before {
     content: ''; position: fixed; inset: 0; z-index: -2;
     background:
-        radial-gradient(ellipse 900px 500px at 90% -10%, rgba(24,86,232,.07), transparent 60%),
-        radial-gradient(ellipse 700px 500px at -10% 20%, rgba(20,48,90,.05), transparent 60%),
+        radial-gradient(ellipse 900px 500px at 90% -10%, var(--neon-faint), transparent 60%),
+        radial-gradient(ellipse 700px 500px at -10% 20%, color-mix(in srgb, var(--pink) 6%, transparent), transparent 60%),
         var(--bg);
     pointer-events: none;
 }
@@ -89,7 +155,7 @@ body::before {
 *::-webkit-scrollbar { width: 10px; height: 10px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; border: 2px solid var(--bg); }
-*::-webkit-scrollbar-thumb:hover { background: var(--neon-deep); }
+*::-webkit-scrollbar-thumb:hover { background: var(--neon); }
 @keyframes boot-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
 /* ---------- 3. Typography ------------------------------------------------ */
 h1, h2, h3, h4 {
@@ -196,17 +262,22 @@ body.lang-mm input[data-i18n-ph] {
     position: sticky; top: 0; z-index: 60;
     backdrop-filter: blur(14px) saturate(140%);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
-    background: rgba(244, 246, 250, .88);
+    background: var(--header-bg);
     border-bottom: 1px solid var(--line);
     transition: border-color var(--t), background var(--t);
 }
-.site-header.is-stuck { background: rgba(244, 246, 250, .97); border-bottom-color: var(--line-strong); box-shadow: var(--sh-1); }
+/* Thin brand-gradient rule along the header's bottom edge. */
+.site-header::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+    background: var(--grad); opacity: .85; pointer-events: none;
+}
+.site-header.is-stuck { background: var(--header-bg-solid); border-bottom-color: var(--line-strong); box-shadow: var(--sh-1); }
 .nav { height: var(--nav-h); display: flex; align-items: center; gap: 18px; }
 .brand { display: inline-flex; align-items: center; gap: 12px; min-width: 0; flex-shrink: 0; }
 .brand-mark {
     width: 42px; height: 42px; padding: 9px;
     clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
-    display: grid; place-items: center; background: var(--neon-deep);
+    display: grid; place-items: center; background: var(--grad);
     color: #fff; flex-shrink: 0;
 }
 .brand-mark svg { width: 100%; height: 100%; display: block; }
@@ -238,23 +309,38 @@ body.lang-mm input[data-i18n-ph] {
     position: relative;
     display: inline-flex; align-items: center; gap: 7px;
     height: 38px; padding: 0 13px 0 11px;
-    background: linear-gradient(160deg, #12294B, #0A1830);
-    color: #DCE6FF;
+    background: var(--arcade);
+    color: var(--arcade-text);
     border: none;
     clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
-    box-shadow: 0 0 10px -4px var(--neon), inset 0 0 0 1px rgba(24,86,232,.35);
+    box-shadow: 0 0 10px -4px var(--neon), inset 0 0 0 1px var(--arcade-line);
     font-family: var(--font-display);
     font-size: .78rem; font-weight: 600; letter-spacing: .01em;
     cursor: pointer;
     transition: box-shadow var(--t-fast), color var(--t-fast);
 }
-.lang-trigger:hover { box-shadow: 0 0 14px -2px var(--neon), inset 0 0 0 1px rgba(24,86,232,.6); }
-.lang-trigger .ico { display: flex; color: var(--neon); }
+.lang-trigger:hover { box-shadow: 0 0 14px -2px var(--neon), inset 0 0 0 1px var(--neon-bright); }
+.lang-trigger .ico { display: flex; color: var(--neon-bright); }
 .lang-trigger .lang-cur { min-width: 58px; text-align: left; }
 .lang-trigger.is-mm .lang-full { font-family: var(--font-mm); font-size: .74rem; letter-spacing: normal; }
 .lang-trigger .lang-abbr { display: none; }
-.lang-trigger .chev { display: flex; color: #7C90B4; transition: transform var(--t-fast); }
+.lang-trigger .chev { display: flex; color: var(--arcade-dim); transition: transform var(--t-fast); }
 .lang-trigger:hover .chev { transform: translateY(1px); }
+/* Theme switcher (system / light / dark) — same HUD button language as the
+   language toggle, icon only. Markup + behaviour live in /js/theme.js. */
+.theme-toggle {
+    display: inline-grid; place-items: center; flex-shrink: 0;
+    width: 38px; height: 38px; padding: 0; border: none; cursor: pointer;
+    background: var(--arcade); color: var(--yellow);
+    clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
+    box-shadow: 0 0 10px -4px var(--neon), inset 0 0 0 1px var(--arcade-line);
+    transition: box-shadow var(--t-fast), color var(--t-fast);
+}
+.theme-toggle[data-mode="dark"] { color: var(--neon-bright); }
+.theme-toggle[data-mode="system"] { color: var(--cyan); }
+.theme-toggle:hover { box-shadow: 0 0 14px -2px var(--neon), inset 0 0 0 1px var(--neon-bright); }
+.theme-toggle:focus-visible, .lang-trigger:focus-visible { outline: 2px solid var(--neon-bright); outline-offset: 2px; }
+.theme-toggle svg { width: 17px; height: 17px; }
 /* ---------- 6. Buttons --------------------------------------------------- */
 .btn {
     --btn-bg: var(--surface);
@@ -279,19 +365,20 @@ body.lang-mm input[data-i18n-ph] {
 .btn-block { width: 100%; }
 .btn-icon { padding: 8px; width: 36px; height: 36px; }
 .nav-burger {
-    --btn-bg: linear-gradient(160deg, #12294B, #0A1830);
-    --btn-fg: #fff; --btn-bd: rgba(24,86,232,.4);
+    --btn-bg: var(--arcade);
+    --btn-fg: #fff; --btn-bd: var(--arcade-line);
     box-shadow: 0 0 10px -4px var(--neon);
 }
 .nav-burger:hover { --btn-fg: #fff; box-shadow: 0 0 14px -2px var(--neon); border-color: var(--neon); }
 .btn-primary {
     --btn-bd: transparent;
-    background: var(--neon); color: #fff;
+    background: var(--grad); background-size: 160% 100%; background-position: 0 0; color: #fff;
     box-shadow: 0 6px 16px -6px var(--neon-glow);
+    transition: transform var(--t-fast), box-shadow var(--t), background-position var(--t), color var(--t-fast);
 }
 .btn-primary:hover {
-    background: var(--neon-dim); color: #fff;
-    box-shadow: 0 8px 20px -4px var(--neon-glow);
+    background: var(--grad); background-size: 160% 100%; background-position: 100% 0; color: #fff;
+    box-shadow: 0 8px 22px -4px var(--neon-glow);
 }
 .btn-outline {
     --btn-bd: var(--neon);
@@ -299,9 +386,9 @@ body.lang-mm input[data-i18n-ph] {
     --btn-bg: var(--neon-faint);
 }
 .btn-outline:hover {
-    --btn-bd: var(--neon-deep);
+    --btn-bd: var(--neon);
     --btn-fg: #fff;
-    --btn-bg: var(--neon-deep);
+    --btn-bg: var(--neon);
 }
 .btn-ghost {
     --btn-bd: transparent;
@@ -314,7 +401,7 @@ body.lang-mm input[data-i18n-ph] {
     --btn-bg: var(--danger);
     --btn-fg: #fff;
 }
-.btn-danger:hover { --btn-bg: #A8232F; }
+.btn-danger:hover { --btn-bg: color-mix(in srgb, var(--danger) 82%, #000); }
 /* Same ghost (transparent, text-only) treatment as .btn-ghost, but for a
    destructive action inline next to non-destructive ones (e.g. a listing
    row's Edit/Delete pair) — sharing .btn-ghost's hover made Delete hover
@@ -345,7 +432,7 @@ body.lang-mm input[data-i18n-ph] {
 .hero-media { margin-top: 20px; }
 .hero-banner {
     position: relative; width: 100%; aspect-ratio: 3.2 / 1; overflow: hidden;
-    background: #0A1830; touch-action: pan-y;
+    background: var(--arcade-solid); touch-action: pan-y;
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
 }
 .hero-track { display: flex; height: 100%; transition: transform .6s cubic-bezier(.22, .61, .36, 1); }
@@ -358,8 +445,8 @@ body.lang-mm input[data-i18n-ph] {
     position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
     display: flex; justify-content: center; align-items: center; gap: 2px;
     height: 28px;
-    background: rgba(8, 17, 36, .78);
-    border-top: 1px solid rgba(120, 170, 255, .14);
+    background: rgba(18, 9, 36, .78);
+    border-top: 1px solid var(--arcade-line);
     backdrop-filter: blur(6px);
 }
 .hero-dots:empty { display: none; }
@@ -371,7 +458,7 @@ body.lang-mm input[data-i18n-ph] {
 }
 .hero-dot:hover::before { background: rgba(255, 255, 255, .7); }
 .hero-dot[aria-selected="true"] { width: 32px; }
-.hero-dot[aria-selected="true"]::before { width: 22px; background: var(--neon-bright); }
+.hero-dot[aria-selected="true"]::before { width: 22px; background: var(--grad); }
 .hero-dot:focus-visible { outline: 2px solid var(--neon-bright); outline-offset: -2px; }
 @media (prefers-reduced-motion: reduce) { .hero-track { transition: none; } }
 .hero-inner {
@@ -397,9 +484,15 @@ body.lang-mm input[data-i18n-ph] {
 .stat-ico {
     grid-row: 1 / span 2; width: 34px; height: 34px;
     display: grid; place-items: center;
-    color: var(--neon); background: var(--neon-faint); border: 1px solid var(--neon-soft);
+    --stat-c: var(--neon);
+    color: var(--stat-c);
+    background: color-mix(in srgb, var(--stat-c) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--stat-c) 30%, transparent);
     clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
 }
+/* One colour per stat so the bar reads at a glance. */
+.stat-chip:nth-child(2) .stat-ico { --stat-c: var(--pink); }
+.stat-chip:nth-child(3) .stat-ico { --stat-c: var(--cyan); }
 .stat-ico svg { width: 17px; height: 17px; }
 .stat-chip b {
     font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
@@ -426,12 +519,12 @@ body.lang-mm .stat-label { font-size: .64rem; letter-spacing: 0; line-height: 1.
     .top-sellers-grid { flex: 1; }
     .hero-steps {
         flex: 1; display: flex; flex-direction: column;
-        background: var(--neon-deep); color: #fff;
+        background: var(--arcade); color: #fff;
         clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
     }
     .hero-steps-title {
         padding: 9px 16px; font-size: .66rem; font-weight: 700; letter-spacing: .12em;
-        text-transform: uppercase; color: #A9BBDD; border-bottom: 1px solid rgba(143, 169, 220, .18);
+        text-transform: uppercase; color: var(--arcade-dim); border-bottom: 1px solid var(--arcade-line);
     }
     body.lang-mm .hero-steps-title { font-size: .74rem; letter-spacing: 0; }
     .hero-steps-list {
@@ -442,22 +535,26 @@ body.lang-mm .stat-label { font-size: .64rem; letter-spacing: 0; line-height: 1.
         position: relative; display: flex; align-items: center; gap: 10px;
         padding: 10px 16px; min-width: 0;
     }
-    .hero-step + .hero-step { border-left: 1px solid rgba(143, 169, 220, .18); }
+    .hero-step + .hero-step { border-left: 1px solid var(--arcade-line); }
     /* Chevron on each divider reads the three cells as a sequence. */
     .hero-step + .hero-step::before {
         content: ""; position: absolute; left: -5px; top: 50%; width: 8px; height: 8px;
-        background: var(--neon-deep); border-top: 1px solid rgba(143, 169, 220, .45); border-right: 1px solid rgba(143, 169, 220, .45);
+        background: var(--arcade-solid); border-top: 1px solid var(--arcade-dim); border-right: 1px solid var(--arcade-dim);
         transform: translateY(-50%) rotate(45deg);
     }
     .hero-step-n {
+        --step-c: var(--neon);
         flex: none; display: grid; place-items: center; width: 28px; height: 28px;
         font-family: var(--font-display); font-weight: 700; font-size: .9rem;
-        color: #fff; background: var(--neon);
+        color: #fff; background: var(--step-c);
+        box-shadow: 0 0 14px -2px var(--step-c);
         clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
     }
+    .hero-step:nth-child(2) .hero-step-n { --step-c: var(--pink); }
+    .hero-step:nth-child(3) .hero-step-n { --step-c: #0A9DAB; }
     .hero-step-text { display: grid; gap: 2px; min-width: 0; }
     .hero-step-text b { font-family: var(--font-display); font-size: .86rem; font-weight: 600; line-height: 1.2; }
-    .hero-step-text small { font-size: .72rem; color: #A9BBDD; line-height: 1.3; }
+    .hero-step-text small { font-size: .72rem; color: var(--arcade-dim); line-height: 1.3; }
     body.lang-mm .hero-step-text b { font-size: .74rem; line-height: 1.5; }
     body.lang-mm .hero-step-text small { font-size: .64rem; line-height: 1.5; }
 }
@@ -522,7 +619,7 @@ body.lang-mm .top-sellers-title { font-size: .74rem; letter-spacing: 0; }
 /* ---------- 8. Toolbar (search + filters) -------------------------------- */
 .toolbar {
     position: sticky; top: var(--nav-h); z-index: 40;
-    padding: 12px 0; background: rgba(244, 246, 250, .9);
+    padding: 12px 0; background: var(--header-bg);
     backdrop-filter: blur(10px);
 }
 /* Myanmar glyphs render visibly larger than Latin at an identical declared
@@ -599,10 +696,12 @@ body.lang-mm .price-range input::placeholder { font-size: .78rem; }
     border-color: color-mix(in srgb, var(--chip-c) 40%, transparent);
 }
 .chip.active::after { opacity: 1; }
-.chip[data-tone="efootball"] { --chip-c: #0FA7A0; --chip-ink: #0A6F69; }
-.chip[data-tone="mlbb"]      { --chip-c: #7C5CFF; --chip-ink: #5B3ED6; }
-.chip[data-tone="pubg"]      { --chip-c: #E0961B; --chip-ink: #96600A; }
-.chip[data-tone="freefire"]  { --chip-c: #E2404F; --chip-ink: #B32A38; }
+.chip[data-tone="all"]       { --chip-c: var(--pink); --chip-ink: var(--neon); }
+.chip[data-tone="efootball"] { --chip-c: var(--g-efootball); --chip-ink: var(--g-efootball-ink); }
+.chip[data-tone="mlbb"]      { --chip-c: var(--g-mlbb); --chip-ink: var(--g-mlbb-ink); }
+.chip[data-tone="pubg"]      { --chip-c: var(--g-pubg); --chip-ink: var(--g-pubg-ink); }
+.chip[data-tone="freefire"]  { --chip-c: var(--g-freefire); --chip-ink: var(--g-freefire-ink); }
+.chip[data-tone="all"]::after { background: var(--grad); }
 .chip[data-tone="more"]      { --chip-c: var(--text-3); --chip-ink: var(--text); }
 
 /* Game filter: on desktop every game is a chip. On phones (see the 720px
@@ -616,9 +715,9 @@ body.lang-mm .price-range input::placeholder { font-size: .78rem; }
 .game-menu {
     position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 45;
     padding: 6px;
-    background: linear-gradient(160deg, #12294B, #0A1830);
-    border: 1px solid rgba(120,170,255,.28);
-    box-shadow: 0 18px 40px -14px rgba(7,14,30,.6);
+    background: var(--arcade);
+    border: 1px solid var(--arcade-line);
+    box-shadow: 0 18px 40px -14px rgba(10,4,24,.6);
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
     animation: gameMenuIn .16s ease-out both;
 }
@@ -626,24 +725,24 @@ body.lang-mm .price-range input::placeholder { font-size: .78rem; }
 .game-menu-opt {
     display: flex; align-items: center; gap: 12px; width: 100%;
     padding: 10px; border: 0; border-bottom: 1px solid rgba(255,255,255,.06);
-    background: transparent; color: #DCE6FF; text-align: left; cursor: pointer;
+    background: transparent; color: var(--arcade-text); text-align: left; cursor: pointer;
     font-family: var(--font-display); font-weight: 600; font-size: .88rem;
     transition: background var(--t-fast);
 }
 .game-menu-opt:last-child { border-bottom: 0; }
-.game-menu-opt:hover, .game-menu-opt:focus-visible { background: rgba(75,133,255,.14); outline: none; }
-.game-menu-opt[aria-selected="true"] { background: rgba(24,86,232,.3); color: #fff; }
+.game-menu-opt:hover, .game-menu-opt:focus-visible { background: rgba(165,123,255,.14); outline: none; }
+.game-menu-opt[aria-selected="true"] { background: color-mix(in srgb, var(--cat, #7B3FF2) 28%, transparent); color: #fff; }
 .gm-glyph {
     width: 32px; height: 32px; flex: none; display: grid; place-items: center; overflow: hidden;
-    color: var(--cat, #8FA3C7);
-    background: color-mix(in srgb, var(--cat, var(--neon)) 16%, #0C1830);
+    color: var(--cat, var(--arcade-dim));
+    background: color-mix(in srgb, var(--cat, var(--neon)) 18%, #150A2C);
     border: 1px solid color-mix(in srgb, var(--cat, var(--neon)) 45%, transparent);
     clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
 }
 .gm-glyph img { width: 80%; height: 80%; object-fit: contain; }
 .gm-glyph svg { width: 16px; height: 16px; }
 .gm-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gm-count { flex: none; padding: 2px 8px; font-family: var(--font-mono); font-size: .7rem; color: #8FA3C7; background: rgba(255,255,255,.06); }
+.gm-count { flex: none; padding: 2px 8px; font-family: var(--font-mono); font-size: .7rem; color: var(--arcade-dim); background: rgba(255,255,255,.06); }
 .gm-check { flex: none; display: inline-flex; color: var(--neon-bright); visibility: hidden; }
 .game-menu-opt[aria-selected="true"] .gm-check { visibility: visible; }
 @media (prefers-reduced-motion: reduce) { .game-menu { animation: none; } }
@@ -746,7 +845,7 @@ select option { background: var(--surface); color: var(--text); }
     isolation: isolate;
     transition: transform var(--t), border-color var(--t), box-shadow var(--t);
 }
-.card:hover { transform: translateY(-4px); box-shadow: var(--sh-3); border-color: var(--line-strong); }
+.card:hover { transform: translateY(-4px); box-shadow: var(--sh-3), 0 0 0 1px var(--neon-soft); border-color: color-mix(in srgb, var(--neon) 45%, var(--line)); }
 .card-media { position: relative; aspect-ratio: 16 / 9; background: var(--surface-3); overflow: hidden; }
 .card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--t-slow), filter var(--t); }
 .card:hover .card-media img { transform: scale(1.06); }
@@ -766,18 +865,18 @@ select option { background: var(--surface); color: var(--text); }
     white-space: nowrap;
 }
 .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.pill-available { background: rgba(255,255,255,.94); color: var(--ok); border-color: transparent; }
-.pill-reserved  { background: rgba(255,255,255,.94); color: var(--warn); border-color: transparent; }
-.pill-sold      { background: rgba(255,255,255,.9); color: var(--danger); border-color: transparent; }
+.pill-available { background: var(--surface); color: var(--ok); border-color: transparent; }
+.pill-reserved  { background: var(--surface); color: var(--warn); border-color: transparent; }
+.pill-sold      { background: var(--surface); color: var(--danger); border-color: transparent; }
 .pill-hot       { background: var(--neon); color: #fff; border-color: transparent; }
 /* .pill-available/-reserved/-sold default to a translucent-white chip meant
    to sit on a photo (see .media-bottom); on a plain white .card-tags row
    that reads as bare colored text with no visible chip at all. Give them a
    real tinted background there, same language as .pill-game's per-game tint. */
-.card-tags .pill-available { background: rgba(14,124,74,.1); }
-.card-tags .pill-reserved  { background: rgba(154,107,16,.12); }
-.card-tags .pill-sold      { background: rgba(200,50,63,.1); }
-.pill-count     { background: rgba(11,18,32,.55); color: #fff; border-color: transparent; text-transform: none; letter-spacing: 0; }
+.card-tags .pill-available { background: var(--ok-bg); }
+.card-tags .pill-reserved  { background: var(--warn-bg); }
+.card-tags .pill-sold      { background: var(--danger-bg); }
+.pill-count     { background: rgba(20,10,40,.6); color: #fff; border-color: transparent; text-transform: none; letter-spacing: 0; }
 .price-tag {
     font-family: var(--font-display); font-size: 1.25rem; font-weight: 700;
     letter-spacing: -0.01em; color: #fff;
@@ -841,7 +940,7 @@ select option { background: var(--surface); color: var(--text); }
 }
 .pg:hover:not(:disabled) { color: var(--neon); border-color: var(--neon); transform: translateY(-1px); }
 .pg:disabled { opacity: .35; cursor: not-allowed; }
-.pg.active { background: var(--neon-deep); border-color: var(--neon-deep); color: #fff; }
+.pg.active { background: var(--grad); border-color: transparent; color: #fff; }
 .pg-gap { color: var(--text-3); padding: 0 4px; }
 
 /* ---------- 12. Detail page ---------------------------------------------- */
@@ -862,7 +961,7 @@ select option { background: var(--surface); color: var(--text); }
     position: absolute; top: 50%; transform: translateY(-50%);
     width: 38px; height: 38px; border-radius: 50%;
     display: grid; place-items: center;
-    background: rgba(11,18,32,.55); border: 1px solid rgba(255,255,255,.2);
+    background: rgba(20,10,40,.55); border: 1px solid rgba(255,255,255,.2);
     backdrop-filter: blur(8px); color: #fff; font-size: 1.15rem;
     transition: background var(--t-fast), transform var(--t-fast);
 }
@@ -872,7 +971,7 @@ select option { background: var(--surface); color: var(--text); }
 .gallery-index {
     position: absolute; right: 12px; bottom: 12px;
     padding: 5px 11px; border-radius: var(--r-xs);
-    background: rgba(11,18,32,.6); color: #fff;
+    background: rgba(20,10,40,.6); color: #fff;
     font-size: .72rem; font-weight: 600;
     font-variant-numeric: tabular-nums; backdrop-filter: blur(8px);
 }
@@ -931,12 +1030,12 @@ select option { background: var(--surface); color: var(--text); }
 .channel:hover .go { color: var(--neon); }
 .ch-telegram { --ch: #229ED9; }
 .ch-facebook { --ch: #1877F2; }
-.ch-email    { --ch: #C8323F; }
-.ch-phone    { --ch: #0E7C4A; }
+.ch-email    { --ch: var(--danger); }
+.ch-phone    { --ch: var(--ok); }
 .ch-viber    { --ch: #7360F2; }
 
 /* Lightbox */
-.lightbox { position: fixed; inset: 0; z-index: 220; display: none; place-items: center; padding: 4vw; background: rgba(6,10,20,.94); backdrop-filter: blur(8px); animation: fade var(--t) both; }
+.lightbox { position: fixed; inset: 0; z-index: 220; display: none; place-items: center; padding: 4vw; background: rgba(10,6,20,.94); backdrop-filter: blur(8px); animation: fade var(--t) both; }
 .lightbox.open { display: grid; }
 .lightbox img { max-width: 100%; max-height: 88vh; border-radius: var(--r); box-shadow: var(--sh-3); transition: transform var(--t); }
 /* transform:rotate() is paint-only — it never touches layout, so the box
@@ -966,7 +1065,8 @@ select option { background: var(--surface); color: var(--text); }
 .lightbox .rotate { right: 68px; font-size: 1.15rem; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 /* ---------- 13. Footer --------------------------------------------------- */
-.site-footer { margin-top: 30px; border-top: 1px solid var(--line); background: var(--surface); }
+.site-footer { position: relative; margin-top: 30px; border-top: 1px solid var(--line); background: var(--surface); }
+.site-footer::before { content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 2px; background: var(--grad); }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 26px; padding-block: 36px 26px; }
 .footer-about p { color: var(--text-2); font-size: .86rem; max-width: 38ch; margin-top: 9px; }
 .footer-grid h4 { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-3); margin-bottom: 12px; font-weight: 700; }
@@ -1029,7 +1129,7 @@ select option { background: var(--surface); color: var(--text); }
 .avatar-upload { display: flex; align-items: center; gap: 14px; }
 .avatar-upload .preview {
     width: 68px; height: 68px; border-radius: 18px; flex-shrink: 0;
-    background: var(--neon-deep); color: #fff; display: grid; place-items: center;
+    background: var(--grad); color: #fff; display: grid; place-items: center;
     font-family: var(--font-display); font-weight: 700; font-size: 1.5rem;
     overflow: hidden; border: 1px solid var(--line);
 }
@@ -1054,7 +1154,7 @@ select option { background: var(--surface); color: var(--text); }
     display: none;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
     padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px));
-    background: rgba(244, 246, 250, .96); backdrop-filter: blur(14px);
+    background: var(--header-bg-solid); backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
 }
 .mtabbar a {
@@ -1066,10 +1166,10 @@ select option { background: var(--surface); color: var(--text); }
 .mtabbar a .ico svg { width: 17px; height: 17px; }
 .mtabbar a.active { color: var(--tab); }
 .mtabbar a.active .ico { color: var(--tab); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tab) 65%, transparent)); }
-.mtabbar a:nth-child(1) { --tab: #1856E8; }
-.mtabbar a:nth-child(2) { --tab: #7C5CFF; }
-.mtabbar a:nth-child(3) { --tab: #0FA7A0; }
-.mtabbar a:nth-child(4) { --tab: #E0961B; }
+.mtabbar a:nth-child(1) { --tab: var(--neon); }
+.mtabbar a:nth-child(2) { --tab: var(--pink); }
+.mtabbar a:nth-child(3) { --tab: var(--cyan); }
+.mtabbar a:nth-child(4) { --tab: var(--g-pubg); }
 
 /* ---------- 17. Responsive ----------------------------------------------- */
 @media (max-width: 980px) {
@@ -1098,6 +1198,9 @@ select option { background: var(--surface); color: var(--text); }
     .nav-links { display: none; }
     .brand-name span { display: none; }
     .lang-trigger { height: 32px; padding: 0 9px 0 8px; gap: 5px; }
+    .theme-toggle { width: 32px; height: 32px; }
+    .theme-toggle svg { width: 15px; height: 15px; }
+    .nav-tools { gap: 7px; }
     .lang-trigger .ico svg { width: 13px; height: 13px; }
     .lang-trigger .chev svg { width: 10px; height: 10px; }
     .lang-trigger .lang-cur { min-width: 20px; font-size: .72rem; }
@@ -1150,8 +1253,8 @@ select option { background: var(--surface); color: var(--text); }
        anyone used (the mobile tab bar already covers Browse/Sellers, and
        the header drawer covers the rest). */
     .site-footer {
-        background: linear-gradient(160deg, #12294B, #0A1830);
-        border-top: 1px solid rgba(255,255,255,.1);
+        background: var(--arcade);
+        border-top: 1px solid var(--arcade-line);
     }
     .footer-grid { grid-template-columns: 1fr; gap: 14px; padding-block: 22px 14px; }
     .footer-about .brand-name b { color: #fff; }
@@ -1161,8 +1264,9 @@ select option { background: var(--surface); color: var(--text); }
     /* Copyright left, tagline right — same one-row layout as desktop
        (the base .footer-bottom rule), just not forced into a stacked
        column here too. */
-    .footer-bottom { border-top-color: rgba(255,255,255,.1); color: #7C90B4; }
-    .footer-bottom span { color: #7C90B4; }
+    .footer-bottom { border-top-color: var(--arcade-line); color: var(--arcade-dim); }
+    .footer-bottom span { color: var(--arcade-dim); }
+    .footer-bottom b { color: #fff; }
     .toast-stack { left: 16px; right: 16px; bottom: calc(58px + env(safe-area-inset-bottom, 0px)); max-width: none; }
     /* Icon + number share the first line, label spans underneath — keeps
        each cell to two short lines in a ~110px-wide column. */

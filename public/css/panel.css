@@ -64,7 +64,7 @@ main.shell { padding-top: 20px; }
     text-align: center; line-height: 1.25;
     clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
 }
-.tab.active { background: var(--neon-deep); border-color: var(--neon-deep); color: #fff; }
+.tab.active { background: var(--grad); border-color: transparent; color: #fff; }
 
 .card-block { padding: 18px; border: 1px solid var(--line); background: var(--surface); }
 .card-block h3 { font-size: 1.05rem; color: var(--neon-deep); margin-bottom: 4px; }
@@ -145,7 +145,7 @@ main.shell { padding-top: 20px; }
 .shot-item .tag {
     position: absolute; left: 5px; bottom: 5px;
     padding: 2px 7px; border-radius: 5px;
-    background: var(--grad); color: #0a0a12;
+    background: var(--grad); color: #fff;
     font-size: .6rem; font-weight: 800; letter-spacing: .08em;
 }
 
@@ -179,7 +179,7 @@ main.shell { padding-top: 20px; }
 .status-chip[data-status="available"] { --chip: var(--ok); }
 .status-chip[data-status="reserved"]  { --chip: var(--warn); }
 .status-chip[data-status="sold"]      { --chip: var(--danger); }
-.status-chip:hover { border-color: var(--chip, var(--neon-deep)); color: var(--chip, var(--neon)); }
+.status-chip:hover { border-color: var(--chip, var(--neon)); color: var(--chip, var(--neon)); }
 .status-chip[aria-pressed="true"] {
     background: color-mix(in srgb, var(--chip, var(--neon)) 12%, transparent);
     border-color: var(--chip, var(--neon));
@@ -205,7 +205,7 @@ main.shell { padding-top: 20px; }
 .shot-item .tag {
     position: absolute; top: 4px; left: 4px;
     font-size: .6rem; font-weight: 700; letter-spacing: .12em;
-    background: var(--neon); color: #07080d;
+    background: var(--neon); color: #fff;
     padding: 2px 6px; border-radius: 4px;
 }
 

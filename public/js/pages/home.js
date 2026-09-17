@@ -332,14 +332,9 @@
             const data = await api('/api/sellers');
             // /api/sellers already sorts featured-first then by listing count
             // descending, so the top slice is naturally "most active sellers".
-            const rows = data.items || [];
-            $('#sellerGrid').innerHTML = rows.slice(0, 4).length
-                ? rows.slice(0, 4).map(window.UI.sellerCard).join('')
-                : emptyState('emptyTitle', 'emptyBody', '🛡️');
-            window.UI.paintSellerCards($('#sellerGrid'));
-            renderHeroHud(rows);
+            // The home page shows sellers in the hero panel only.
+            renderHeroHud(data.items || []);
         } catch {
-            $('#sellerGrid').innerHTML = '';
             renderHeroHud([]);
         }
     }

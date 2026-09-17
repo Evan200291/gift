@@ -577,11 +577,7 @@ main :is(section, div):has(> .shell > [data-ad="footer"]) { padding-bottom: 0; }
 .hero-visual { position: relative; }
 .top-sellers {
     position: relative; overflow: hidden;
-    border: 1px solid var(--arcade-line);
-    background:
-        radial-gradient(80% 120% at 100% 0%, rgba(124,92,255,.22), transparent 55%),
-        var(--arcade);
-    box-shadow: 0 0 0 1px rgba(165,123,255,.14) inset, 0 0 28px -14px var(--neon);
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1);
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
 }
 .top-sellers::before {
@@ -591,16 +587,15 @@ main :is(section, div):has(> .shell > [data-ad="footer"]) { padding-bottom: 0; }
 .top-sellers-head {
     position: relative; z-index: 1;
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    padding: 11px 14px; border-bottom: 1px solid var(--arcade-line);
+    padding: 7px 12px; border-bottom: 1px solid var(--line);
 }
 .top-sellers-title {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: .66rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--arcade-text);
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3);
 }
-.top-sellers-title::before { content: ''; width: 7px; height: 7px; background: var(--pink); box-shadow: 0 0 10px var(--pink); transform: rotate(45deg); }
-.top-sellers .view-all { color: #fff; }
-.top-sellers .view-all:hover { color: var(--neon-bright); }
-body.lang-mm .top-sellers-title { font-size: .74rem; letter-spacing: 0; }
+.top-sellers-title::before { content: ''; width: 6px; height: 6px; background: var(--pink); transform: rotate(45deg); }
+.top-sellers .view-all { font-size: .74rem; }
+body.lang-mm .top-sellers-title { font-size: .66rem; letter-spacing: 0; }
 /* Compact "View all ›" text link used for every section's see-more action —
    replaces the outlined buttons that dwarfed the headings next to them
    (worse in Myanmar, where .btn opts out of the MM text shrink). */
@@ -615,11 +610,11 @@ body.lang-mm .top-sellers-title { font-size: .74rem; letter-spacing: 0; }
 /* gap:1px over a line-coloured background draws the hairlines between cells.
    minmax(0,1fr) so a long seller name ellipsizes instead of widening the
    column (a bare 1fr track can't shrink below its content). */
-.top-sellers-grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--arcade-line); }
+.top-sellers-grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); }
 .ts-item {
     display: flex; align-items: center; gap: 10px; min-width: 0;
     --ts-c: var(--neon-bright);
-    position: relative; padding: 12px 14px; background: var(--arcade-solid); color: inherit;
+    position: relative; padding: 11px 13px; background: var(--surface); color: inherit;
     transition: background var(--t-fast);
 }
 /* One accent per seller, the same four colours as the mobile tab bar. */
@@ -627,23 +622,19 @@ body.lang-mm .top-sellers-title { font-size: .74rem; letter-spacing: 0; }
 .ts-item:nth-child(2) { --ts-c: #FF4FA8; }
 .ts-item:nth-child(3) { --ts-c: #19CAD9; }
 .ts-item:nth-child(4) { --ts-c: #FFB22E; }
-/* Same lit-tab treatment as the mobile tab bar: a glowing bar at the top of
-   the cell and its colour washing down from there. */
+/* The tab bar's glow, on a white cell: the accent washes down from the top
+   edge and lights the avatar, with no bar drawn. */
 .ts-item {
     background:
-        radial-gradient(90% 80% at 50% 0%, color-mix(in srgb, var(--ts-c) 38%, transparent), transparent 75%),
-        color-mix(in srgb, var(--ts-c) 14%, var(--arcade-solid));
+        radial-gradient(90% 80% at 50% 0%, color-mix(in srgb, var(--ts-c) 22%, transparent), transparent 75%),
+        var(--surface);
 }
-.ts-item::before {
-    content: ''; position: absolute; top: 0; left: 14px; width: 30px; height: 3px;
-    background: var(--ts-c); box-shadow: 0 0 12px 1px var(--ts-c);
-}
-.ts-item .ts-av { box-shadow: 0 0 14px -3px var(--ts-c); }
+.ts-item .ts-av { box-shadow: 0 0 14px -4px var(--ts-c); }
 .ts-item:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .ts-item:hover {
     background:
-        radial-gradient(90% 80% at 50% 0%, color-mix(in srgb, var(--ts-c) 55%, transparent), transparent 75%),
-        color-mix(in srgb, var(--ts-c) 22%, var(--arcade-solid));
+        radial-gradient(90% 80% at 50% 0%, color-mix(in srgb, var(--ts-c) 34%, transparent), transparent 75%),
+        var(--surface);
 }
 .ts-av {
     width: 34px; height: 34px; flex: none; overflow: hidden;
@@ -653,12 +644,12 @@ body.lang-mm .top-sellers-title { font-size: .74rem; letter-spacing: 0; }
 }
 .ts-av img { width: 100%; height: 100%; object-fit: cover; }
 .ts-info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.ts-name { display: flex; align-items: center; gap: 4px; min-width: 0; font-family: var(--font-display); font-weight: 600; font-size: .84rem; line-height: 1.2; color: #fff; }
+.ts-name { display: flex; align-items: center; gap: 4px; min-width: 0; font-family: var(--font-display); font-weight: 600; font-size: .82rem; line-height: 1.2; color: var(--neon-deep); }
 .ts-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .ts-name svg { flex: none; width: 13px; height: 13px; color: var(--ts-c); }
-.ts-meta { font-size: .72rem; color: var(--arcade-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ts-meta { font-size: .72rem; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ts-meta b { color: var(--ts-c); font-family: var(--font-mono); font-weight: 700; }
-.ts-empty { grid-column: 1 / -1; padding: 22px 14px; text-align: center; background: var(--arcade-solid); color: var(--arcade-dim); font-size: .84rem; }
+.ts-empty { grid-column: 1 / -1; padding: 22px 14px; text-align: center; background: var(--surface); color: var(--text-3); font-size: .84rem; }
 
 /* No heading here any more, so the section's own top padding would stack on
    the categories section's bottom padding right above it and read as a dead

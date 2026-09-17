@@ -96,7 +96,7 @@
             <div class="profile-cover" aria-hidden="true">
                 <span class="profile-cover-bars">${games.map((g) => `<i data-game="${esc(g)}"></i>`).join('')}</span>
             </div>
-            <div class="profile-body">
+            <div class="shell profile-body">
                 <div class="profile-top">
                     <span class="profile-av"><span class="profile-av-inner">${avatar}</span></span>
                     <div class="profile-id">
@@ -124,7 +124,6 @@
         </section>`;
 
         applyCoverFromAvatar(s.avatar);
-        $('#crumbName').textContent = name;
         document.title = `${name} — ${window.EX.site().brand || ''}`;
 
         $('#copyStore').addEventListener('click', async () => {

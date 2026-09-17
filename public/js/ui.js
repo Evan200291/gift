@@ -21,6 +21,7 @@
         { href: '/', key: 'navHome', match: (p) => p === '/' },
         { href: '/browse', key: 'navBrowse', match: (p) => p === '/browse' },
         { href: '/sellers', key: 'navSellers', match: (p) => p.startsWith('/sellers') || p.startsWith('/store') },
+        { href: '/guide', key: 'navGuide', match: (p) => p === '/guide' },
         { href: '/blog', key: 'navBlog', match: (p) => p.startsWith('/blog') },
         { href: '/advertise', key: 'navAdvertise', match: (p) => p === '/advertise' },
     ];
@@ -138,6 +139,7 @@
                 <div class="footer-list">
                     <a href="/browse" data-i18n="navBrowse">${esc(t('navBrowse'))}</a>
                     <a href="/sellers" data-i18n="navSellers">${esc(t('navSellers'))}</a>
+                    <a href="/guide" data-i18n="navGuide">${esc(t('navGuide'))}</a>
                     <a href="/blog" data-i18n="navBlog">${esc(t('navBlog'))}</a>
                 </div>
             </div>
@@ -385,6 +387,7 @@
         const brand = site().brand || 'EXABYTE';
         const template = document.documentElement.getAttribute('data-title') || '%s';
         document.title = template.replace('%s', brand);
+        if (window.EXLoader) window.EXLoader.done();
 
         document.addEventListener('langchange', () => {
             mountHeader();

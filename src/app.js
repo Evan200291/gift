@@ -43,6 +43,7 @@ const PAGES = [
     { test: (p) => p === '/blog', file: 'blog.html' },
     { test: (p) => p.startsWith('/blog/'), file: 'post.html' },
     { test: (p) => p === '/advertise', file: 'advertise.html' },
+    { test: (p) => p === '/guide', file: 'guide.html' },
     { test: (p) => p === '/seller' || p.startsWith('/seller/'), file: 'portal.html' },
 ];
 

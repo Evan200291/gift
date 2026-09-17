@@ -1,0 +1,213 @@
+/* =============================================================
+   pages/guide.js — user guide: buying, selling, safety, FAQ.
+
+   Content lives here in both languages (it is long-form, so it is
+   kept out of the short-string i18n table) and re-renders on
+   langchange. Sections: jump chips, then each section in order.
+   ============================================================= */
+(function () {
+    'use strict';
+
+    const { esc, getLang, site, $, $$ } = window.EX;
+
+    const I = {
+        search: '<path d="m20 20-3.5-3.5"/><circle cx="11" cy="11" r="7"/>',
+        shield: '<path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6z"/><path d="m9 12 2.2 2.2L15.5 10"/>',
+        chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',
+        key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3M14 9l2 2"/>',
+        user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
+        login: '<path d="M14 4h5v16h-5"/><path d="M10 8l4 4-4 4M14 12H3"/>',
+        plus: '<rect x="3.5" y="3.5" width="17" height="17"/><path d="M12 8v8M8 12h8"/>',
+        refresh: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20v-4h-4"/>',
+        badge: '<path d="m12 2 2.4 2 3.2-.3 1 3 2.6 1.9-1.2 3 1.2 3-2.6 1.9-1 3-3.2-.3L12 22l-2.4-2-3.2.3-1-3-2.6-1.9 1.2-3-1.2-3 2.6-1.9 1-3 3.2.3z"/><path d="m9 12 2 2 4-4"/>',
+        image: '<rect x="3" y="4" width="18" height="16"/><circle cx="9" cy="10" r="2"/><path d="m21 17-5-5-9 8"/>',
+        lock: '<rect x="4" y="10" width="16" height="11"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+        alert: '<path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18v.5"/>',
+        cash: '<rect x="2.5" y="6" width="19" height="12"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9v6M18 9v6"/>',
+    };
+    const icon = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[name]}</svg>`;
+
+    const CONTENT = {
+        en: {
+            title: 'How EXABYTE works',
+            sub: 'Everything you need to buy or sell a game account here — step by step, plus how to stay safe.',
+            jump: { buy: 'Buying', sell: 'Selling', safety: 'Stay safe', faq: 'FAQ' },
+            buy: {
+                title: 'Buying an account',
+                lead: 'No sign-up needed. You deal with the seller directly.',
+                steps: [
+                    ['search', 'Find an account', 'Pick a game on the home page or use Browse. Filter by price and search by rank, hero or player name.'],
+                    ['image', 'Check the details', 'Open the listing and look through every screenshot, the price and the description. Note the listing code.'],
+                    ['chat', 'Message the seller', 'Use the Telegram, Viber, Facebook or phone button on the listing. Mention the listing code so they know which account.'],
+                    ['key', 'Pay and take over', 'Agree on payment with the seller, receive the login, then change the password, email and linked accounts straight away.'],
+                ],
+                cta: ['Browse accounts', '/browse'],
+            },
+            sell: {
+                title: 'Selling on EXABYTE',
+                lead: 'Listings come from subscribed resellers, so buyers know who they are dealing with.',
+                steps: [
+                    ['user', 'Get a seller account', 'Message us on Telegram to open a reseller account and choose a plan.'],
+                    ['login', 'Sign in to the portal', 'Use Seller login with the username and password we send you, then fill in your profile and contact channels.'],
+                    ['plus', 'Post a listing', 'Tap New listing, choose the game, add a clear title, price, description and up to 6 screenshots.'],
+                    ['refresh', 'Keep it up to date', 'Mark accounts Reserved or Sold as soon as they are. Sold accounts leave your public store automatically.'],
+                ],
+                cta: ['Seller login', '/seller'],
+            },
+            safety: {
+                title: 'Stay safe',
+                tips: [
+                    ['badge', 'Look for the verified badge', 'Verified sellers have been checked by our team. Their badge shows next to their name everywhere on the site.'],
+                    ['image', 'Ask for live proof', 'Before paying, ask the seller for a fresh screenshot or short video showing the account and today’s date.'],
+                    ['lock', 'Secure the account at once', 'Change the password, recovery email and phone, and unlink old social logins as soon as you receive it.'],
+                    ['cash', 'Keep your payment record', 'Save the chat and payment receipt until you have fully taken over the account.'],
+                    ['alert', 'Never share codes', 'Nobody from EXABYTE will ask for your OTP, verification code or password. Report anyone who does.'],
+                ],
+            },
+            faq: {
+                title: 'Questions',
+                items: [
+                    ['Do I need an account to buy?', 'No. Buyers never sign up — you contact the seller directly from the listing.'],
+                    ['Does EXABYTE handle payment?', 'No. Payment is agreed between you and the seller. Follow the safety tips above.'],
+                    ['Which games are listed?', 'eFootball, Mobile Legends: Bang Bang, PUBG Mobile and Free Fire.'],
+                    ['What does “Reserved” mean?', 'Another buyer is already arranging to buy it. You can still ask the seller to be next in line.'],
+                    ['How do I report a problem?', 'Message us on Telegram with the listing code or the seller’s store link.'],
+                ],
+            },
+            contact: 'Message us on Telegram',
+        },
+        mm: {
+            title: 'EXABYTE အသုံးပြုနည်း',
+            sub: 'ဂိမ်းအကောင့် ဝယ်ရန် သို့မဟုတ် ရောင်းရန် လိုအပ်သမျှကို အဆင့်လိုက်နှင့် ဘေးကင်းစေမည့် အကြံပြုချက်များ။',
+            jump: { buy: 'ဝယ်ယူခြင်း', sell: 'ရောင်းချခြင်း', safety: 'ဘေးကင်းရေး', faq: 'မေးခွန်းများ' },
+            buy: {
+                title: 'အကောင့် ဝယ်ယူခြင်း',
+                lead: 'အကောင့်ဖွင့်ရန် မလိုပါ။ ရောင်းသူနှင့် တိုက်ရိုက် ဆက်သွယ်ပါ။',
+                steps: [
+                    ['search', 'အကောင့်ရှာပါ', 'ပင်မစာမျက်နှာတွင် ဂိမ်းရွေးပါ သို့မဟုတ် Browse ကို သုံးပါ။ ဈေးနှုန်း၊ rank၊ hero သို့မဟုတ် player အမည်ဖြင့် ရှာနိုင်ပါသည်။'],
+                    ['image', 'အသေးစိတ် စစ်ဆေးပါ', 'Screenshot များ၊ ဈေးနှုန်းနှင့် ဖော်ပြချက်ကို သေချာကြည့်ပါ။ Listing code ကို မှတ်ထားပါ။'],
+                    ['chat', 'ရောင်းသူကို ဆက်သွယ်ပါ', 'Listing ပေါ်ရှိ Telegram၊ Viber၊ Facebook သို့မဟုတ် ဖုန်းခလုတ်ကို နှိပ်ပြီး listing code ကို ပြောပါ။'],
+                    ['key', 'ငွေပေးပြီး အကောင့်ယူပါ', 'ငွေပေးချေမှုကို ရောင်းသူနှင့် ညှိပါ။ Login ရပြီးတာနဲ့ password၊ email နှင့် ချိတ်ထားသော အကောင့်များကို ချက်ချင်း ပြောင်းပါ။'],
+                ],
+                cta: ['အကောင့်များ ကြည့်ရန်', '/browse'],
+            },
+            sell: {
+                title: 'EXABYTE တွင် ရောင်းချခြင်း',
+                lead: 'Listing များကို subscription ရှိသော ရောင်းသူများသာ တင်နိုင်သဖြင့် ဝယ်သူများ ယုံကြည်စိတ်ချနိုင်ပါသည်။',
+                steps: [
+                    ['user', 'ရောင်းသူအကောင့် ရယူပါ', 'Reseller အကောင့်ဖွင့်ရန်နှင့် plan ရွေးရန် Telegram မှ ဆက်သွယ်ပါ။'],
+                    ['login', 'Portal သို့ ဝင်ပါ', 'ပေးပို့ထားသော username နှင့် password ဖြင့် Seller login ဝင်ပြီး profile နှင့် ဆက်သွယ်ရန် လမ်းကြောင်းများ ဖြည့်ပါ။'],
+                    ['plus', 'Listing တင်ပါ', 'New listing ကိုနှိပ်၍ ဂိမ်းရွေးပါ။ ခေါင်းစဉ်၊ ဈေးနှုန်း၊ ဖော်ပြချက်နှင့် screenshot ၆ ပုံအထိ ထည့်ပါ။'],
+                    ['refresh', 'အခြေအနေ update လုပ်ပါ', 'Reserved သို့မဟုတ် Sold ဖြစ်သည်နှင့် ချက်ချင်း ပြောင်းပါ။ Sold အကောင့်များ သင့်စတိုးမှ အလိုအလျောက် ဖယ်ရှားပါမည်။'],
+                ],
+                cta: ['ရောင်းသူ ဝင်ရန်', '/seller'],
+            },
+            safety: {
+                title: 'ဘေးကင်းရေး',
+                tips: [
+                    ['badge', 'Verified တံဆိပ်ကို ကြည့်ပါ', 'Verified ရောင်းသူများကို ကျွန်ုပ်တို့အဖွဲ့က စစ်ဆေးပြီးဖြစ်ပြီး အမည်ဘေးတွင် တံဆိပ် ပြထားပါသည်။'],
+                    ['image', 'လက်ရှိ အထောက်အထား တောင်းပါ', 'ငွေမပေးမီ ယနေ့ရက်စွဲပါသော screenshot သို့မဟုတ် video တိုကို တောင်းပါ။'],
+                    ['lock', 'အကောင့်ကို ချက်ချင်း လုံခြုံအောင်လုပ်ပါ', 'Password၊ recovery email နှင့် ဖုန်းနံပါတ်ကို ပြောင်းပြီး အဟောင်း social login များကို ဖြုတ်ပါ။'],
+                    ['cash', 'ငွေပေးချေမှု မှတ်တမ်း သိမ်းပါ', 'အကောင့်ကို အပြည့်အဝ ရယူပြီးသည်အထိ chat နှင့် ငွေလွှဲပြေစာကို သိမ်းထားပါ။'],
+                    ['alert', 'Code များ မမျှဝေပါနှင့်', 'EXABYTE မှ OTP၊ verification code သို့မဟုတ် password ကို ဘယ်တော့မှ မတောင်းပါ။ တောင်းသူကို report လုပ်ပါ။'],
+                ],
+            },
+            faq: {
+                title: 'မေးလေ့ရှိသော မေးခွန်းများ',
+                items: [
+                    ['ဝယ်ရန် အကောင့်လိုပါသလား။', 'မလိုပါ။ ဝယ်သူများ စာရင်းသွင်းရန် မလိုဘဲ listing မှ ရောင်းသူကို တိုက်ရိုက် ဆက်သွယ်နိုင်ပါသည်။'],
+                    ['EXABYTE က ငွေကိုင်ပေးပါသလား။', 'မကိုင်ပါ။ ငွေပေးချေမှုကို သင်နှင့် ရောင်းသူ ညှိရပါမည်။ အထက်ပါ ဘေးကင်းရေး အကြံပြုချက်များကို လိုက်နာပါ။'],
+                    ['ဘယ်ဂိမ်းတွေ ရှိပါသလဲ။', 'eFootball၊ Mobile Legends: Bang Bang၊ PUBG Mobile နှင့် Free Fire။'],
+                    ['“Reserved” ဆိုတာ ဘာလဲ။', 'အခြားဝယ်သူတစ်ဦး ဝယ်ရန် ညှိနေဆဲဖြစ်သည်။ နောက်တစ်ယောက်အဖြစ် ရောင်းသူကို မေးနိုင်ပါသည်။'],
+                    ['ပြဿနာကို ဘယ်လို report လုပ်ရမလဲ။', 'Listing code သို့မဟုတ် ရောင်းသူ၏ စတိုးလင့်ခ်နှင့်အတူ Telegram မှ ဆက်သွယ်ပါ။'],
+                ],
+            },
+            contact: 'Telegram မှ ဆက်သွယ်ရန်',
+        },
+    };
+
+    function telegramHref() {
+        const raw = String(site().adsContact || '').trim();
+        if (!raw) return '';
+        if (/^https?:\/\//i.test(raw)) return raw;
+        const clean = raw.replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, '');
+        return clean ? `https://t.me/${clean}` : '';
+    }
+
+    function steps(list) {
+        return `<ol class="guide-steps">${list.map(([ic, title, body], i) => `
+            <li class="guide-step">
+                <span class="guide-step-n">${i + 1}</span>
+                <span class="guide-step-ico">${icon(ic)}</span>
+                <b>${esc(title)}</b>
+                <p>${esc(body)}</p>
+            </li>`).join('')}</ol>`;
+    }
+
+    function render() {
+        const c = CONTENT[getLang()] || CONTENT.en;
+        const tg = telegramHref();
+        const tgBtn = tg
+            ? `<a class="btn btn-outline" href="${esc(tg)}" target="_blank" rel="noopener noreferrer">${window.EX.ICONS.telegram} ${esc(c.contact)}</a>`
+            : '';
+
+        $('#guideRoot').innerHTML = `
+        <div class="guide-hero">
+            <div class="shell">
+                <h1>${esc(c.title)}</h1>
+                <p>${esc(c.sub)}</p>
+                <nav class="guide-jump" aria-label="${esc(c.title)}">
+                    ${Object.entries(c.jump).map(([id, label]) => `<a href="#guide-${id}" data-tone="${id}">${esc(label)}</a>`).join('')}
+                </nav>
+            </div>
+        </div>
+
+        <section class="section-sm guide-section" id="guide-buy" data-tone="buy">
+            <div class="shell">
+                <div class="guide-head"><h2>${esc(c.buy.title)}</h2><p>${esc(c.buy.lead)}</p></div>
+                ${steps(c.buy.steps)}
+                <div class="guide-actions"><a class="btn btn-primary" href="${c.buy.cta[1]}">${esc(c.buy.cta[0])}</a></div>
+            </div>
+        </section>
+
+        <section class="section-sm guide-section" id="guide-sell" data-tone="sell">
+            <div class="shell">
+                <div class="guide-head"><h2>${esc(c.sell.title)}</h2><p>${esc(c.sell.lead)}</p></div>
+                ${steps(c.sell.steps)}
+                <div class="guide-actions"><a class="btn btn-primary" href="${c.sell.cta[1]}">${esc(c.sell.cta[0])}</a>${tgBtn}</div>
+            </div>
+        </section>
+
+        <section class="section-sm guide-section" id="guide-safety" data-tone="safety">
+            <div class="shell">
+                <div class="guide-head"><h2>${esc(c.safety.title)}</h2></div>
+                <div class="guide-tips">${c.safety.tips.map(([ic, title, body]) => `
+                    <div class="guide-tip"><span class="guide-tip-ico">${icon(ic)}</span><div><b>${esc(title)}</b><p>${esc(body)}</p></div></div>`).join('')}
+                </div>
+            </div>
+        </section>
+
+        <section class="section-sm guide-section" id="guide-faq" data-tone="faq">
+            <div class="shell">
+                <div class="guide-head"><h2>${esc(c.faq.title)}</h2></div>
+                <div class="guide-faq">${c.faq.items.map(([q, a], i) => `
+                    <details${i === 0 ? ' open' : ''}><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
+                </div>
+                ${tgBtn ? `<div class="guide-actions">${tgBtn}</div>` : ''}
+            </div>
+        </section>`;
+
+        $$('.guide-jump a').forEach((a) => a.addEventListener('click', (e) => {
+            const target = document.querySelector(a.getAttribute('href'));
+            if (!target) return;
+            e.preventDefault();
+            target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        }));
+    }
+
+    (async function boot() {
+        await window.UI.boot();
+        render();
+        document.addEventListener('langchange', render);
+    })();
+})();

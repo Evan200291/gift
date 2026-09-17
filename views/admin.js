@@ -1521,6 +1521,7 @@
         bindTabs();
 
         if (EX.loadSite) { try { await EX.loadSite(); } catch { /* site defaults are fine */ } }
+        if (window.EXLoader) window.EXLoader.done();
         paintBrand();
 
         // Try to skip the login screen if a valid token is already stored.

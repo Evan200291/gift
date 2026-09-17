@@ -43,6 +43,7 @@
        ============================================================= */
     async function boot() {
         try { await loadSite(); } catch { /* site defaults are fine */ }
+        if (window.EXLoader) window.EXLoader.done();
 
         if (window.UI && window.UI.loadAds) { try { await window.UI.loadAds(); } catch { /* ads are optional */ } }
         if (window.UI && window.UI.mountHeader) window.UI.mountHeader();

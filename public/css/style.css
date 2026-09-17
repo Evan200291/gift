@@ -252,6 +252,9 @@ body.lang-mm input[data-i18n-ph] {
    30px margin-top, so pairing this with .section-sm's 22px+22px stacked on
    top of that read as a big dead gap above and below the banner. */
 .ad-footer-section { padding-block: 22px 0; }
+/* A banner between two sections only needs one section's worth of space
+   above it — the section before it already pads its own bottom. */
+section.section-sm.ad-inline-section { padding-top: 0; }
 /* Any wrapper holding the footer banner is the last block before the footer: no bottom padding. */
 main :is(section, div):has(> [data-ad="footer"]),
 main :is(section, div):has(> .shell > [data-ad="footer"]) { padding-bottom: 0; }
@@ -619,13 +622,29 @@ body.lang-mm .top-sellers-title { font-size: .74rem; letter-spacing: 0; }
     position: relative; padding: 12px 14px; background: var(--arcade-solid); color: inherit;
     transition: background var(--t-fast);
 }
-/* A different accent per seller so the list is not four identical rows. */
-.ts-item:nth-child(2) { --ts-c: #FF5FB0; }
-.ts-item:nth-child(3) { --ts-c: #3EE0EE; }
-.ts-item:nth-child(4) { --ts-c: #FFC44D; }
-.ts-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--ts-c); box-shadow: 0 0 12px -2px var(--ts-c); }
+/* One accent per seller, the same four colours as the mobile tab bar. */
+.ts-item:nth-child(1) { --ts-c: #9A6BFF; }
+.ts-item:nth-child(2) { --ts-c: #FF4FA8; }
+.ts-item:nth-child(3) { --ts-c: #19CAD9; }
+.ts-item:nth-child(4) { --ts-c: #FFB22E; }
+/* Same lit-tab treatment as the mobile tab bar: a glowing bar at the top of
+   the cell and its colour washing down from there. */
+.ts-item {
+    background:
+        radial-gradient(90% 80% at 50% 0%, color-mix(in srgb, var(--ts-c) 38%, transparent), transparent 75%),
+        color-mix(in srgb, var(--ts-c) 14%, var(--arcade-solid));
+}
+.ts-item::before {
+    content: ''; position: absolute; top: 0; left: 14px; width: 30px; height: 3px;
+    background: var(--ts-c); box-shadow: 0 0 12px 1px var(--ts-c);
+}
+.ts-item .ts-av { box-shadow: 0 0 14px -3px var(--ts-c); }
 .ts-item:last-child:nth-child(odd) { grid-column: 1 / -1; }
-.ts-item:hover { background: color-mix(in srgb, var(--ts-c) 22%, var(--arcade-solid)); }
+.ts-item:hover {
+    background:
+        radial-gradient(90% 80% at 50% 0%, color-mix(in srgb, var(--ts-c) 55%, transparent), transparent 75%),
+        color-mix(in srgb, var(--ts-c) 22%, var(--arcade-solid));
+}
 .ts-av {
     width: 34px; height: 34px; flex: none; overflow: hidden;
     display: grid; place-items: center;

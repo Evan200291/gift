@@ -71,10 +71,15 @@
 
         const cards = items.map((l) => window.UI.listingCard(l));
         // Slot the in-grid advertisement in after the first row so it reads as
-        // part of the catalogue rather than an interruption.
+        // part of the catalogue rather than an interruption. It now spans the
+        // full grid row (style.css `.grid > [data-ad]`), so use the same
+        // "wide" 8:1 banner shape as the page's other ad slots (leaderboard,
+        // footer) instead of the 16:9 "card" shape sized for a single column
+        // — at full width that used to render much taller than every other
+        // ad on the page.
         if (cards.length >= 4) {
             cards.splice(Math.min(4, cards.length), 0,
-                '<div data-ad="home-inline" data-ad-variant="card"></div>');
+                '<div data-ad="home-inline" data-ad-variant="wide"></div>');
         }
         grid.innerHTML = cards.join('');
         window.UI.wireCards(grid);

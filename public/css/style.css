@@ -942,6 +942,10 @@ select option { background: var(--surface); color: var(--text); }
     }
     .stat-chip b { font-size: 1.1rem; }
     .stat-chip span { font-size: .58rem; letter-spacing: .03em; white-space: normal; line-height: 1.25; }
+    /* At the compact 3-across width, the text stack below (tags + title +
+       seller row) ran taller than the 16:9 photo above it, so the image read
+       as an afterthought rather than the focal point of the card. */
+    .card-media { aspect-ratio: 1 / 1; }
     .card-body { padding: 8px 8px 9px; gap: 6px; }
     .card-title { font-size: .74rem; }
     .card-title-mm { font-size: .74rem; }
@@ -949,7 +953,14 @@ select option { background: var(--surface); color: var(--text); }
     .media-bottom { bottom: 8px; left: 8px; right: 8px; }
     .media-top { left: 8px; right: 8px; top: 8px; }
     .pill { font-size: .56rem; padding: 3px 7px; }
-    .card-tags { gap: 4px; }
+    .card-tags { gap: 3px; flex-wrap: nowrap; }
+    /* At 3-across mobile widths, the game pill ("eFootball") and the status
+       pill ("AVAILABLE") together no longer fit the card body at the base
+       .pill size — the status dot, letter-spacing and uppercase transform ate
+       space they didn't have, so they wrapped onto two lines (or truncated)
+       instead of sitting side by side in a row as designed. */
+    .card-tags .pill { font-size: .5rem; padding: 2px 5px; gap: 0; letter-spacing: 0; text-transform: none; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .card-tags .pill .dot { display: none; }
     .card-seller { font-size: .66rem; flex: 1 1 auto; }
     .card-foot { padding-top: 7px; }
 

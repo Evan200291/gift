@@ -46,6 +46,12 @@
     --arcade-line:   rgba(190,160,255,.22);
     --arcade-text:   #ECE4FF;
     --arcade-dim:    #A99BD0;
+    /* The compact mobile footer follows the theme instead of being dark always. */
+    --footer-bg:     var(--surface);
+    --footer-line:   var(--line);
+    --footer-ink:    var(--ink);
+    --footer-dim:    var(--text-3);
+    --footer-div:    var(--line-strong);
     --header-bg:     rgba(246,244,252,.88);
     --header-bg-solid: rgba(246,244,252,.97);
     --violet:        #7C5CFF;
@@ -97,6 +103,8 @@
         --neon-soft: rgba(156,107,255,.24); --neon-glow: rgba(156,107,255,.45); --neon-faint: rgba(156,107,255,.12);
         --grad-soft: rgba(156,107,255,.2);
         --arcade: linear-gradient(150deg, #24133F 0%, #120A24 100%); --arcade-solid: #1A0F33;
+        --footer-bg: var(--arcade); --footer-line: var(--arcade-line); --footer-ink: #fff;
+        --footer-dim: var(--arcade-dim); --footer-div: rgba(255,255,255,.22);
         --header-bg: rgba(13,10,23,.86); --header-bg-solid: rgba(13,10,23,.97);
         --violet-soft: #2A2050;
         --ok: #3DD68C; --warn: #F5B73B; --danger: #FF6B81;
@@ -115,6 +123,8 @@
     --neon-soft: rgba(156,107,255,.24); --neon-glow: rgba(156,107,255,.45); --neon-faint: rgba(156,107,255,.12);
     --grad-soft: rgba(156,107,255,.2);
     --arcade: linear-gradient(150deg, #24133F 0%, #120A24 100%); --arcade-solid: #1A0F33;
+    --footer-bg: var(--arcade); --footer-line: var(--arcade-line); --footer-ink: #fff;
+    --footer-dim: var(--arcade-dim); --footer-div: rgba(255,255,255,.22);
     --header-bg: rgba(13,10,23,.86); --header-bg-solid: rgba(13,10,23,.97);
     --violet-soft: #2A2050;
     --ok: #3DD68C; --warn: #F5B73B; --danger: #FF6B81;
@@ -1427,20 +1437,20 @@ body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
        the header drawer covers the rest). */
     .site-footer {
         margin-top: 16px;
-        background: var(--arcade);
-        border-top: 1px solid var(--arcade-line);
+        background: var(--footer-bg);
+        border-top: 1px solid var(--footer-line);
     }
     .footer-grid { grid-template-columns: 1fr; gap: 14px; padding-block: 22px 14px; }
-    .footer-about .brand-name b { color: #fff; }
-    .footer-about .brand-div { background: rgba(255,255,255,.22); }
+    .footer-about .brand-name b { color: var(--footer-ink); }
+    .footer-about .brand-div { background: var(--footer-div); }
     .footer-about p { display: none; }
     .footer-grid > div:not(.footer-about) { display: none; }
     /* Copyright left, tagline right — same one-row layout as desktop
        (the base .footer-bottom rule), just not forced into a stacked
        column here too. */
-    .footer-bottom { border-top-color: var(--arcade-line); color: var(--arcade-dim); }
-    .footer-bottom span { color: var(--arcade-dim); }
-    .footer-bottom b { color: #fff; }
+    .footer-bottom { border-top-color: var(--footer-line); color: var(--footer-dim); }
+    .footer-bottom span { color: var(--footer-dim); }
+    .footer-bottom b { color: var(--footer-ink); }
     .toast-stack { left: 16px; right: 16px; bottom: calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom, 0px)); max-width: none; }
     /* Icon + number share the first line, label spans underneath — keeps
        each cell to two short lines in a ~110px-wide column. */

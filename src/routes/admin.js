@@ -585,6 +585,29 @@ router.put('/ads/:slot', images.uploader.single('image'), wrap(async (req, res) 
  * ================================================================== */
 const ADMIN_PATH_KEY = 'adminPath';
 
+/* ================================================================== *
+ * Suggestions from the guide page
+ * ================================================================== */
+router.get('/suggestions', (req, res) => {
+    const items = store.readSuggestions();
+    res.json({ items, total: items.length, unread: items.filter((s) => !s.read).length });
+});
+
+router.put('/suggestions/read', (req, res) => {
+    const list = store.readSuggestions();
+    list.forEach((s) => { s.read = true; });
+    store.writeSuggestions(list);
+    res.json({ ok: true });
+});
+
+router.delete('/suggestions/:id', (req, res) => {
+    const list = store.readSuggestions();
+    const next = list.filter((s) => s.id !== req.params.id);
+    if (next.length === list.length) return res.status(404).json({ error: 'Not found' });
+    store.writeSuggestions(next);
+    return res.json({ ok: true });
+});
+
 router.get('/settings', (req, res) => {
     res.json({
         ...store.readSettings(),

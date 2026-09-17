@@ -159,8 +159,109 @@
         listings: () => Listings.load(),
         sellers: () => Sellers.load(),
         posts: () => Posts.load(),
+        ideas: () => Ideas.load(),
         store: () => Store.load(),
         security: () => Security.load(),
+    };
+
+    /* =============================================================
+       Suggestions tab — messages from the guide page's suggestion box
+       ============================================================= */
+    const IDEA_TOPICS = { feature: 'New feature', game: 'Add a game', payment: 'Payments', problem: 'Problem', other: 'Other' };
+
+    const Ideas = {
+        items: [],
+
+        async load() {
+            Ideas.bind();
+            const host = $('#ideaRows');
+            host.innerHTML = '<div class="rowcard" style="grid-template-columns:1fr;"><div class="info" style="padding:18px;">Loading…</div></div>';
+            try {
+                const data = await api('/api/admin/suggestions');
+                Ideas.items = data.items || [];
+                Ideas.setCount(data.unread || 0);
+                Ideas.render();
+            } catch (err) {
+                host.innerHTML = '<div class="rowcard" style="grid-template-columns:1fr;"><div class="info" style="padding:24px;color:var(--danger);">' + esc(err.message || 'Load failed') + '</div></div>';
+            }
+        },
+
+        /** Unread badge on the tab; fetched once after login too. */
+        async refreshCount() {
+            try {
+                const data = await api('/api/admin/suggestions');
+                Ideas.setCount(data.unread || 0);
+            } catch { /* badge is optional */ }
+        },
+
+        setCount(n) {
+            const badge = $('#ideasCount');
+            if (!badge) return;
+            badge.hidden = !n;
+            badge.textContent = String(n);
+        },
+
+        render() {
+            const host = $('#ideaRows');
+            const topic = $('#ideaTopic').value;
+            const rows = Ideas.items.filter((i) => !topic || i.topic === topic);
+            if (!rows.length) {
+                host.innerHTML = '<div class="rowcard" style="grid-template-columns:1fr;"><div class="info" style="text-align:center;padding:32px;color:var(--text-3);">No suggestions yet. They arrive from the box on the Guide page.</div></div>';
+                return;
+            }
+            host.innerHTML = rows.map((i) => {
+                const from = [i.name, i.contact].filter(Boolean).map(esc).join(' · ');
+                return '<article class="idea-card' + (i.read ? '' : ' is-unread') + '" data-id="' + esc(i.id) + '" data-topic="' + esc(i.topic) + '">'
+                    + '<div class="idea-head">'
+                    +   '<span class="idea-topic">' + esc(IDEA_TOPICS[i.topic] || 'Other') + '</span>'
+                    +   (i.read ? '' : '<span class="idea-new">NEW</span>')
+                    +   '<span>' + esc(shortDate(i.createdAt)) + '</span>'
+                    +   '<span>' + (i.lang === 'mm' ? 'Myanmar' : 'English') + '</span>'
+                    +   '<button type="button" class="btn btn-ghost btn-sm idea-del" data-act="del">Delete</button>'
+                    + '</div>'
+                    + '<div class="idea-msg">' + esc(i.message) + '</div>'
+                    + (from ? '<div class="idea-from">From: ' + from + '</div>' : '')
+                    + '</article>';
+            }).join('');
+
+            $$('.idea-card [data-act="del"]', host).forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                    // Two taps: the first arms the button, the second deletes.
+                    if (btn.dataset.armed !== '1') {
+                        btn.dataset.armed = '1';
+                        btn.textContent = 'Tap again to delete';
+                        setTimeout(() => { btn.dataset.armed = ''; btn.textContent = 'Delete'; }, 3000);
+                        return;
+                    }
+                    const id = btn.closest('.idea-card').dataset.id;
+                    try {
+                        await api('/api/admin/suggestions/' + encodeURIComponent(id), { method: 'DELETE' });
+                        Ideas.items = Ideas.items.filter((i) => i.id !== id);
+                        Ideas.setCount(Ideas.items.filter((i) => !i.read).length);
+                        Ideas.render();
+                        toast('Suggestion deleted', 'success');
+                    } catch (err) {
+                        toast(err.message || 'Delete failed', 'error');
+                    }
+                });
+            });
+        },
+
+        bind() {
+            if (Ideas._bound) return;
+            Ideas._bound = true;
+            $('#ideaTopic').addEventListener('change', () => Ideas.render());
+            $('#ideasReadAll').addEventListener('click', async () => {
+                try {
+                    await api('/api/admin/suggestions/read', { method: 'PUT' });
+                    Ideas.items.forEach((i) => { i.read = true; });
+                    Ideas.setCount(0);
+                    Ideas.render();
+                } catch (err) {
+                    toast(err.message || 'Could not update', 'error');
+                }
+            });
+        },
     };
     /* =============================================================
        Listings tab
@@ -1514,6 +1615,7 @@
         Listings.bind();
         Sellers.bind();
         Posts.bind();
+        Ideas.refreshCount();
         await Listings.load(); // listings is the default tab
     }
 

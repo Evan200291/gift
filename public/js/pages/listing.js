@@ -6,8 +6,8 @@
 
     const {
         t, esc, api, money, statusPill, ICONS, gameName, fieldLabel,
-        channelsFrom, channelList, toast, copyText, getLang, field, productCode,
-        $, $$, monthYear,
+        channelsFrom, channelList, toast, copyText, productCode,
+        $, $$,
     } = window.EX;
 
     let listing = null;
@@ -90,21 +90,17 @@
         </div>`;
     }
 
+    /** Sits right under the title in the buy panel — descriptions are short. */
     function description() {
+        const both = listing.description_en && listing.description_mm;
+        const block = (body, tag, mm) => `<div class="buy-desc-block">
+                ${both ? `<span class="lang-tag">${tag}</span>` : ''}
+                <div class="prose${mm ? ' mm' : ''}"${mm ? ' lang="my"' : ''}>${esc(body)}</div>
+            </div>`;
         const blocks = [];
-        if (listing.description_en) {
-            blocks.push(`<div class="panel">
-                <h3>${esc(t('description'))}<span class="lang-tag">EN</span></h3>
-                <div class="prose">${esc(listing.description_en)}</div>
-            </div>`);
-        }
-        if (listing.description_mm) {
-            blocks.push(`<div class="panel">
-                <h3>${esc(t('description'))}<span class="lang-tag">MM</span></h3>
-                <div class="prose mm" lang="my">${esc(listing.description_mm)}</div>
-            </div>`);
-        }
-        return blocks.join('');
+        if (listing.description_en) blocks.push(block(listing.description_en, 'EN', false));
+        if (listing.description_mm) blocks.push(block(listing.description_mm, 'MM', true));
+        return blocks.length ? `<div class="buy-desc">${blocks.join('')}</div>` : '';
     }
 
     function statusNotice() {
@@ -122,24 +118,21 @@
         if (!seller) return '';
 
         const channels = channelsFrom(seller.contacts);
-        const bio = field(seller, 'bio');
 
-        return `<div class="panel">
+        return `<div class="panel seller-panel">
             <h3>${esc(t('soldBy'))}</h3>
             <a class="seller-card" href="/store/${esc(seller.username)}"${seller.avatar ? ` data-avatar="${esc(seller.avatar)}"` : ''}>
                 <span class="avatar lg">${seller.avatar ? `<img src="${esc(seller.avatar)}" alt="">` : esc((seller.displayName || '?').charAt(0).toUpperCase())}</span>
                 <span class="seller-meta">
                     <b>${esc(seller.displayName)}${seller.verified ? `<span class="verified">${ICONS.verified}</span>` : ''}</b>
-                    <span class="dim">${esc(t('memberSince'))} ${esc(monthYear(seller.since))}</span>
                 </span>
+                <span class="seller-count"><b>${seller.listingCount || 0}</b><span>${esc(t('sellerListings'))}</span></span>
             </a>
-            ${bio ? `<p class="muted mt-16" style="font-size:.86rem;">${esc(bio)}</p>` : ''}
-
-            <h3 class="mt-24">${esc(t('contactSeller'))}</h3>
-            <p class="dim" style="font-size:.83rem;margin-bottom:12px;">${esc(t('contactSellerSub'))}</p>
-            ${channels.length
-                ? channelList(channels)
-                : `<p class="dim">${esc(t('sellerNoContact'))}</p>`}
+            <div class="mt-16">
+                ${channels.length
+                    ? channelList(channels)
+                    : `<p class="dim">${esc(t('sellerNoContact'))}</p>`}
+            </div>
             ${listing.contact_note
                 ? `<div class="notice info mt-16">${esc(listing.contact_note)}</div>` : ''}
         </div>`;
@@ -159,6 +152,7 @@
 
             ${listing.title_en ? `<h1 class="detail-title display">${esc(listing.title_en)}</h1>` : ''}
             ${listing.title_mm ? `<div class="detail-title-mm" lang="my">${esc(listing.title_mm)}</div>` : ''}
+            ${description()}
 
             <div class="price-block">
                 <span class="amount">${esc(money(listing.price))}</span>
@@ -177,7 +171,6 @@
                 ${gallery()}
                 ${specs()}
                 ${highlights()}
-                ${description()}
             </div>
             <aside class="detail-side">
                 ${buyPanel()}

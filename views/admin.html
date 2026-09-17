@@ -86,6 +86,21 @@
 .tab:hover { color: var(--text); border-color: var(--line-strong); }
 .tab.active { background: var(--grad); border-color: transparent; color: #fff; }
 
+/* Suggestions inbox */
+.tab-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 4px; font-size: .66rem; font-weight: 700; color: #fff; background: var(--pink); }
+.idea-card { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); box-shadow: inset 3px 0 0 var(--idea-c, var(--neon)); }
+.idea-card.is-unread { background: color-mix(in srgb, var(--neon) 6%, var(--surface)); }
+.idea-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: .76rem; color: var(--text-3); }
+.idea-topic { padding: 2px 8px; font-size: .64rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--idea-c, var(--neon)); }
+.idea-new { padding: 2px 6px; font-size: .6rem; font-weight: 700; color: var(--pink); border: 1px solid var(--pink); }
+.idea-head .idea-del { margin-left: auto; }
+.idea-msg { white-space: pre-wrap; font-size: .9rem; line-height: 1.55; color: var(--text); overflow-wrap: anywhere; }
+.idea-from { font-size: .8rem; color: var(--text-2); overflow-wrap: anywhere; }
+.idea-card[data-topic="feature"] { --idea-c: #8B55FF; }
+.idea-card[data-topic="game"]    { --idea-c: #0BB4C4; }
+.idea-card[data-topic="payment"] { --idea-c: #22C55E; }
+.idea-card[data-topic="problem"] { --idea-c: #F0359A; }
+.idea-card[data-topic="other"]   { --idea-c: #F2A017; }
 .admin-tabbar {
     display: none;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
@@ -302,7 +317,7 @@
 
     main.shell { padding-inline: 14px; padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
     .tabs { display: none; }
-    .admin-tabbar { display: grid; grid-template-columns: repeat(5, 1fr); }
+    .admin-tabbar { display: grid; grid-template-columns: repeat(6, 1fr); }
 
     .tiles { grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .tile { padding: 8px 6px; }
@@ -461,6 +476,7 @@
             <button type="button" class="tab active" data-tab="listings">Listings</button>
             <button type="button" class="tab" data-tab="sellers">Sellers</button>
             <button type="button" class="tab" data-tab="posts">Blog</button>
+            <button type="button" class="tab" data-tab="ideas">Suggestions <span class="tab-count" id="ideasCount" hidden></span></button>
             <button type="button" class="tab" data-tab="store">Store &amp; contact</button>
             <button type="button" class="tab" data-tab="security">Security</button>
         </div>
@@ -551,6 +567,24 @@
 
             <div class="rows" id="postRows"></div>
             <div class="pagination" id="postPagination"></div>
+        </section>
+
+        <!-- ---- Suggestions from the guide page ---- -->
+        <section id="tab-ideas" class="hidden">
+            <div class="bar">
+                <div class="select-wrap">
+                    <select id="ideaTopic" aria-label="Topic filter">
+                        <option value="">All topics</option>
+                        <option value="feature">New feature</option>
+                        <option value="game">Add a game</option>
+                        <option value="payment">Payments</option>
+                        <option value="problem">Problem</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-outline" id="ideasReadAll">Mark all read</button>
+            </div>
+            <div class="rows" id="ideaRows"></div>
         </section>
 
         <!-- ---- Store & contact ---- -->
@@ -705,6 +739,10 @@
         <button type="button" data-tab="posts">
             <span class="ico"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5Z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></span>
             <span>Blog</span>
+        </button>
+        <button type="button" data-tab="ideas">
+            <span class="ico"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/></svg></span>
+            <span>Ideas</span>
         </button>
         <button type="button" data-tab="store">
             <span class="ico"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5 5 4h14l1.5 5.5"/><path d="M3.5 9.5a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"/><path d="M5 10v10h14V10"/></svg></span>

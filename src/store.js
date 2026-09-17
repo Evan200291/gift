@@ -26,6 +26,7 @@ const FILES = {
     posts: path.join(DATA_DIR, 'posts.json'),
     ads: path.join(DATA_DIR, 'ads.json'),
     settings: path.join(DATA_DIR, 'settings.json'),
+    suggestions: path.join(DATA_DIR, 'suggestions.json'),
 };
 
 /* ------------------------------------------------------------------ *
@@ -188,6 +189,8 @@ const readPlans = () => {
     return list.length ? list.slice().sort((a, b) => (a.order || 0) - (b.order || 0)) : DEFAULT_PLANS;
 };
 const writePlans = (l) => writeList('plans', l);
+const readSuggestions = () => readList('suggestions');
+const writeSuggestions = (l) => writeList('suggestions', l);
 
 const readSettings = () => ({ ...DEFAULT_SETTINGS, ...readFile(FILES.settings, {}) });
 const writeSettings = (s) => writeFile(FILES.settings, s);
@@ -369,6 +372,7 @@ module.exports = {
     readListings, writeListings,
     readPosts, writePosts,
     readPlans, writePlans,
+    readSuggestions, writeSuggestions,
     readSettings, writeSettings,
     readAds, writeAds,
     newId, seed,

@@ -442,7 +442,6 @@
             <span class="seller-meta">
                 <b>${esc(seller.displayName || seller.username)}
                    ${seller.verified ? `<span class="verified">${ICONS.verified}</span>` : ''}</b>
-                <span class="dim">${esc(t('memberSince'))} ${esc(monthYear(seller.createdAt))}</span>
                 ${games ? `<span class="spec-row">${games}</span>` : ''}
             </span>
             <span class="seller-count"><b>${seller.listingCount || 0}</b><span>${esc(t('sellerListings'))}</span></span>

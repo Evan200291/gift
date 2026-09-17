@@ -9,7 +9,7 @@ const express = require('express');
 const store = require('../store');
 const listings = require('../listings');
 const stats = require('../stats');
-const { paginate, sortListings, matches, intIn } = require('../util');
+const { paginate, sortListings, matches, intIn, text } = require('../util');
 
 const router = express.Router();
 
@@ -88,7 +88,9 @@ router.get('/listings/:id', (req, res) => {
     const found = live.find((l) => l.id === req.params.id);
     if (!found) return res.status(404).json({ error: 'Listing not found' });
     stats.bump(found.id, 'views', req.ip);
-    return res.json(listings.withSeller(found, sellerById));
+    const out = listings.withSeller(found, sellerById);
+    if (out.seller) out.seller.listingCount = live.filter((l) => l.sellerId === found.sellerId && l.status !== 'sold').length;
+    return res.json(out);
 });
 
 /** A buyer tapped one of the seller's contact buttons on a listing. */
@@ -96,6 +98,48 @@ router.post('/listings/:id/contact', (req, res) => {
     const { live } = liveCatalogue();
     if (live.some((l) => l.id === req.params.id)) stats.bump(req.params.id, 'contacts', req.ip);
     res.status(204).end();
+});
+
+/* ------------------------------------------------------------------ *
+ * Suggestions — the "recommend something" box on the guide page.
+ * Read by admins in the panel. Anonymous, so keep it cheap to abuse-proof:
+ * a hidden honeypot field and a per-IP hourly cap.
+ * ------------------------------------------------------------------ */
+const SUGGESTION_TOPICS = ['feature', 'game', 'payment', 'problem', 'other'];
+const SUGGESTION_LIMIT = 5;
+const suggestionHits = new Map();
+
+router.post('/suggestions', (req, res) => {
+    const body = req.body || {};
+    if (text(body.website, 50)) return res.status(204).end(); // bots fill every field
+
+    const now = Date.now();
+    const key = req.ip || 'unknown';
+    const hit = suggestionHits.get(key);
+    if (hit && now < hit.resetAt && hit.count >= SUGGESTION_LIMIT) {
+        return res.status(429).json({ error: 'Too many messages. Please try again later.' });
+    }
+
+    const message = text(body.message, 1000);
+    if (message.length < 5) return res.status(400).json({ error: 'Please write a little more.' });
+
+    if (!hit || now >= hit.resetAt) suggestionHits.set(key, { count: 1, resetAt: now + 60 * 60 * 1000 });
+    else hit.count += 1;
+    if (suggestionHits.size > 5000) suggestionHits.clear();
+
+    const list = store.readSuggestions();
+    list.unshift({
+        id: store.newId(),
+        topic: SUGGESTION_TOPICS.includes(body.topic) ? body.topic : 'other',
+        message,
+        name: text(body.name, 60),
+        contact: text(body.contact, 100),
+        lang: body.lang === 'mm' ? 'mm' : 'en',
+        read: false,
+        createdAt: now,
+    });
+    store.writeSuggestions(list.slice(0, 2000));
+    return res.status(201).json({ ok: true });
 });
 
 /** Counts per game, used by the storefront category rail. */

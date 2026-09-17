@@ -178,6 +178,9 @@ body.lang-mm .cat-meta span { font-family: var(--font-mm); font-size: .68rem; }
 .ad-wide { aspect-ratio: 8 / 1; min-height: 64px; }
 .ad-card { aspect-ratio: 16 / 9; }
 .ad-portrait { aspect-ratio: 4 / 3; }
+/* Empty slots only need to fit their copy — a 4:3 box left a big dead area. */
+.ad-portrait.is-empty, .ad-card.is-empty { aspect-ratio: auto; }
+.ad-portrait .ad-empty, .ad-card .ad-empty { padding: 20px 18px; gap: 12px; }
 .ad.is-filled { transition: transform var(--t), box-shadow var(--t); }
 a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--neon), 0 12px 28px -12px var(--neon-glow); }
 .ad .ad-copy {
@@ -663,6 +666,8 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
 [data-tone="sell"]   { --tone: #F0359A; }
 [data-tone="safety"] { --tone: #0BB4C4; }
 [data-tone="faq"]    { --tone: #F2A017; }
+[data-tone="soon"]   { --tone: #22C55E; }
+[data-tone="ideas"]  { --tone: #3B7BFF; }
 .guide-section { scroll-margin-top: var(--nav-h); }
 .guide-head { margin-bottom: 14px; }
 .guide-head h2 { display: flex; align-items: center; gap: 10px; font-size: clamp(1.2rem, 2.4vw, 1.5rem); }
@@ -723,6 +728,34 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
 .guide-faq details[open] summary::after { content: '–'; }
 .guide-faq summary:focus-visible { outline: 2px solid var(--tone); outline-offset: -2px; }
 .guide-faq details p { padding: 0 16px 14px; font-size: .86rem; line-height: 1.6; color: var(--text-2); }
+/* Coming soon: tip cards with a corner tag. */
+.guide-soon .guide-tip { position: relative; padding-right: 64px; }
+.guide-soon-tag {
+    position: absolute; top: 10px; right: 12px;
+    padding: 2px 7px; font-size: .58rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: #fff; background: var(--tone);
+}
+/* Suggestion box */
+.guide-ideas {
+    position: relative; padding: 18px; background: var(--surface); border: 1px solid var(--line);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
+}
+.guide-ideas::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--grad); }
+.guide-idea-form { display: flex; flex-direction: column; gap: 12px; max-width: 760px; }
+.guide-idea-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.guide-idea-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.guide-topics { display: flex; flex-wrap: wrap; gap: 6px; }
+.guide-topic { position: relative; cursor: pointer; }
+.guide-topic input { position: absolute; opacity: 0; pointer-events: none; }
+.guide-topic span {
+    display: inline-block; padding: 7px 12px; font-size: .8rem; font-weight: 600;
+    color: var(--text-2); background: var(--bg-soft); border: 1px solid var(--line);
+    transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+}
+.guide-topic:hover span { border-color: var(--tone); color: var(--ink); }
+.guide-topic input:checked + span { color: #fff; background: var(--tone); border-color: var(--tone); }
+.guide-topic input:focus-visible + span { outline: 2px solid var(--tone); outline-offset: 2px; }
+.guide-idea-form .guide-actions { margin-top: 0; }
 body.lang-mm .guide-hero p, body.lang-mm .guide-head p, body.lang-mm .guide-step p,
 body.lang-mm .guide-tip p, body.lang-mm .guide-faq details p { font-family: var(--font-mm); font-size: .8rem; line-height: 1.75; }
 body.lang-mm .guide-step b, body.lang-mm .guide-tip b, body.lang-mm .guide-faq summary,
@@ -741,6 +774,9 @@ body.lang-mm .guide-hero h1, body.lang-mm .guide-head h2 { font-family: var(--fo
     .guide-step b { font-size: .86rem; }
     .guide-step p { font-size: .76rem; }
     .guide-tips { grid-template-columns: 1fr; gap: 8px; }
+    .guide-jump { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .guide-ideas { padding: 14px; }
+    .guide-idea-row { grid-template-columns: 1fr; }
     .guide-actions .btn { flex: 1 1 auto; }
 }
 

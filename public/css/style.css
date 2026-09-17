@@ -242,6 +242,9 @@ body.lang-mm input[data-i18n-ph] {
    30px margin-top, so pairing this with .section-sm's 22px+22px stacked on
    top of that read as a big dead gap above and below the banner. */
 .ad-footer-section { padding-block: 22px 0; }
+/* Any wrapper holding the footer banner is the last block before the footer: no bottom padding. */
+main :is(section, div):has(> [data-ad="footer"]),
+main :is(section, div):has(> .shell > [data-ad="footer"]) { padding-bottom: 0; }
 .section-head {
     display: flex; align-items: flex-end; justify-content: space-between;
     gap: 20px; margin-bottom: 20px; flex-wrap: wrap;
@@ -995,7 +998,7 @@ select option { background: var(--surface); color: var(--text); }
 .detail[data-game="pubg"]      { --pg-a: #4A4A4A; --pg-b: #0D0D0D; --pg-hi: #F2A900; }
 .detail[data-game="freefire"]  { --pg-a: #FF9A1F; --pg-b: #D1321E; --pg-hi: #FFE45C; }
 
-.detail { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; align-items: start; padding-block: 16px 46px; }
+.detail { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; align-items: start; padding-block: 16px 0; }
 .detail-main > * + *, .detail-side > * + * { margin-top: 14px; }
 .detail .panel + .panel { margin-top: 14px; }
 .detail .panel h3 { color: var(--cat-ink, var(--neon)); display: flex; align-items: center; gap: 8px; }
@@ -1045,7 +1048,11 @@ select option { background: var(--surface); color: var(--text); }
 .panel { border: 1px solid var(--line); clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg))); background: var(--surface); padding: 18px; }
 .panel + .panel { margin-top: 14px; }
 .panel h3 { font-size: .76rem; letter-spacing: .12em; text-transform: uppercase; color: var(--neon); font-weight: 700; margin-bottom: 12px; }
-.buy-panel { position: sticky; top: calc(var(--nav-h) + 16px); padding: 0; }
+.buy-panel { padding: 0; }
+.buy-desc { display: flex; flex-direction: column; gap: 10px; margin: 10px 16px 0; padding-top: 10px; border-top: 1px dashed var(--line); }
+.buy-desc-block .lang-tag { margin: 0 0 4px; }
+.buy-desc .prose { font-size: .88rem; line-height: 1.55; }
+.seller-panel .seller-card { align-items: center; }
 .buy-panel > .notice { margin: 14px 16px 0 !important; }
 .buy-top {
     display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
@@ -1337,7 +1344,7 @@ body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
     .hero-visual { max-width: 460px; min-height: 0; }
     .detail { grid-template-columns: 1fr; gap: 14px; padding-top: 10px; }
     /* Phones: gallery, then price/contact straight away, then the details. */
-    .detail { display: flex; flex-direction: column; }
+    .detail { display: flex; flex-direction: column; align-items: stretch; padding-bottom: 0; }
     .detail-main, .detail-side { display: contents; }
     .detail-main > *, .detail-side > *, .detail .panel + .panel { margin-top: 0 !important; order: 3; }
     .detail .gallery { order: 1; margin-inline: calc(-1 * var(--detail-gutter, 14px)); border-inline: 0; }
@@ -1419,6 +1426,7 @@ body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
        anyone used (the mobile tab bar already covers Browse/Sellers, and
        the header drawer covers the rest). */
     .site-footer {
+        margin-top: 16px;
         background: var(--arcade);
         border-top: 1px solid var(--arcade-line);
     }

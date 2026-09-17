@@ -411,6 +411,21 @@ body.lang-mm input[data-i18n-ph] {
    ~12.5px instead of its intended small size and broke mid-word in the
    narrow mobile cells. */
 body.lang-mm .stat-label { font-size: .64rem; letter-spacing: 0; line-height: 1.4; }
+/* Desktop: the stat bar sits beside the taller trusted-sellers card, so it
+   stretches to that card's height as three tall tiles (icon, big number,
+   label) instead of floating centred in empty space. */
+@media (min-width: 981px) {
+    .hero-inner { align-items: stretch; }
+    .hero-copy { max-width: none; display: flex; }
+    .hero-stats { flex: 1; }
+    .stat-chip {
+        grid-template-columns: minmax(0, 1fr); align-content: space-between; row-gap: 6px;
+        padding: 16px 18px;
+    }
+    .stat-ico { grid-row: auto; width: 40px; height: 40px; margin-bottom: auto; }
+    .stat-ico svg { width: 20px; height: 20px; }
+    .stat-chip b { font-size: 2.1rem; line-height: 1; margin-top: 14px; }
+}
 
 /* Hero visual: compact "trusted sellers" card. A light surface in the same
    visual language as the stat bar — header row + a 2x2 grid of sellers split

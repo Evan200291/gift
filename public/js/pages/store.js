@@ -78,9 +78,6 @@
                     <div class="pstat"><b>${esc(monthYear(s.createdAt))}</b><span data-i18n="storeSince">${esc(t('storeSince'))}</span></div>
                 </div>
 
-                ${games.length ? `<div class="profile-games">${games.map((g) =>
-                    `<span class="pill pill-game" data-game="${esc(g)}">${esc(gameById(g).short || gameName(g))}</span>`).join('')}</div>` : ''}
-
                 ${channels.length ? `<div class="profile-contact">
                     <span class="profile-label" data-i18n="contactSeller">${esc(t('contactSeller'))}</span>
                     <div class="pcontacts">${contactButtons(channels)}</div>

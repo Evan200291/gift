@@ -349,18 +349,34 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 .profile-share svg { width: 17px; height: 17px; }
 .profile-share:hover { background: var(--neon); border-color: var(--neon); color: #fff; }
 .profile-bio {
-    position: relative; margin-top: 16px; padding: 13px 16px 14px;
-    background: color-mix(in srgb, var(--neon) 7%, var(--surface));
-    border-left: 3px solid var(--neon);
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+    position: relative; margin-top: 16px; padding: 15px 18px 16px; overflow: hidden;
+    border: 1px solid var(--arcade-line);
+    background:
+        radial-gradient(90% 140% at 100% 0%, rgba(240,53,154,.2), transparent 55%),
+        radial-gradient(70% 120% at 0% 100%, rgba(0,184,200,.14), transparent 60%),
+        var(--arcade);
+    box-shadow: 0 0 0 1px rgba(165,123,255,.16) inset, 0 0 26px -12px var(--neon);
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
 }
-.profile-bio p { font-size: .92rem; line-height: 1.6; color: var(--text-2); max-width: 70ch; }
+.profile-bio::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+    background: var(--grad); pointer-events: none;
+}
+.profile-bio::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 24px);
+}
+.profile-bio p { position: relative; z-index: 1; font-size: .92rem; line-height: 1.6; color: #fff; max-width: 70ch; }
 .profile-bio-label {
-    display: block; margin-bottom: 5px;
-    font-size: .64rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--neon);
+    position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 7px; margin-bottom: 6px;
+    font-size: .64rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--arcade-text);
 }
+.profile-bio-label::before { content: ''; width: 7px; height: 7px; background: var(--pink); box-shadow: 0 0 10px var(--pink); transform: rotate(45deg); }
 body.lang-mm .profile-bio-label { font-size: .72rem; letter-spacing: 0; text-transform: none; }
 body.lang-mm .profile-bio p { font-family: var(--font-mm); font-size: .84rem; line-height: 1.75; }
+body.lang-mm .profile-bio-label { font-size: .74rem; letter-spacing: 0; text-transform: none; }
 /* One strip rather than separate tiles: four figures read as a single
    summary line and no tile is left half-empty at the right. */
 .profile-stats {
@@ -415,11 +431,14 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
 .store-listings-head { margin-bottom: 10px; }
 .store-ad { padding-block: 16px 0; }
 .store-count {
-    display: inline-grid; place-items: center; min-width: 24px; height: 21px; padding: 0 7px; margin-left: 8px;
-    vertical-align: middle; font-family: var(--font-mono); font-size: .72rem; font-weight: 700;
-    color: var(--neon); background: color-mix(in srgb, var(--neon) 12%, var(--surface));
-    border: 1px solid color-mix(in srgb, var(--neon) 35%, transparent);
+    position: relative; display: inline-grid; place-items: center;
+    min-width: 30px; height: 24px; padding: 0 9px; margin-left: 10px; vertical-align: middle;
+    font-family: var(--font-mono); font-size: .76rem; font-weight: 700; letter-spacing: .04em;
+    color: var(--arcade-text); background: var(--arcade-solid);
+    box-shadow: 0 0 18px -8px var(--neon);
+    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
 }
+.store-count::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--grad); }
 .store-count:empty { display: none; }
 .store-count:empty { display: none; }
 .store-grid { margin-top: 0; }
@@ -631,10 +650,12 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     .profile-top { gap: 12px; margin-top: -32px; }
     .profile-id, .profile-share { margin-top: 40px; }
     .profile-av { width: 74px; height: 74px; }
-    .pstat { flex: 1 1 42%; min-width: 0; padding: 9px 11px; }
-    .pstat:nth-child(3) { border-left: 0; }
-    .pstat:nth-child(n+3) { border-top: 1px solid var(--line-soft); }
-    .pstat b { font-size: 1.15rem; }
+    .pstat { flex: 1 1 0; min-width: 0; padding: 9px 7px; text-align: center; }
+    .pstat b { font-size: .95rem; letter-spacing: -.02em; }
+    /* The "selling since" month/year is the longest value in the row. */
+    .pstat:last-child b { font-size: .8rem; }
+    .pstat span { font-size: .58rem; letter-spacing: .04em; }
+    body.lang-mm .pstat span { font-size: .6rem; }
     .profile-bio { padding: 11px 13px 12px; }
     .pstat b { font-size: 1.05rem; }
     .pstat span { font-size: .58rem; letter-spacing: .04em; }

@@ -155,8 +155,16 @@
 .cat-go svg { width: 16px; height: 16px; }
 .cat-card:hover .cat-go, .cat-card.active .cat-go { opacity: 1; transform: none; }
 
-/* ---------- 4. Advertising slots ---------------------------------------- */
+/* ---------- 4. Advertising slots ----------------------------------------
+   Ads carry the site's dark-navy/cut-corner/grid-texture structure but a
+   green accent instead of the brand's blue — a deliberate, deliberate-
+   looking split so a promo slot never gets mistaken for core site chrome
+   (nav, buttons, status) at a glance, the same way most ad networks key
+   their own placements to a distinct color from the host page's palette. */
 .ad {
+    --ad-accent: #22D66B;
+    --ad-accent-bright: #5CE79A;
+    --ad-accent-deep: #0B5C33;
     position: relative; display: block;
     border: 1px solid var(--line);
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
@@ -169,7 +177,7 @@
 .ad-card { aspect-ratio: 16 / 9; }
 .ad-portrait { aspect-ratio: 4 / 3; }
 .ad.is-filled { transition: transform var(--t), box-shadow var(--t); }
-a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
+a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--ad-accent), var(--sh-2); }
 .ad .ad-copy {
     position: absolute;
     left: 0; right: 0; bottom: 0;
@@ -187,13 +195,13 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
     backdrop-filter: blur(6px);
 }
 .ad.is-empty {
-    border: 1px solid rgba(120,170,255,.28);
-    background: linear-gradient(160deg, #12294B, #0A1830);
+    border: 1px solid rgba(60,220,140,.32);
+    background: linear-gradient(160deg, #0F2B22, #081712);
     animation: ad-pulse 3.6s ease-in-out infinite;
 }
 @keyframes ad-pulse {
-    0%, 100% { box-shadow: 0 0 0 1px rgba(24,86,232,.18) inset, 0 0 22px -10px var(--neon); }
-    50%      { box-shadow: 0 0 0 1px rgba(75,133,255,.4) inset, 0 0 34px -6px var(--neon-bright); }
+    0%, 100% { box-shadow: 0 0 0 1px rgba(34,214,107,.2) inset, 0 0 22px -10px var(--ad-accent); }
+    50%      { box-shadow: 0 0 0 1px rgba(92,231,154,.45) inset, 0 0 34px -6px var(--ad-accent-bright); }
 }
 @media (prefers-reduced-motion: reduce) { .ad.is-empty { animation: none; } }
 .ad.is-empty::before {
@@ -210,19 +218,27 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
 .ad-empty-icon {
     flex-shrink: 0; width: 38px; height: 38px;
     display: grid; place-items: center; font-size: 1.15rem;
-    background: rgba(24,86,232,.25); color: #fff;
-    border: 1px solid rgba(120,170,255,.45);
+    background: rgba(34,214,107,.2); color: #fff;
+    border: 1px solid rgba(92,231,154,.5);
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-    box-shadow: 0 0 16px -4px var(--neon);
+    box-shadow: 0 0 16px -4px var(--ad-accent);
 }
 .ad-empty-copy { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1 1 auto; }
 .ad-empty b { font-family: var(--font-display); font-size: .96rem; color: #fff; }
-.ad-empty span { font-size: .78rem; color: #A9BBDD; max-width: 46ch; }
-.ad-empty .btn { margin-top: 0; flex-shrink: 0; box-shadow: 0 0 16px -6px var(--neon); }
+.ad-empty span { font-size: .78rem; color: #9FE8C2; max-width: 46ch; }
+.ad-empty .btn { margin-top: 0; flex-shrink: 0; }
 .ad-empty .btn svg { width: 14px; height: 14px; }
+/* The shared .btn-primary is brand blue everywhere else on the site;
+   inside an ad slot it takes the green accent instead, so the CTA reads
+   as part of the ad unit rather than a stray blue site button. */
+.ad-empty .btn-primary {
+    background: var(--ad-accent); border-color: transparent; color: #06210F;
+    box-shadow: 0 0 16px -6px var(--ad-accent);
+}
+.ad-empty .btn-primary:hover { background: var(--ad-accent-bright); color: #06210F; }
 .ad-card .ad-empty, .ad-portrait .ad-empty { flex-direction: column; text-align: center; }
 .ad-card .ad-empty-copy, .ad-portrait .ad-empty-copy { align-items: center; text-align: center; }
-.ad.is-empty .ad-flag { background: rgba(24,86,232,.35); color: #DCE6FF; }
+.ad.is-empty .ad-flag { background: rgba(34,214,107,.28); color: #DFFCEA; }
 
 /* ---------- 5. Seller cards & storefront -------------------------------- */
 .seller-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }

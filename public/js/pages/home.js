@@ -150,8 +150,8 @@
         return `<a class="hud-sel" href="/store/${esc(s.username)}">
             <div class="hud-sel-top">
                 <span class="hud-av" style="background:${esc(accent)}">${av}</span>
-                <span>
-                    <span class="hud-name">${esc(truncate(s.displayName || s.username, 16))}${s.verified ? ` ${ICONS.verified}` : ''}</span>
+                <span class="hud-info">
+                    <span class="hud-name"><span class="hud-name-text">${esc(s.displayName || s.username)}</span>${s.verified ? ICONS.verified : ''}</span>
                     ${firstGame ? `<span class="hud-game">${esc(gameName(firstGame))}</span>` : ''}
                 </span>
             </div>
@@ -172,9 +172,11 @@
     async function loadSellers() {
         try {
             const data = await api('/api/sellers');
+            // /api/sellers already sorts featured-first then by listing count
+            // descending, so the top slice is naturally "most active sellers".
             const rows = data.items || [];
-            $('#sellerGrid').innerHTML = rows.slice(0, 6).length
-                ? rows.slice(0, 6).map(window.UI.sellerCard).join('')
+            $('#sellerGrid').innerHTML = rows.slice(0, 4).length
+                ? rows.slice(0, 4).map(window.UI.sellerCard).join('')
                 : emptyState('emptyTitle', 'emptyBody', '🛡️');
             $('#statSellers').textContent = String(data.total || 0);
             renderHeroHud(rows);

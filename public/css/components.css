@@ -444,7 +444,14 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
     .portal-row .acts { grid-column: 1 / -1; }
     .store-head { padding: 16px; }
     .article { padding-block: 14px 34px; }
+    /* 2-up is fine on tablets, but a 375px phone splits into ~165px columns —
+       nowhere near enough room for names like "Mobile Legends" or "PUBG
+       Mobile" next to the 58px glyph, so they were hard-truncated down to
+       "Mo…"/"PU…". Single column below 480px instead. */
     .cat-rail { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .cat-rail { grid-template-columns: 1fr; }
     .seller-grid { grid-template-columns: 1fr; }
     .post-grid { grid-template-columns: 1fr; }
     .avatar-upload { gap: 11px; }

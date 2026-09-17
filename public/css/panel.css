@@ -49,11 +49,19 @@ main.shell { padding-top: 20px; }
 .tile b { font-family: var(--font-display); font-size: 1.4rem; color: var(--neon-deep); }
 .tile.accent b { color: var(--neon); }
 
-.tabs { display: flex; gap: 5px; margin-bottom: 16px; flex-wrap: wrap; }
+/* Equal-width segmented row instead of wrap: at 3 tabs (portal) or 4 (admin),
+   a longer Myanmar label used to push the row past its available width and
+   wrap the last tab onto its own ragged line. flex:1 keeps every tab on one
+   row regardless of count or label length — a tab's own text wraps to a
+   second line inside its box first, which reads as one clean control strip
+   instead of a broken layout. */
+.tabs { display: flex; gap: 5px; margin-bottom: 16px; }
 .tab {
-    padding: 8px 15px; border: 1px solid var(--line-strong);
+    flex: 1 1 0; min-width: 0;
+    padding: 8px 10px; border: 1px solid var(--line-strong);
     background: var(--surface); color: var(--text-2);
     font-family: var(--font-display); font-weight: 600; font-size: .83rem;
+    text-align: center; line-height: 1.25;
     clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
 }
 .tab.active { background: var(--neon-deep); border-color: var(--neon-deep); color: #fff; }
@@ -151,7 +159,11 @@ main.shell { padding-top: 20px; }
     font-size: .76rem;
 }
 
-/* status flip chip — three colours, one component */
+/* Status flip chip — colour keys to what the status actually means
+   (available = ok green, reserved = warn amber, sold = danger red),
+   not one blue regardless of which chip — same tokens the public card
+   pills already use (see .card-tags .pill-available/-reserved/-sold in
+   style.css) so a status reads the same colour everywhere on the site. */
 .status-chip {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 9px;
@@ -164,11 +176,14 @@ main.shell { padding-top: 20px; }
     cursor: pointer;
     transition: border-color .15s, background .15s, color .15s;
 }
-.status-chip:hover { border-color: var(--neon-deep); color: var(--neon); }
+.status-chip[data-status="available"] { --chip: var(--ok); }
+.status-chip[data-status="reserved"]  { --chip: var(--warn); }
+.status-chip[data-status="sold"]      { --chip: var(--danger); }
+.status-chip:hover { border-color: var(--chip, var(--neon-deep)); color: var(--chip, var(--neon)); }
 .status-chip[aria-pressed="true"] {
-    background: var(--neon-faint);
-    border-color: var(--neon);
-    color: var(--neon);
+    background: color-mix(in srgb, var(--chip, var(--neon)) 12%, transparent);
+    border-color: var(--chip, var(--neon));
+    color: var(--chip, var(--neon));
 }
 
 /* ---- editor: keep the image grid clean and consistent ---- */
@@ -218,6 +233,13 @@ main.shell { padding-top: 20px; }
     #tab-listings .bar .select-wrap { flex: 1 1 calc(50% - 6px); min-width: 0; }
     #tab-listings .bar #newBtn { width: 100%; }
     .modal { max-width: 100% !important; margin: 8px; }
+    /* The 3 status chips + Edit + Delete overflowed a 375px row by ~20px at
+       their default size, so Delete wrapped onto its own line, right-aligned
+       under a ragged gap — reads as broken spacing rather than one control
+       row. Tighten just enough for all five to sit on one line. */
+    .portal-row .acts { gap: 4px; flex-wrap: nowrap; }
+    .portal-row .acts .status-chip { padding: 2px 7px; font-size: .62rem; }
+    .portal-row .acts .btn { padding: 5px 7px; font-size: .68rem; }
     .sub-banner .sub-status { font-size: .74rem; }
     /* On short mobile viewports, vertical centering leaves large equal
        gaps above and below the login card — start near the top instead

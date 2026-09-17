@@ -141,8 +141,8 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
 [lang="my"],
 body.lang-mm [data-i18n] {
     font-family: var(--font-mm);
-    font-size: .84em;
-    line-height: 1.5;
+    font-size: .78em;
+    line-height: 1.35;
     letter-spacing: normal;
     font-optical-sizing: none;
     text-justify: inter-cluster;
@@ -306,6 +306,16 @@ body.lang-mm input[data-i18n-ph] {
     --btn-fg: #fff;
 }
 .btn-danger:hover { --btn-bg: #A8232F; }
+/* Same ghost (transparent, text-only) treatment as .btn-ghost, but for a
+   destructive action inline next to non-destructive ones (e.g. a listing
+   row's Edit/Delete pair) — sharing .btn-ghost's hover made Delete hover
+   the same neutral blue as Edit, giving no visual warning before deleting. */
+.btn-ghost-danger {
+    --btn-bd: transparent;
+    --btn-bg: transparent;
+    --btn-fg: var(--danger);
+}
+.btn-ghost-danger:hover { --btn-fg: #fff; --btn-bg: var(--danger); }
 
 /* ---------- 7. Hero ------------------------------------------------------ */
 .hero { position: relative; padding-block: 0 30px; overflow: hidden; }
@@ -369,6 +379,13 @@ body.lang-mm input[data-i18n-ph] {
 }
 .hud-sel:hover { background: rgba(75,133,255,.16); border-color: rgba(75,133,255,.42); transform: translateY(-2px); }
 .hud-sel-top { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+/* The name column is a flex sibling of the fixed-size avatar; without
+   min-width:0 a flex item won't shrink below its text's natural width, so
+   the ellipsis on .hud-name-text below never got a chance to engage — names
+   were hard-truncated to a fixed 16 characters in JS instead, cutting short
+   names that had room and still overflowing long ones on narrow panels. */
+.hud-info { min-width: 0; flex: 1 1 auto; }
+.hud-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .hud-sel .hud-av {
     width: 32px; height: 32px; flex: none;
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
@@ -443,6 +460,7 @@ body.lang-mm .price-range input::placeholder { font-size: .78rem; }
     padding: 8px 14px; border: 1px solid var(--line);
     background: var(--bg-soft);
     color: var(--text-2); font-size: .8rem; font-weight: 600;
+    white-space: nowrap; flex-shrink: 0;
     transition: all var(--t-fast); cursor: pointer;
 }
 .chip:hover { color: var(--neon); border-color: var(--neon); }
@@ -528,6 +546,12 @@ select option { background: var(--surface); color: var(--text); }
    full-width auto track still won't shrink an un-shrinkable child below its
    content size otherwise. */
 .grid > [data-ad] { grid-column: 1 / -1; min-width: 0; }
+/* The "nothing here yet" placeholder is the sole child of #grid when a
+   search/filter has no results, but nothing told it to span the grid — it
+   sat in column 1 of the 3-column mobile layout only ~110px wide, leaving
+   the other two columns' worth of width as blank space next to/below it
+   (read as a big empty gap before the next section). */
+.grid > .empty { grid-column: 1 / -1; }
 .listings-more { display: flex; justify-content: center; margin-top: 24px; }
 /* Full browse page: two wide columns instead of many small ones. */
 .browse-grid { grid-template-columns: 1fr; }

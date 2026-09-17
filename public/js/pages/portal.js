@@ -337,7 +337,7 @@
                 +     statusChip(l.id, "reserved",  l.status === "reserved")
                 +     statusChip(l.id, "sold",      l.status === "sold")
                 +     "<button type=\"button\" class=\"btn btn-ghost btn-sm\" data-act=\"edit\">Edit</button>"
-                +     "<button type=\"button\" class=\"btn btn-ghost btn-sm\" data-act=\"del\">Delete</button>"
+                +     "<button type=\"button\" class=\"btn btn-ghost-danger btn-sm\" data-act=\"del\">Delete</button>"
                 +   "</div>"
                 + "</div>";
         },

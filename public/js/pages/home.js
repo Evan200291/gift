@@ -70,14 +70,14 @@
         const moreLabel = activeHidden ? gameName(state.game) : t('moreGames');
 
         const chip = (id, label, extra) =>
-            `<button type="button" class="chip${extra || ''}${state.game === id ? ' active' : ''}" data-game="${esc(id)}">${esc(label)}</button>`;
+            `<button type="button" class="chip${extra || ''}${state.game === id ? ' active' : ''}" data-game="${esc(id)}" data-tone="${esc(id || 'all')}">${esc(label)}</button>`;
 
         const options = [{ id: '', name: t('allGames'), count: state.total, g: null }]
             .concat(list.map((g) => ({ id: g.id, name: gameName(g.id), count: state.counts[g.id] || 0, g })));
 
         wrap.innerHTML = chip('', t('allGames'))
             + list.map((g, i) => chip(g.id, gameName(g.id), i >= VISIBLE_GAME_CHIPS ? ' chip-overflow' : '')).join('')
-            + `<button type="button" class="chip chip-more${activeHidden ? ' active' : ''}" aria-haspopup="listbox"
+            + `<button type="button" class="chip chip-more${activeHidden ? ' active' : ''}" data-tone="${esc(activeHidden ? state.game : 'more')}" aria-haspopup="listbox"
                        aria-expanded="false" aria-controls="gameMenu">
                    <span class="chip-more-label">${esc(moreLabel)}</span><span class="chev">${ICONS.chevronDown}</span>
                </button>`

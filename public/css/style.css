@@ -137,8 +137,13 @@ code, pre, kbd, samp { font-family: var(--font-mono); }
    dates) and shrank them too. Dynamic MM content that has no data-i18n
    hook (listing titles, seller bios) opts in explicitly via `.mm`/[lang]
    instead, applied by the page's own JS. */
+/* :not(html) — core.js sets <html lang="my"> when Myanmar is active, and a
+   bare [lang="my"] matched the root too, shrinking the root font-size to
+   .78 x 16px. Every rem-based size on the page (Latin prices, titles,
+   paddings) then shrank ~22% in Myanmar mode, which is why layouts visibly
+   changed on a language switch. Only actual Myanmar text should shrink. */
 .mm,
-[lang="my"],
+:not(html)[lang="my"],
 body.lang-mm [data-i18n] {
     font-family: var(--font-mm);
     font-size: .78em;
@@ -335,23 +340,36 @@ body.lang-mm input[data-i18n-ph] {
    safe zone at least ~18% in from every edge, so object-fit:cover cropping
    it down to a narrower box (the mobile 1.9:1 override below only trims the
    sides, see the breakpoint) never cuts into anything that matters. */
-.hero-banner { position: relative; width: 100%; aspect-ratio: 2.6 / 1; overflow: hidden; background: #0A1830; touch-action: pan-y; }
+/* max-height stops the full-bleed 2.6:1 box from growing to ~770px tall on
+   wide desktop screens (it used to fill the whole first screen). Past the
+   cap, object-fit:cover trims top/bottom instead — the art keeps its
+   essential content inside the middle ~60% of its height, so that's safe. */
+.hero-banner { position: relative; width: 100%; aspect-ratio: 2.6 / 1; max-height: 460px; overflow: hidden; background: #0A1830; touch-action: pan-y; }
 .hero-track { display: flex; height: 100%; transition: transform .6s cubic-bezier(.22, .61, .36, 1); }
 .hero-banner-img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; user-select: none; -webkit-user-drag: none; }
-/* Each dot is a 20px hit target; the visible mark is the ::before pill, which
-   stretches into a bar for the active slide. */
-.hero-dots { display: flex; justify-content: center; gap: 2px; padding-top: 10px; }
+/* Slide dots sit inside the banner on a slim navy strip along its bottom
+   edge, so banner + controls read as one unit. Each dot is a 20px hit
+   target; the visible mark is the ::before pill, which stretches into a bar
+   for the active slide. */
+.hero-dots {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+    display: flex; justify-content: center; align-items: center; gap: 2px;
+    height: 28px;
+    background: rgba(8, 17, 36, .78);
+    border-top: 1px solid rgba(120, 170, 255, .14);
+    backdrop-filter: blur(6px);
+}
 .hero-dots:empty { display: none; }
 .hero-dot { position: relative; width: 20px; height: 20px; padding: 0; border: 0; background: transparent; cursor: pointer; transition: width var(--t); }
 .hero-dot::before {
     content: ''; position: absolute; left: 50%; top: 50%;
-    width: 8px; height: 8px; border-radius: 999px; transform: translate(-50%, -50%);
-    background: var(--line-strong); transition: width var(--t), background var(--t);
+    width: 7px; height: 7px; border-radius: 999px; transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, .35); transition: width var(--t), background var(--t);
 }
-.hero-dot:hover::before { background: var(--neon-bright); }
-.hero-dot[aria-selected="true"] { width: 34px; }
-.hero-dot[aria-selected="true"]::before { width: 24px; background: var(--neon); }
-.hero-dot:focus-visible { outline: 2px solid var(--neon); outline-offset: 1px; }
+.hero-dot:hover::before { background: rgba(255, 255, 255, .7); }
+.hero-dot[aria-selected="true"] { width: 32px; }
+.hero-dot[aria-selected="true"]::before { width: 22px; background: var(--neon-bright); }
+.hero-dot:focus-visible { outline: 2px solid var(--neon-bright); outline-offset: -2px; }
 @media (prefers-reduced-motion: reduce) { .hero-track { transition: none; } }
 .hero-inner {
     display: grid;
@@ -361,12 +379,10 @@ body.lang-mm input[data-i18n-ph] {
 }
 .hero-inner > * { min-width: 0; }
 .hero-copy { max-width: 580px; }
-.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 /* One connected stat bar (three cells split by hairlines) rather than three
    loose numbers floating on the page background. */
 .hero-stats {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-top: 18px;
     background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1);
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
 }
@@ -387,6 +403,11 @@ body.lang-mm input[data-i18n-ph] {
     color: var(--neon-deep); line-height: 1.1;
 }
 .stat-label { font-size: .62rem; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; font-weight: 600; line-height: 1.25; }
+/* The generic `body.lang-mm [data-i18n]` size rule (.78em of the parent)
+   outranks .stat-label on specificity, so in Myanmar the label rendered at
+   ~12.5px instead of its intended small size and broke mid-word in the
+   narrow mobile cells. */
+body.lang-mm .stat-label { font-size: .64rem; letter-spacing: 0; line-height: 1.4; }
 
 /* Hero visual: compact "trusted sellers" card. A light surface in the same
    visual language as the stat bar — header row + a 2x2 grid of sellers split
@@ -402,8 +423,18 @@ body.lang-mm input[data-i18n-ph] {
     padding: 10px 14px; border-bottom: 1px solid var(--line);
 }
 .top-sellers-title { font-size: .66rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); }
-.top-sellers-all { display: inline-flex; align-items: center; gap: 4px; font-size: .74rem; font-weight: 600; white-space: nowrap; }
-.top-sellers-all svg { width: 13px; height: 13px; }
+body.lang-mm .top-sellers-title { font-size: .74rem; letter-spacing: 0; }
+/* Compact "View all ›" text link used for every section's see-more action —
+   replaces the outlined buttons that dwarfed the headings next to them
+   (worse in Myanmar, where .btn opts out of the MM text shrink). */
+.view-all {
+    display: inline-flex; align-items: center; gap: 2px; padding: 4px 0;
+    font-family: var(--font-display); font-size: .8rem; font-weight: 600;
+    color: var(--neon); white-space: nowrap;
+}
+.view-all svg { width: 14px; height: 14px; transition: transform var(--t-fast); }
+.view-all:hover { color: var(--neon-dim); }
+.view-all:hover svg { transform: translateX(2px); }
 /* gap:1px over a line-coloured background draws the hairlines between cells.
    minmax(0,1fr) so a long seller name ellipsizes instead of widening the
    column (a bare 1fr track can't shrink below its content). */
@@ -489,15 +520,37 @@ body.lang-mm .price-range input::placeholder { font-size: .78rem; }
 .price-range .to { color: var(--text-3); font-size: .8rem; flex-shrink: 0; }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; }
 #homeGameChips { margin-top: 18px; }
+/* Filter chip with a colour bar along its bottom edge. The bar takes the
+   game's own colour — the same one its tag uses on listing cards (eFootball
+   teal, MLBB violet, PUBG amber, Free Fire red; "All" is brand blue) — faint
+   at rest, full strength when selected, where the chip also picks up a tint
+   and the darker text shade of that colour. */
 .chip {
-    padding: 8px 14px; border: 1px solid var(--line);
-    background: var(--bg-soft);
-    color: var(--text-2); font-size: .8rem; font-weight: 600;
-    white-space: nowrap; flex-shrink: 0;
-    transition: all var(--t-fast); cursor: pointer;
+    --chip-c: var(--neon); --chip-ink: var(--neon-deep);
+    position: relative; overflow: hidden;
+    padding: 9px 14px 11px; border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text-2); font-family: var(--font-display); font-size: .8rem; font-weight: 600;
+    white-space: nowrap; flex-shrink: 0; cursor: pointer;
+    transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
 }
-.chip:hover { color: var(--neon); border-color: var(--neon); }
-.chip.active { color: #fff; background: var(--neon-deep); border-color: var(--neon-deep); }
+.chip::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background: var(--chip-c); opacity: .35; transition: opacity var(--t-fast);
+}
+.chip:hover { color: var(--chip-ink); border-color: var(--line-strong); }
+.chip:hover::after { opacity: .75; }
+.chip.active {
+    color: var(--chip-ink);
+    background: color-mix(in srgb, var(--chip-c) 11%, var(--surface));
+    border-color: color-mix(in srgb, var(--chip-c) 40%, transparent);
+}
+.chip.active::after { opacity: 1; }
+.chip[data-tone="efootball"] { --chip-c: #0FA7A0; --chip-ink: #0A6F69; }
+.chip[data-tone="mlbb"]      { --chip-c: #7C5CFF; --chip-ink: #5B3ED6; }
+.chip[data-tone="pubg"]      { --chip-c: #E0961B; --chip-ink: #96600A; }
+.chip[data-tone="freefire"]  { --chip-c: #E2404F; --chip-ink: #B32A38; }
+.chip[data-tone="more"]      { --chip-c: var(--text-3); --chip-ink: var(--text); }
 
 /* Game filter: on desktop every game is a chip. On phones (see the 720px
    breakpoint) only "All" + the first two games stay as chips and the rest
@@ -628,7 +681,7 @@ select option { background: var(--surface); color: var(--text); }
    the other two columns' worth of width as blank space next to/below it
    (read as a big empty gap before the next section). */
 .grid > .empty { grid-column: 1 / -1; }
-.listings-more { display: flex; justify-content: center; margin-top: 24px; }
+.listings-more { display: flex; justify-content: center; margin-top: 14px; }
 /* Full browse page: two wide columns instead of many small ones. */
 .browse-grid { grid-template-columns: 1fr; }
 @media (min-width: 680px) { .browse-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -1013,15 +1066,23 @@ select option { background: var(--surface); color: var(--text); }
     /* Four equal cells that fill the row — no sideways scrolling. overflow
        must be visible here or the absolutely positioned menu gets clipped. */
     .chips.game-filter {
-        display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
+        /* Third cell is wider: it holds "Mobile Legends", by far the longest
+           of the always-visible labels. */
+        display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr); gap: 6px;
         overflow: visible; padding-bottom: 0;
     }
     .game-filter .chip {
-        min-width: 0; padding: 10px 6px; font-size: .74rem; text-align: center;
+        min-width: 0; padding: 10px 4px 12px; font-size: .7rem; text-align: center;
         overflow: hidden; text-overflow: ellipsis;
     }
     .game-filter .chip-overflow { display: none; }
-    .game-filter .chip-more { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+    .game-filter .chip-more { display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
+    .game-filter .chip-more .chev svg { width: 11px; height: 11px; }
+    /* "All games" / "More" are the only translated labels here (game names
+       stay Latin), and they're inserted by JS without data-i18n, so the
+       generic Myanmar size rule never reaches them. */
+    body.lang-mm .game-filter .chip[data-tone="all"],
+    body.lang-mm .game-filter .chip-more:not(.active) { font-family: var(--font-mm); font-size: .64rem; }
     .game-filter .chip-more .chip-more-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .game-menu:not([hidden]) { display: block; }
     /* Minimal dark "gaming" footer on mobile — brand + copyright row only.
@@ -1045,8 +1106,6 @@ select option { background: var(--surface); color: var(--text); }
     .footer-bottom { border-top-color: rgba(255,255,255,.1); color: #7C90B4; }
     .footer-bottom span { color: #7C90B4; }
     .toast-stack { left: 16px; right: 16px; bottom: calc(58px + env(safe-area-inset-bottom, 0px)); max-width: none; }
-    .hero-actions .btn { flex: 1 1 auto; }
-    .hero-stats { margin-top: 14px; }
     /* Icon + number share the first line, label spans underneath — keeps
        each cell to two short lines in a ~110px-wide column. */
     .stat-chip { column-gap: 7px; row-gap: 3px; padding: 10px; }
@@ -1054,6 +1113,7 @@ select option { background: var(--surface); color: var(--text); }
     .stat-ico svg { width: 13px; height: 13px; }
     .stat-chip b { font-size: 1.1rem; }
     .stat-label { grid-column: 1 / -1; font-size: .56rem; letter-spacing: .03em; }
+    body.lang-mm .stat-label { font-size: .58rem; letter-spacing: 0; }
     .top-sellers-head { padding: 9px 12px; }
     .ts-item { gap: 8px; padding: 10px 12px; }
     .ts-av { width: 30px; height: 30px; }

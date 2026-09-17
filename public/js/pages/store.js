@@ -51,8 +51,8 @@
     function renderChips() {
         const host = $('#gameChips');
         const present = data.stats.games || [];
-        host.innerHTML = `<button type="button" class="chip${game ? '' : ' active'}" data-game="">${esc(t('allGames'))}</button>`
-            + present.map((g) => `<button type="button" class="chip${game === g ? ' active' : ''}" data-game="${esc(g)}">${esc(gameName(g))}</button>`).join('');
+        host.innerHTML = `<button type="button" class="chip${game ? '' : ' active'}" data-game="" data-tone="all">${esc(t('allGames'))}</button>`
+            + present.map((g) => `<button type="button" class="chip${game === g ? ' active' : ''}" data-game="${esc(g)}" data-tone="${esc(g)}">${esc(gameName(g))}</button>`).join('');
 
         $$('.chip', host).forEach((chip) => {
             chip.addEventListener('click', () => {

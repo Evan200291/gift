@@ -22,7 +22,6 @@
         { href: '/browse', key: 'navBrowse', match: (p) => p === '/browse' },
         { href: '/sellers', key: 'navSellers', match: (p) => p.startsWith('/sellers') || p.startsWith('/store') },
         { href: '/blog', key: 'navBlog', match: (p) => p.startsWith('/blog') },
-        { href: '/sell', key: 'navSell', match: (p) => p === '/sell' },
         { href: '/advertise', key: 'navAdvertise', match: (p) => p === '/advertise' },
     ];
 
@@ -78,7 +77,7 @@
         { href: '/', key: 'navHome', icon: 'home', match: (p) => p === '/' },
         { href: '/browse', key: 'navBrowse', icon: 'grid', match: (p) => p === '/browse' },
         { href: '/sellers', key: 'navSellers', icon: 'users', match: (p) => p.startsWith('/sellers') || p.startsWith('/store') },
-        { href: '/sell', key: 'navSell', icon: 'tag', match: (p) => p === '/sell' },
+        { href: '/seller', key: 'navSellerLogin', icon: 'tag', match: (p) => p === '/seller' || p.startsWith('/seller/') },
     ];
 
     function mountTabbar() {
@@ -143,7 +142,6 @@
             <div>
                 <h4 data-i18n="footerCompany">${esc(t('footerCompany'))}</h4>
                 <div class="footer-list">
-                    <a href="/sell" data-i18n="navSell">${esc(t('navSell'))}</a>
                     <a href="/advertise" data-i18n="navAdvertise">${esc(t('navAdvertise'))}</a>
                     <a href="/seller" data-i18n="navSellerLogin">${esc(t('navSellerLogin'))}</a>
                 </div>
@@ -191,18 +189,27 @@
      * Render one ad slot. An unsold slot still renders — as a tasteful
      * "advertise here" card — so the layout is stable and the space sells itself.
      */
+    // Ad slot copy is always English, whatever the site language: no
+    // data-i18n hooks, so applyTranslations() never swaps it, and the Myanmar
+    // text-size rules (keyed off data-i18n) don't touch it either.
+    const AD_TEXT = {
+        label: 'Advertisement',
+        emptyTitle: 'Your ad could be here',
+        emptyBody: 'Reach thousands of mobile gamers every week.',
+    };
+
     function adMarkup(slotId, variant) {
         const data = (ADS && ADS.slots && ADS.slots[slotId]) || { filled: false };
         const shape = variant || 'wide';
 
         if (data.filled) {
             const inner = `
-                ${data.image ? `<img src="${esc(data.image)}" alt="${esc(data.title || 'Advertisement')}" loading="lazy">` : ''}
+                ${data.image ? `<img src="${esc(data.image)}" alt="${esc(data.title || AD_TEXT.label)}" loading="lazy">` : ''}
                 ${(data.title || data.subtitle) ? `<div class="ad-copy">
                     ${data.title ? `<b>${esc(data.title)}</b>` : ''}
                     ${data.subtitle ? `<span>${esc(data.subtitle)}</span>` : ''}
                 </div>` : ''}
-                <span class="ad-flag" data-i18n="adLabel">${esc(t('adLabel'))}</span>`;
+                <span class="ad-flag">${AD_TEXT.label}</span>`;
 
             return data.link
                 ? `<a class="ad ad-${shape} is-filled" href="${esc(data.link)}" target="_blank" rel="noopener noreferrer sponsored">${inner}</a>`
@@ -213,10 +220,10 @@
         const handle = (ADS && ADS.contact) || site().adsContact || '';
         return `<div class="ad ad-${shape} is-empty">
             <div class="ad-empty">
-                <span class="ad-flag" data-i18n="adLabel">${esc(t('adLabel'))}</span>
                 <div class="ad-empty-copy">
-                    <b data-i18n="adEmptyTitle">${esc(t('adEmptyTitle'))}</b>
-                    <span data-i18n="adEmptyBody">${esc(t('adEmptyBody'))}</span>
+                    <span class="ad-flag ad-flag-inline">${AD_TEXT.label}</span>
+                    <b>${AD_TEXT.emptyTitle}</b>
+                    <span>${AD_TEXT.emptyBody}</span>
                 </div>
                 ${url ? `<a class="btn btn-primary btn-sm" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
                     ${ICONS.telegram} ${esc(handle)}

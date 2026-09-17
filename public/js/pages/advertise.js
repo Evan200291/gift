@@ -8,7 +8,7 @@
 
     const VARIANT = {
         'home-leaderboard': 'wide',
-        'home-inline': 'card',
+        'home-inline': 'wide',
         'listing-sidebar': 'portrait',
         footer: 'wide',
     };
@@ -28,10 +28,12 @@
 
     /* The slot catalogue lives on the server; the ad payload is fetched by ui.js. */
     const SLOTS = [
-        { id: 'home-leaderboard', name: 'Home — top banner', blurb: 'Full-width strip directly under the hero. The most visible slot on the site.', recommended: '1440 × 240' },
-        { id: 'home-inline', name: 'Home — inside the listings grid', blurb: 'Appears between listing rows, styled like a card so it reads as part of the grid.', recommended: '1280 × 720' },
+        // Recommended sizes match what each slot actually renders at on
+        // desktop: wide banners are 8:1, the listing sidebar is 4:3.
+        { id: 'home-leaderboard', name: 'Home — top banner', blurb: 'Full-width strip directly under the hero. The most visible slot on the site.', recommended: '1600 × 200' },
+        { id: 'home-inline', name: 'Home — inside the listings grid', blurb: 'Full-width banner between rows of listings, right where buyers are browsing.', recommended: '1600 × 200' },
         { id: 'listing-sidebar', name: 'Listing page — sidebar', blurb: 'Sits under the seller contact panel on every listing page.', recommended: '600 × 450' },
-        { id: 'footer', name: 'Site-wide — footer banner', blurb: 'Shown above the footer on every page of the site.', recommended: '1440 × 240' },
+        { id: 'footer', name: 'Site-wide — footer banner', blurb: 'Shown above the footer on every page of the site.', recommended: '1600 × 200' },
     ];
 
     (async function boot() {

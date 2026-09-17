@@ -231,6 +231,12 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 .ad-card .ad-empty, .ad-portrait .ad-empty { flex-direction: column; text-align: center; }
 .ad-card .ad-empty-copy, .ad-portrait .ad-empty-copy { align-items: center; text-align: center; }
 .ad.is-empty .ad-flag { background: rgba(34,214,107,.28); color: #DFFCEA; }
+/* In the empty "advertise here" state the badge sits in flow as an eyebrow
+   above the title. Absolutely positioned in the corner, it overlapped the
+   title whenever the copy was centered (card/portrait slots) or the banner
+   was narrow enough for the title to reach the right edge. */
+.ad-flag-inline { position: static; align-self: flex-start; margin-bottom: 5px; backdrop-filter: none; }
+.ad-card .ad-flag-inline, .ad-portrait .ad-flag-inline { align-self: center; }
 
 /* ---------- 5. Seller cards & storefront -------------------------------- */
 .seller-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }

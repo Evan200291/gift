@@ -255,7 +255,6 @@
                     + "<div class=\"sub-banner " + (sub.active ? (sub.expiringSoon ? "is-warn" : "") : "is-danger") + "\">"
                     +   "<span class=\"sub-days\">" + esc(daysLabel) + "</span>"
                     +   "<span class=\"sub-status\">" + esc(statusLabel) + "</span>"
-                    +   "<a class=\"btn btn-outline btn-sm\" href=\"/sell#plans\" data-i18n=\"plansTitle\">" + esc(t("plansTitle")) + "</a>"
                     + "</div>";
             } catch (err) {
                 host.innerHTML = "";

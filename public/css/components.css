@@ -167,15 +167,12 @@
 body.lang-mm .cat-meta span { font-family: var(--font-mm); font-size: .7rem; }
 
 /* ---------- 4. Advertising slots ----------------------------------------
-   Ads carry the site's dark-navy/cut-corner/grid-texture structure but a
-   green accent instead of the brand's blue — a deliberate, deliberate-
-   looking split so a promo slot never gets mistaken for core site chrome
-   (nav, buttons, status) at a glance, the same way most ad networks key
-   their own placements to a distinct color from the host page's palette. */
+   Ads use the site's own arcade language — dark violet panel, cut corners,
+   grid texture, brand-gradient accents — so a slot reads as part of the
+   marketplace. The "Advertisement" flag keeps it identifiable as promo. */
 .ad {
-    --ad-accent: #22D66B;
-    --ad-accent-bright: #5CE79A;
-    --ad-accent-deep: #0B5C33;
+    --ad-accent: var(--pink);
+    --ad-accent-bright: var(--neon-bright);
     position: relative; display: block;
     border: 1px solid var(--line);
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
@@ -188,7 +185,7 @@ body.lang-mm .cat-meta span { font-family: var(--font-mm); font-size: .7rem; }
 .ad-card { aspect-ratio: 16 / 9; }
 .ad-portrait { aspect-ratio: 4 / 3; }
 .ad.is-filled { transition: transform var(--t), box-shadow var(--t); }
-a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--ad-accent), var(--sh-2); }
+a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--neon), 0 12px 28px -12px var(--neon-glow); }
 .ad .ad-copy {
     position: absolute;
     left: 0; right: 0; bottom: 0;
@@ -206,13 +203,21 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
     backdrop-filter: blur(6px);
 }
 .ad.is-empty {
-    border: 1px solid rgba(60,220,140,.32);
-    background: linear-gradient(160deg, #0F2B22, #081712);
+    border: 1px solid var(--arcade-line);
+    background:
+        radial-gradient(90% 140% at 100% 0%, rgba(240,53,154,.28), transparent 55%),
+        radial-gradient(70% 120% at 0% 100%, rgba(0,184,200,.16), transparent 60%),
+        var(--arcade);
     animation: ad-pulse 3.6s ease-in-out infinite;
 }
+/* Gradient rule along the top edge, matching the header/footer. */
+.ad.is-empty::after {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+    background: var(--grad); pointer-events: none;
+}
 @keyframes ad-pulse {
-    0%, 100% { box-shadow: 0 0 0 1px rgba(34,214,107,.2) inset, 0 0 22px -10px var(--ad-accent); }
-    50%      { box-shadow: 0 0 0 1px rgba(92,231,154,.45) inset, 0 0 34px -6px var(--ad-accent-bright); }
+    0%, 100% { box-shadow: 0 0 0 1px rgba(165,123,255,.18) inset, 0 0 22px -10px var(--neon); }
+    50%      { box-shadow: 0 0 0 1px rgba(240,53,154,.4) inset, 0 0 34px -6px var(--pink); }
 }
 @media (prefers-reduced-motion: reduce) { .ad.is-empty { animation: none; } }
 .ad.is-empty::before {
@@ -228,20 +233,12 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 }
 .ad-empty-copy { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1 1 auto; }
 .ad-empty b { font-family: var(--font-display); font-size: .96rem; color: #fff; }
-.ad-empty span { font-size: .78rem; color: #9FE8C2; max-width: 46ch; }
+.ad-empty span { font-size: .78rem; color: var(--arcade-dim); max-width: 46ch; }
 .ad-empty .btn { margin-top: 0; flex-shrink: 0; }
 .ad-empty .btn svg { width: 14px; height: 14px; }
-/* The shared .btn-primary is brand blue everywhere else on the site;
-   inside an ad slot it takes the green accent instead, so the CTA reads
-   as part of the ad unit rather than a stray blue site button. */
-.ad-empty .btn-primary {
-    background: var(--ad-accent); border-color: transparent; color: #06210F;
-    box-shadow: 0 0 16px -6px var(--ad-accent);
-}
-.ad-empty .btn-primary:hover { background: var(--ad-accent-bright); color: #06210F; }
-.ad-card .ad-empty, .ad-portrait .ad-empty { flex-direction: column; text-align: center; }
+.ad-empty .btn-primary { box-shadow: 0 0 18px -6px var(--pink); }.ad-card .ad-empty, .ad-portrait .ad-empty { flex-direction: column; text-align: center; }
 .ad-card .ad-empty-copy, .ad-portrait .ad-empty-copy { align-items: center; text-align: center; }
-.ad.is-empty .ad-flag { background: rgba(34,214,107,.28); color: #DFFCEA; }
+.ad.is-empty .ad-flag { background: var(--grad); color: #fff; }
 /* In the empty "advertise here" state the badge sits in flow as an eyebrow
    above the title. Absolutely positioned in the corner, it overlapped the
    title whenever the copy was centered (card/portrait slots) or the banner
@@ -273,19 +270,110 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 }
 .seller-count span { font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
 
-.store-head {
-    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
-    padding: 20px;
-    border: 1px solid var(--line); border-radius: var(--r-xl);
-    background: var(--surface);
-    margin-block: 16px 22px;
+/* Seller profile (/store/<username>). One card: a gradient "cover" with a
+   bar per game the seller stocks, an avatar that overlaps it, then name,
+   bio, three stat tiles, game tags and big tappable contact buttons. */
+.profile {
+    position: relative; margin-block: 8px 26px;
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-2);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
 }
-.store-head .avatar { width: 64px; height: 64px; font-size: 1.6rem; clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 13px 100%, 0 calc(100% - 13px)); }
-.store-head-meta { flex: 1 1 260px; min-width: 0; }
-.store-head-meta h1 { font-size: clamp(1.3rem, 3vw, 1.8rem); display: flex; align-items: center; gap: 8px; }
-.store-head-meta p { color: var(--text-2); font-size: .88rem; margin-top: 5px; max-width: 60ch; }
-.store-head-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
+.profile-cover {
+    position: relative; height: 112px; overflow: hidden;
+    background:
+        radial-gradient(60% 120% at 85% 0%, rgba(255,255,255,.25), transparent 60%),
+        var(--grad);
+}
+.profile-cover::before {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(-55deg, rgba(255,255,255,.12) 0 2px, transparent 2px 16px);
+    -webkit-mask-image: linear-gradient(90deg, transparent 25%, #000 100%);
+            mask-image: linear-gradient(90deg, transparent 25%, #000 100%);
+}
+.profile-cover-bars { position: absolute; right: 18px; bottom: 16px; display: flex; gap: 5px; }
+.profile-cover-bars i { width: 26px; height: 6px; background: var(--cat); box-shadow: 0 0 10px var(--cat); transform: skewX(-30deg); }
+.profile-body { position: relative; padding: 0 22px 22px; }
+.profile-top { display: flex; align-items: flex-start; gap: 16px; margin-top: -40px; }
+.profile-av {
+    flex: none; width: 92px; height: 92px; padding: 4px; background: var(--surface);
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+.profile-av-inner {
+    display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden;
+    background: var(--grad); color: #fff;
+    font-family: var(--font-display); font-weight: 700; font-size: 2.2rem;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+}
+.profile-av-inner img { width: 100%; height: 100%; object-fit: cover; }
+.profile-id { flex: 1 1 auto; min-width: 0; margin-top: 50px; }
+.profile-id h1 {
+    display: flex; align-items: center; gap: 6px; min-width: 0;
+    font-size: clamp(1.3rem, 3.4vw, 1.75rem); line-height: 1.15; color: var(--ink);
+    overflow-wrap: anywhere;
+}
+.profile-id h1 .verified svg { width: 20px; height: 20px; }
+.profile-handle { display: block; margin-top: 3px; font-size: .82rem; color: var(--text-3); }
+.profile-verified { color: var(--neon); font-weight: 600; }
+.profile-share {
+    flex: none; display: grid; place-items: center; width: 40px; height: 40px; margin-top: 50px;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--neon); cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
+    transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.profile-share svg { width: 17px; height: 17px; }
+.profile-share:hover { background: var(--neon); border-color: var(--neon); color: #fff; }
+.profile-bio { margin-top: 14px; font-size: .92rem; color: var(--text-2); max-width: 70ch; }
+.profile-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+.pstat {
+    --stat-c: var(--neon);
+    position: relative; min-width: 0; padding: 12px 14px 12px 16px;
+    background: color-mix(in srgb, var(--stat-c) 9%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--stat-c) 22%, transparent);
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+.pstat::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--stat-c); }
+.pstat:nth-child(2) { --stat-c: var(--pink); }
+.pstat:nth-child(3) { --stat-c: var(--cyan); }
+.pstat b {
+    display: block; font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; line-height: 1.15;
+    color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pstat span { display: block; margin-top: 2px; font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+body.lang-mm .pstat span { font-size: .66rem; letter-spacing: 0; text-transform: none; }
+.profile-games { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.profile-games .pill { font-size: .72rem; padding: 5px 11px; }
+.profile-contact { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line-soft); }
+.profile-label { display: block; margin-bottom: 10px; font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); }
+body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transform: none; }
+.pcontacts { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.pcontact {
+    display: flex; align-items: center; gap: 12px; min-width: 0;
+    padding: 10px 12px; color: var(--text);
+    background: color-mix(in srgb, var(--ch, var(--neon)) 10%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--ch, var(--neon)) 30%, transparent);
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast);
+}
+.pcontact:hover { color: var(--text); background: color-mix(in srgb, var(--ch, var(--neon)) 18%, var(--surface)); transform: translateY(-2px); }
+.pcontact-ico {
+    flex: none; display: grid; place-items: center; width: 38px; height: 38px;
+    background: var(--ch, var(--neon)); color: #fff; box-shadow: 0 6px 14px -6px var(--ch, var(--neon));
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+.pcontact-ico svg { width: 19px; height: 19px; }
+.pcontact-meta { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.pcontact-meta b { font-family: var(--font-display); font-size: .9rem; font-weight: 600; color: var(--ink); }
+.pcontact-meta span { font-size: .76rem; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pcontact-go { flex: none; display: flex; color: var(--ch, var(--neon)); transition: transform var(--t-fast); }
+.pcontact-go svg { width: 16px; height: 16px; }
+.pcontact:hover .pcontact-go { transform: translateX(3px); }
+.store-listings-head { margin-bottom: 12px; }
+.store-count {
+    display: inline-grid; place-items: center; min-width: 26px; height: 22px; padding: 0 7px; margin-left: 6px;
+    vertical-align: middle; font-family: var(--font-mono); font-size: .72rem; color: #fff; background: var(--grad);
+}
+.store-count:empty { display: none; }
+.store-grid { margin-top: 0; }
 /* ---------- 6. Blog ------------------------------------------------------ */
 .post-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 .post-card {
@@ -489,7 +577,16 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 @media (max-width: 760px) {
     .portal-row { grid-template-columns: 76px minmax(0, 1fr); }
     .portal-row .acts { grid-column: 1 / -1; }
-    .store-head { padding: 16px; }
+    .profile-body { padding: 0 14px 16px; }
+    .profile-cover { height: 84px; }
+    .profile-top { gap: 12px; margin-top: -32px; }
+    .profile-id, .profile-share { margin-top: 40px; }
+    .profile-av { width: 74px; height: 74px; }
+    .profile-stats { gap: 6px; }
+    .pstat { padding: 9px 8px 9px 11px; }
+    .pstat b { font-size: 1.05rem; }
+    .pstat span { font-size: .58rem; letter-spacing: .04em; }
+    .pcontacts { grid-template-columns: 1fr; }
     .article { padding-block: 14px 34px; }
     /* 2-up on tablets and phones: the stacked tile layout puts the name on
        its own full-width row, so "Mobile Legends" fits a ~165px column. */

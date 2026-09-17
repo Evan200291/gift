@@ -91,23 +91,22 @@
     </section>
 
     <!-- ========== Listings ========== -->
-    <section id="listings" class="section">
+    <section id="listings" class="section-sm">
         <div class="shell">
-            <div class="search" id="searchWrap" style="max-width:420px;margin-bottom:14px;">
-                <span class="ico" id="searchIcon"></span>
-                <input type="search" id="searchInput" autocomplete="off"
-                       data-i18n-ph="searchPlaceholder" placeholder="Search…"
-                       data-i18n-aria="searchPlaceholder" aria-label="Search">
-                <button type="button" class="clear" id="searchClear" data-i18n-aria="clearSearch" aria-label="Clear"></button>
+            <div class="listings-head">
+                <div class="search" id="searchWrap">
+                    <span class="ico" id="searchIcon"></span>
+                    <input type="search" id="searchInput" autocomplete="off"
+                           data-i18n-ph="searchPlaceholder" placeholder="Search…"
+                           data-i18n-aria="searchPlaceholder" aria-label="Search">
+                    <button type="button" class="clear" id="searchClear" data-i18n-aria="clearSearch" aria-label="Clear"></button>
+                </div>
+                <a class="view-all" href="/browse" id="viewMoreBtn"><span data-i18n="viewAll">View all</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
             </div>
 
             <div class="chips" id="homeGameChips"></div>
 
             <div id="grid" class="grid" aria-live="polite"></div>
-
-            <div class="listings-more">
-                <a class="view-all" href="/browse" id="viewMoreBtn"><span data-i18n="viewAll">View all</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
-            </div>
         </div>
     </section>
 

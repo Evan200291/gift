@@ -833,7 +833,15 @@ select option { background: var(--surface); color: var(--text); }
    the other two columns' worth of width as blank space next to/below it
    (read as a big empty gap before the next section). */
 .grid > .empty { grid-column: 1 / -1; }
-.listings-more { display: flex; justify-content: center; margin-top: 14px; }
+/* Search + "View all" share one row above the game chips, so the section
+   ends at the grid with no trailing link row (and no gap) below it. */
+.listings-head { display: flex; align-items: center; gap: 14px; }
+.listings-head .search { flex: 0 1 420px; min-width: 0; }
+.listings-head .view-all { margin-left: auto; flex-shrink: 0; }
+@media (max-width: 720px) {
+    .listings-head { gap: 10px; }
+    .listings-head .search { flex: 1 1 auto; }
+}
 /* Full browse page: two wide columns instead of many small ones. */
 .browse-grid { grid-template-columns: 1fr; }
 @media (min-width: 680px) { .browse-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -1155,26 +1163,53 @@ body:has(> .site-footer) > main { flex: 1 0 auto; width: 100%; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 /* ---------- 16b. Mobile tab bar ------------------------------------------ */
+/* Arcade HUD bar: dark violet panel with the brand-gradient rule on top.
+   Every tab carries its own colour — the icon is tinted at rest; the active
+   tab fills a cut-corner chip in that colour with a glow and a lit bar. */
+:root { --tabbar-h: 58px; }
 .mtabbar {
     display: none;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
-    padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px));
-    background: var(--header-bg-solid); backdrop-filter: blur(14px);
-    border-top: 1px solid var(--line);
+    height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+    padding: 0 6px env(safe-area-inset-bottom, 0px);
+    background: var(--arcade);
+    box-shadow: 0 -10px 24px -14px rgba(20,8,48,.55);
+}
+.mtabbar::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+    background: var(--grad); pointer-events: none;
 }
 .mtabbar a {
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    padding: 4px 2px; color: var(--text-3); font-size: .6rem; font-weight: 600;
-    --tab: var(--neon);
+    --tab: var(--neon-bright);
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    height: var(--tabbar-h); padding: 0 2px;
+    color: var(--arcade-dim); font-size: .6rem; font-weight: 600; letter-spacing: .01em;
+    transition: color var(--t-fast);
 }
-.mtabbar a .ico { display: grid; place-items: center; width: 18px; height: 18px; margin: 0 auto; transition: filter var(--t-fast); }
+.mtabbar a .ico {
+    display: grid; place-items: center; width: 38px; height: 26px; margin: 0 auto;
+    color: var(--tab);
+    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+    transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
+}
 .mtabbar a .ico svg { width: 17px; height: 17px; }
-.mtabbar a.active { color: var(--tab); }
-.mtabbar a.active .ico { color: var(--tab); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tab) 65%, transparent)); }
-.mtabbar a:nth-child(1) { --tab: var(--neon); }
+.mtabbar a:hover .ico { background: color-mix(in srgb, var(--tab) 16%, transparent); }
+.mtabbar a.active { color: #fff; }
+.mtabbar a.active .ico {
+    background: var(--tab); color: #fff;
+    box-shadow: 0 0 16px -2px var(--tab);
+}
+.mtabbar a.active::before {
+    content: ''; position: absolute; top: 2px; left: 50%; width: 22px; height: 3px;
+    transform: translateX(-50%); border-radius: 0 0 3px 3px;
+    background: var(--tab); box-shadow: 0 0 10px var(--tab);
+}
+.mtabbar a:nth-child(1) { --tab: #8B55FF; }
 .mtabbar a:nth-child(2) { --tab: var(--pink); }
-.mtabbar a:nth-child(3) { --tab: var(--cyan); }
-.mtabbar a:nth-child(4) { --tab: var(--g-pubg); }
+.mtabbar a:nth-child(3) { --tab: #0BB4C4; }
+.mtabbar a:nth-child(4) { --tab: #F2A017; }
+body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
 
 /* ---------- 17. Responsive ----------------------------------------------- */
 @media (max-width: 980px) {
@@ -1272,7 +1307,7 @@ body:has(> .site-footer) > main { flex: 1 0 auto; width: 100%; }
     .footer-bottom { border-top-color: var(--arcade-line); color: var(--arcade-dim); }
     .footer-bottom span { color: var(--arcade-dim); }
     .footer-bottom b { color: #fff; }
-    .toast-stack { left: 16px; right: 16px; bottom: calc(58px + env(safe-area-inset-bottom, 0px)); max-width: none; }
+    .toast-stack { left: 16px; right: 16px; bottom: calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom, 0px)); max-width: none; }
     /* Icon + number share the first line, label spans underneath — keeps
        each cell to two short lines in a ~110px-wide column. */
     .stat-chip { column-gap: 7px; row-gap: 3px; padding: 10px; }
@@ -1308,13 +1343,13 @@ body:has(> .site-footer) > main { flex: 1 0 auto; width: 100%; }
     .card-foot { padding-top: 7px; }
 
     .mtabbar { display: grid; grid-template-columns: repeat(4, 1fr); }
-    body { padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)); }
+    body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
     /* The body's bottom padding reserves room for the fixed tab bar; pull the
        footer down into it so that strip is footer-coloured, not a band of
        page background between the footer and the tab bar. */
     .site-footer {
-        margin-bottom: calc(-48px - env(safe-area-inset-bottom, 0px));
-        padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+        margin-bottom: calc(-1 * var(--tabbar-h) - env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
     }
 }
 @media (max-width: 420px) {

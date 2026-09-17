@@ -89,19 +89,32 @@
 .admin-tabbar {
     display: none;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
-    padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px));
-    background: var(--header-bg-solid); backdrop-filter: blur(14px);
-    border-top: 1px solid var(--line);
+    padding: 0 4px env(safe-area-inset-bottom, 0px);
+    background: var(--arcade);
+    box-shadow: 0 -10px 24px -14px rgba(20,8,48,.55);
 }
+.admin-tabbar::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--grad); }
 .admin-tabbar button {
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    padding: 5px 2px; border: 0; background: transparent;
-    color: var(--text-3); font: inherit; font-size: .6rem; font-weight: 600;
+    --tab: #8B55FF;
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    height: 58px; padding: 0 2px; border: 0; background: transparent;
+    color: var(--arcade-dim); font: inherit; font-size: .6rem; font-weight: 600;
 }
-.admin-tabbar .ico { display: grid; place-items: center; width: 18px; height: 18px; }
-.admin-tabbar button.active { color: var(--neon); }
-.admin-tabbar button.active .ico { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--neon) 65%, transparent)); }
-
+.admin-tabbar button:nth-child(2) { --tab: var(--pink); }
+.admin-tabbar button:nth-child(3) { --tab: #0BB4C4; }
+.admin-tabbar button:nth-child(4) { --tab: #F2A017; }
+.admin-tabbar button:nth-child(5) { --tab: #3DD68C; }
+.admin-tabbar .ico {
+    display: grid; place-items: center; width: 38px; height: 26px; color: var(--tab);
+    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+}
+.admin-tabbar button.active { color: #fff; }
+.admin-tabbar button.active .ico { background: var(--tab); color: #fff; box-shadow: 0 0 16px -2px var(--tab); }
+.admin-tabbar button.active::before {
+    content: ''; position: absolute; top: 2px; left: 50%; width: 22px; height: 3px;
+    transform: translateX(-50%); border-radius: 0 0 3px 3px; background: var(--tab);
+}
 .tiles {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -283,7 +296,7 @@
     .who { display: none; }
     #logoutBtn { flex-shrink: 0; }
 
-    main.shell { padding-inline: 14px; padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+    main.shell { padding-inline: 14px; padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
     .tabs { display: none; }
     .admin-tabbar { display: grid; grid-template-columns: repeat(5, 1fr); }
 
@@ -416,7 +429,6 @@
             <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn">Sign in</button>
         </form>
 
-        <p class="auth-foot">Sessions expire after 12 hours of inactivity.</p>
     </div>
 </div>
 

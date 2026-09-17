@@ -30,22 +30,11 @@
 
     <div id="storeHead"></div>
 
-    <div class="toolbar" style="position:static;padding-top:0;">
-        <div class="toolbar-inner">
-            <div class="chips" id="gameChips" role="group"></div>
-            <div class="select-wrap">
-                <select id="sortSelect" aria-label="Sort">
-                    <option value="newest" data-i18n="sortNewest">Newest first</option>
-                    <option value="price_asc" data-i18n="sortPriceAsc">Price: low to high</option>
-                    <option value="price_desc" data-i18n="sortPriceDesc">Price: high to low</option>
-                    <option value="oldest" data-i18n="sortOldest">Oldest first</option>
-                </select>
-            </div>
-            <span class="result-count" id="resultCount"></span>
-        </div>
+    <div class="section-head-sm store-listings-head" id="storeListingsHead" hidden>
+        <h2 class="section-title-sm"><span data-i18n="storeAccountsTitle">Accounts for sale</span> <span class="store-count tabular" id="resultCount"></span></h2>
     </div>
 
-    <div id="grid" class="grid" aria-live="polite"></div>
+    <div id="grid" class="grid store-grid" aria-live="polite"></div>
 
     <section class="section-sm">
         <div data-ad="footer" data-ad-variant="wide"></div>

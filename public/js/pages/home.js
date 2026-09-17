@@ -5,7 +5,7 @@
     'use strict';
 
     const {
-        t, esc, api, site, games, gameName, gameById, gameIcon, gameLogo,
+        t, esc, api, games, gameName, gameById, gameIcon, gameLogo,
         ICONS, skeletonCards, emptyState, applyTranslations,
         getLang, $, $$, shortDate, truncate, debounce,
     } = window.EX;
@@ -225,17 +225,10 @@
         }
     }
 
-    /* ---------------- copy from settings ---------------- */
-
-    function applyCopy() {
-        if (site().sellerPitch) $('#sellPitch').textContent = site().sellerPitch;
-    }
-
     /* ---------------- boot ---------------- */
 
     (async function boot() {
         await window.UI.boot();
-        applyCopy();
         renderChips();
         initSearch();
 
@@ -243,7 +236,6 @@
         await load();
 
         document.addEventListener('langchange', () => {
-            applyCopy();
             renderChips();
             loadCatalogue();
             loadSellers();

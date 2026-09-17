@@ -164,6 +164,10 @@ body.lang-mm input[data-i18n-ph] {
 .shell { width: 100%; max-width: var(--shell); margin-inline: auto; padding-inline: 22px; }
 .section { padding-block: 34px; }
 .section-sm { padding-block: 22px; }
+/* The last thing before the footer — .site-footer already carries its own
+   30px margin-top, so pairing this with .section-sm's 22px+22px stacked on
+   top of that read as a big dead gap above and below the banner. */
+.ad-footer-section { padding-block: 22px 0; }
 .section-head {
     display: flex; align-items: flex-end; justify-content: space-between;
     gap: 20px; margin-bottom: 20px; flex-wrap: wrap;

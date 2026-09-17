@@ -214,8 +214,11 @@
         return `<div class="ad ad-${shape} is-empty">
             <div class="ad-empty">
                 <span class="ad-flag" data-i18n="adLabel">${esc(t('adLabel'))}</span>
-                <b data-i18n="adEmptyTitle">${esc(t('adEmptyTitle'))}</b>
-                <span data-i18n="adEmptyBody">${esc(t('adEmptyBody'))}</span>
+                <span class="ad-empty-icon" aria-hidden="true">🎮</span>
+                <div class="ad-empty-copy">
+                    <b data-i18n="adEmptyTitle">${esc(t('adEmptyTitle'))}</b>
+                    <span data-i18n="adEmptyBody">${esc(t('adEmptyBody'))}</span>
+                </div>
                 ${url ? `<a class="btn btn-primary btn-sm" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
                     ${ICONS.telegram} ${esc(handle)}
                 </a>` : ''}

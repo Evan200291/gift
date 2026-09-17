@@ -23,6 +23,7 @@ window.I18N = {
 
         /* ---- games ---- */
         allGames: 'All games',
+        moreGames: 'More',
         gameEfootball: 'eFootball',
         gameMlbb: 'Mobile Legends',
         gamePubg: 'PUBG Mobile',
@@ -203,6 +204,7 @@ window.I18N = {
         noContact: 'ဆက်သွယ်ရန် လမ်းကြောင်း မထည့်ရသေးပါ။',
 
         allGames: 'ဂိမ်းအားလုံး',
+        moreGames: 'နောက်ထပ်',
         gameEfootball: 'eFootball',
         gameMlbb: 'Mobile Legends',
         gamePubg: 'PUBG Mobile',

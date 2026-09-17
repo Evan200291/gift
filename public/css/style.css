@@ -335,14 +335,31 @@ body.lang-mm input[data-i18n-ph] {
    safe zone at least ~18% in from every edge, so object-fit:cover cropping
    it down to a narrower box (the mobile 1.9:1 override below only trims the
    sides, see the breakpoint) never cuts into anything that matters. */
-.hero-banner { width: 100%; aspect-ratio: 2.6 / 1; overflow: hidden; background: #0A1830; }
-.hero-banner-img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+.hero-banner { position: relative; width: 100%; aspect-ratio: 2.6 / 1; overflow: hidden; background: #0A1830; touch-action: pan-y; }
+.hero-track { display: flex; height: 100%; transition: transform .6s cubic-bezier(.22, .61, .36, 1); }
+.hero-banner-img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; user-select: none; -webkit-user-drag: none; }
+/* Each dot is a 20px hit target; the visible mark is the ::before pill, which
+   stretches into a bar for the active slide. */
+.hero-dots { display: flex; justify-content: center; gap: 2px; padding-top: 10px; }
+.hero-dots:empty { display: none; }
+.hero-dot { position: relative; width: 20px; height: 20px; padding: 0; border: 0; background: transparent; cursor: pointer; transition: width var(--t); }
+.hero-dot::before {
+    content: ''; position: absolute; left: 50%; top: 50%;
+    width: 8px; height: 8px; border-radius: 999px; transform: translate(-50%, -50%);
+    background: var(--line-strong); transition: width var(--t), background var(--t);
+}
+.hero-dot:hover::before { background: var(--neon-bright); }
+.hero-dot[aria-selected="true"] { width: 34px; }
+.hero-dot[aria-selected="true"]::before { width: 24px; background: var(--neon); }
+.hero-dot:focus-visible { outline: 2px solid var(--neon); outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { .hero-track { transition: none; } }
 .hero-inner {
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
     gap: 34px; align-items: center;
-    padding-top: 30px;
+    padding-top: 20px;
 }
+.hero-inner > * { min-width: 0; }
 .hero-copy { max-width: 580px; }
 .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .hero-stats { display: flex; flex-wrap: wrap; gap: 0; margin-top: 22px; }
@@ -375,8 +392,14 @@ body.lang-mm input[data-i18n-ph] {
 .hud-top b { font-family: var(--font-ui); font-size: .64rem; font-weight: 700; letter-spacing: .14em; color: #7C90B4; }
 .hud-live { display: flex; align-items: center; gap: 6px; font-size: .64rem; font-weight: 700; letter-spacing: .06em; color: #4ADE80; }
 .hud-live .dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 0 3px rgba(74,222,128,.22); animation: boot-blink 1.6s steps(2,end) infinite; }
-.hud-grid { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+/* minmax(0,1fr), not bare 1fr: a bare 1fr track won't shrink below its
+   item's min-content, and a full un-wrapping seller name gave each card a
+   ~174px floor — the HUD couldn't get narrower than ~390px, so on phones
+   around 400px wide it pushed the whole hero (buttons, stats, panel) past
+   the right edge of the screen. */
+.hud-grid { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
 .hud-sel {
+    min-width: 0;
     background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
     padding: 11px; transition: background .14s, border-color .14s, transform .14s; cursor: pointer;
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
@@ -469,6 +492,49 @@ body.lang-mm .price-range input::placeholder { font-size: .78rem; }
 }
 .chip:hover { color: var(--neon); border-color: var(--neon); }
 .chip.active { color: #fff; background: var(--neon-deep); border-color: var(--neon-deep); }
+
+/* Game filter: on desktop every game is a chip. On phones (see the 720px
+   breakpoint) only "All" + the first two games stay as chips and the rest
+   fold into a "More" cell that opens .game-menu, a full-width panel listing
+   every game with its account count. */
+.game-filter { position: relative; }
+.chip-more, .game-menu { display: none; }
+.chip-more .chev { display: inline-flex; transition: transform var(--t-fast); }
+.chip-more[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.game-menu {
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 45;
+    padding: 6px;
+    background: linear-gradient(160deg, #12294B, #0A1830);
+    border: 1px solid rgba(120,170,255,.28);
+    box-shadow: 0 18px 40px -14px rgba(7,14,30,.6);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
+    animation: gameMenuIn .16s ease-out both;
+}
+@keyframes gameMenuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.game-menu-opt {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 10px; border: 0; border-bottom: 1px solid rgba(255,255,255,.06);
+    background: transparent; color: #DCE6FF; text-align: left; cursor: pointer;
+    font-family: var(--font-display); font-weight: 600; font-size: .88rem;
+    transition: background var(--t-fast);
+}
+.game-menu-opt:last-child { border-bottom: 0; }
+.game-menu-opt:hover, .game-menu-opt:focus-visible { background: rgba(75,133,255,.14); outline: none; }
+.game-menu-opt[aria-selected="true"] { background: rgba(24,86,232,.3); color: #fff; }
+.gm-glyph {
+    width: 32px; height: 32px; flex: none; display: grid; place-items: center; overflow: hidden;
+    color: var(--cat, #8FA3C7);
+    background: color-mix(in srgb, var(--cat, var(--neon)) 16%, #0C1830);
+    border: 1px solid color-mix(in srgb, var(--cat, var(--neon)) 45%, transparent);
+    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+}
+.gm-glyph img { width: 80%; height: 80%; object-fit: contain; }
+.gm-glyph svg { width: 16px; height: 16px; }
+.gm-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gm-count { flex: none; padding: 2px 8px; font-family: var(--font-mono); font-size: .7rem; color: #8FA3C7; background: rgba(255,255,255,.06); }
+.gm-check { flex: none; display: inline-flex; color: var(--neon-bright); visibility: hidden; }
+.game-menu-opt[aria-selected="true"] .gm-check { visibility: visible; }
+@media (prefers-reduced-motion: reduce) { .game-menu { animation: none; } }
 .select-wrap { position: relative; display: inline-flex; }
 .select-wrap::after {
     content: ''; position: absolute; right: 14px; top: 50%;
@@ -938,6 +1004,20 @@ select option { background: var(--surface); color: var(--text); }
     .result-count { margin-left: 0; width: 100%; }
     .chips { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
     .chips::-webkit-scrollbar { display: none; }
+    /* Four equal cells that fill the row — no sideways scrolling. overflow
+       must be visible here or the absolutely positioned menu gets clipped. */
+    .chips.game-filter {
+        display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
+        overflow: visible; padding-bottom: 0;
+    }
+    .game-filter .chip {
+        min-width: 0; padding: 10px 6px; font-size: .74rem; text-align: center;
+        overflow: hidden; text-overflow: ellipsis;
+    }
+    .game-filter .chip-overflow { display: none; }
+    .game-filter .chip-more { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+    .game-filter .chip-more .chip-more-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .game-menu:not([hidden]) { display: block; }
     /* Minimal dark "gaming" footer on mobile — brand + copyright row only.
        The link columns (Browse/Sellers/Blog/Sell/Advertise/Seller login)
        are dropped entirely rather than collapsed into a wrapped row: on a

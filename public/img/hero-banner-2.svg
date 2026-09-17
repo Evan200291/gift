@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 640" role="img" aria-label="Verified sellers — contact them directly">
+  <defs>
+    <linearGradient id="bg" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#15315A"/>
+      <stop offset="55%" stop-color="#0E2140"/>
+      <stop offset="100%" stop-color="#080F1E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="18%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity=".32"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="92%" cy="90%" r="45%">
+      <stop offset="0%" stop-color="#1856E8" stop-opacity=".45"/>
+      <stop offset="100%" stop-color="#1856E8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="shield" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4B85FF"/>
+      <stop offset="100%" stop-color="#1856E8"/>
+    </linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+    </pattern>
+    <clipPath id="frame"><rect width="1800" height="640"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="1800" height="640" fill="url(#bg)"/>
+    <rect width="1800" height="640" fill="url(#grid)"/>
+    <rect width="1800" height="640" fill="url(#glow)"/>
+    <rect width="1800" height="640" fill="url(#glow2)"/>
+
+    <!-- Decorative geometry, outside the safe zone -->
+    <polygon points="0,0 250,0 110,200 0,280" fill="#22D3EE" opacity=".08"/>
+    <polygon points="1800,380 1800,640 1480,640" fill="#1856E8" opacity=".16"/>
+    <polygon points="1620,0 1800,0 1800,150" fill="#4B85FF" opacity=".1"/>
+    <g fill="none" stroke="#4B85FF" stroke-opacity=".22" stroke-width="2">
+      <polygon points="1560,120 1640,120 1660,140 1660,220 1580,220 1560,200"/>
+      <polygon points="150,430 210,430 225,445 225,505 165,505 150,490"/>
+    </g>
+    <g opacity=".5" fill="#4B85FF">
+      <circle cx="1690" cy="300" r="3"/>
+      <circle cx="1530" cy="560" r="4"/>
+      <circle cx="90" cy="360" r="3"/>
+      <circle cx="260" cy="580" r="3"/>
+    </g>
+
+    <!-- ===== Safe zone: x 324–1476, y 115–525 ===== -->
+
+    <!-- Shield emblem -->
+    <g transform="translate(372,178)">
+      <path d="M0,22 L80,0 L160,22 V110 C160,178 110,222 80,236 C50,222 0,178 0,110 Z" fill="url(#shield)"/>
+      <path d="M14,32 L80,14 L146,32 V110 C146,168 104,206 80,219 C56,206 14,168 14,110 Z" fill="none" stroke="#ffffff" stroke-opacity=".28" stroke-width="3"/>
+      <path d="M46,116 L72,142 L118,90" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Headline -->
+    <text x="580" y="276" font-family="Arial, Helvetica, sans-serif" font-weight="700"
+          font-size="70" letter-spacing="1" fill="#ffffff">VERIFIED SELLERS</text>
+    <text x="582" y="318" font-family="Arial, Helvetica, sans-serif" font-weight="600"
+          font-size="22" letter-spacing="4" fill="#8FA9DC">CONTACT SELLERS DIRECTLY · NO SIGN-UP</text>
+
+    <!-- Feature pills -->
+    <g font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="22" fill="#E6EEFF">
+      <g transform="translate(580,366)">
+        <rect width="300" height="54" rx="6" fill="#ffffff" fill-opacity=".07" stroke="#22D3EE" stroke-opacity=".5" stroke-width="2"/>
+        <circle cx="30" cy="27" r="13" fill="#22D3EE"/>
+        <path d="M23,27 L28,32 L37,22" fill="none" stroke="#062A33" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="54" y="35">Subscribed resellers</text>
+      </g>
+      <g transform="translate(896,366)">
+        <rect width="232" height="54" rx="6" fill="#ffffff" fill-opacity=".07" stroke="#22D3EE" stroke-opacity=".5" stroke-width="2"/>
+        <circle cx="30" cy="27" r="13" fill="#22D3EE"/>
+        <path d="M23,27 L28,32 L37,22" fill="none" stroke="#062A33" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="54" y="35">Direct contact</text>
+      </g>
+      <g transform="translate(1144,366)">
+        <rect width="250" height="54" rx="6" fill="#ffffff" fill-opacity=".07" stroke="#22D3EE" stroke-opacity=".5" stroke-width="2"/>
+        <circle cx="30" cy="27" r="13" fill="#22D3EE"/>
+        <path d="M23,27 L28,32 L37,22" fill="none" stroke="#062A33" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="54" y="35">4 games covered</text>
+      </g>
+    </g>
+  </g>
+</svg>

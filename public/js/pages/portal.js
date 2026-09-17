@@ -1,4 +1,4 @@
-﻿/* =============================================================
+/* =============================================================
    pages/portal.js — the seller portal page controller.
 
    Wired up against portal.html. The page has:
@@ -36,7 +36,7 @@
     let PLANS = [];         // subscription plans, for the banner
 
     const ListState = { q: "", game: "", status: "", sort: "newest", page: 1, limit: 12, total: 0, totalPages: 1 };
-    const Editor = { open: false, editing: null, files: [], removed: new Set(), existing: [], existingThumbs: [] };
+    const Editor = { open: false, editing: null, files: [], frames: [], previews: [], removed: new Set(), existing: [], existingThumbs: [] };
 
     /* =============================================================
        Boot
@@ -205,6 +205,46 @@
      * image is animated (GIF — canvas would flatten it to one frame),
      * or if compression somehow doesn't come out smaller.
      */
+    /**
+     * Render a photo into the 16:9 listing frame exactly as the seller set it
+     * in the editor (zoom + pan), over a blurred, darkened copy of itself so
+     * zoomed-out photos get soft bars instead of flat white ones. The server
+     * stores 1600x900 with no further crop. Falls back to the raw file.
+     */
+    const FRAME_W = 1600;
+    const FRAME_H = 900;
+    async function composeFrame(file, frame) {
+        const fr = frame || { zoom: 1, ox: 0, oy: 0 };
+        if (!window.createImageBitmap || file.type === "image/gif") return file;
+        try {
+            const bmp = await createImageBitmap(file);
+            const canvas = document.createElement("canvas");
+            canvas.width = FRAME_W;
+            canvas.height = FRAME_H;
+            const ctx = canvas.getContext("2d");
+
+            ctx.fillStyle = "#140C28";
+            ctx.fillRect(0, 0, FRAME_W, FRAME_H);
+            const cover = Math.max(FRAME_W / bmp.width, FRAME_H / bmp.height) * 1.1;
+            ctx.save();
+            ctx.filter = "blur(28px) brightness(.45) saturate(1.2)";
+            ctx.drawImage(bmp, (FRAME_W - bmp.width * cover) / 2, (FRAME_H - bmp.height * cover) / 2, bmp.width * cover, bmp.height * cover);
+            ctx.restore();
+
+            const fit = Math.min(FRAME_W / bmp.width, FRAME_H / bmp.height) * fr.zoom;
+            const w = bmp.width * fit;
+            const h = bmp.height * fit;
+            ctx.drawImage(bmp, (FRAME_W - w) / 2 + fr.ox * FRAME_W, (FRAME_H - h) / 2 + fr.oy * FRAME_H, w, h);
+            bmp.close();
+
+            const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", 0.88));
+            if (!blob) return file;
+            return new File([blob], file.name.replace(/\.\w+$/, "") + "-framed.webp", { type: "image/webp" });
+        } catch {
+            return file;
+        }
+    }
+
     const MAX_UPLOAD_DIM = 1920;
     async function compressImage(file) {
         if (file.type === "image/gif" || !window.createImageBitmap) return file;
@@ -421,6 +461,7 @@
         openEditor(id) {
             Editor.open = true;
             Editor.editing = id || null;
+            Listings.dropPreviews();
             Editor.files = [];
             Editor.removed = new Set();
             Editor.existing = [];
@@ -469,11 +510,18 @@
             }
         },
 
+        dropPreviews() {
+            (Editor.previews || []).forEach((u) => u && URL.revokeObjectURL(u));
+            Editor.previews = [];
+            Editor.frames = [];
+        },
+
         closeEditor() {
             const scrim = $("#editor");
             if (scrim) { scrim.classList.remove("open"); scrim.setAttribute("hidden", ""); }
             Editor.open = false;
             Editor.editing = null;
+            Listings.dropPreviews();
             Editor.files = [];
             Editor.removed = new Set();
             Editor.existing = [];
@@ -492,14 +540,26 @@
                     + "</div>");
             });
             Editor.files.forEach((file, i) => {
-                const preview = URL.createObjectURL(file);
-                tiles.push("<div class=\"shot-item\" data-new=\"" + i + "\">"
-                    + "<img src=\"" + esc(preview) + "\" alt=\"\">"
+                const fr = Editor.frames[i] || (Editor.frames[i] = { zoom: 1, ox: 0, oy: 0 });
+                if (!Editor.previews[i]) Editor.previews[i] = URL.createObjectURL(file);
+                tiles.push("<div class=\"shot-item shot-new\" data-new=\"" + i + "\">"
+                    + "<div class=\"shot-frame\" data-frame=\"" + i + "\" title=\"Drag to position\">"
+                    +   "<img class=\"shot-bg\" src=\"" + esc(Editor.previews[i]) + "\" alt=\"\">"
+                    +   "<img class=\"shot-fg\" src=\"" + esc(Editor.previews[i]) + "\" alt=\"\" draggable=\"false\""
+                    +     " style=\"--z:" + fr.zoom + ";--ox:" + fr.ox + ";--oy:" + fr.oy + "\">"
+                    + "</div>"
                     + "<button type=\"button\" class=\"kill\" data-rm-new=\"" + i + "\" title=\"Remove\">×</button>"
                     + "<span class=\"tag\">NEW</span>"
+                    + "<div class=\"shot-zoom\">"
+                    +   "<button type=\"button\" data-zoom=\"-\" data-i=\"" + i + "\" aria-label=\"Zoom out\">−</button>"
+                    +   "<input type=\"range\" min=\"0.4\" max=\"2.5\" step=\"0.05\" value=\"" + fr.zoom + "\" data-zoom-range=\"" + i + "\" aria-label=\"Zoom\">"
+                    +   "<button type=\"button\" data-zoom=\"+\" data-i=\"" + i + "\" aria-label=\"Zoom in\">+</button>"
+                    +   "<button type=\"button\" class=\"shot-fit\" data-fit=\"" + i + "\">Fit</button>"
+                    + "</div>"
                     + "</div>");
             });
             host.innerHTML = tiles.join("");
+            Listings.bindFrames(host);
             $$("[data-rm-existing]", host).forEach((btn) => {
                 btn.addEventListener("click", () => {
                     const url = btn.dataset.rmExisting;
@@ -511,9 +571,65 @@
             $$("[data-rm-new]", host).forEach((btn) => {
                 btn.addEventListener("click", () => {
                     const i = Number(btn.dataset.rmNew);
+                    if (Editor.previews[i]) URL.revokeObjectURL(Editor.previews[i]);
                     Editor.files.splice(i, 1);
+                    Editor.frames.splice(i, 1);
+                    Editor.previews.splice(i, 1);
                     Listings.renderShots();
                 });
+            });
+        },
+
+        /* ---- photo framing: zoom (buttons/slider/wheel) + drag to pan ----
+           zoom 1 = the whole photo fits the 16:9 frame; below 1 zooms out
+           further, above 1 crops in. ox/oy are offsets as a fraction of the
+           frame size. The same numbers drive composeFrame() on save, so what
+           the seller sees is exactly what gets uploaded. */
+        bindFrames(host) {
+            const apply = (i) => {
+                const fr = Editor.frames[i];
+                const img = host.querySelector(".shot-frame[data-frame=\"" + i + "\"] .shot-fg");
+                if (img) { img.style.setProperty("--z", fr.zoom); img.style.setProperty("--ox", fr.ox); img.style.setProperty("--oy", fr.oy); }
+                const range = host.querySelector("[data-zoom-range=\"" + i + "\"]");
+                if (range) range.value = fr.zoom;
+            };
+            const setZoom = (i, z) => {
+                Editor.frames[i].zoom = Math.min(2.5, Math.max(0.4, Math.round(z * 100) / 100));
+                apply(i);
+            };
+            $$("[data-zoom]", host).forEach((b) => b.addEventListener("click", () => {
+                const i = Number(b.dataset.i);
+                setZoom(i, Editor.frames[i].zoom + (b.dataset.zoom === "+" ? 0.1 : -0.1));
+            }));
+            $$("[data-zoom-range]", host).forEach((r) => r.addEventListener("input", () => setZoom(Number(r.dataset.zoomRange), Number(r.value))));
+            $$("[data-fit]", host).forEach((b) => b.addEventListener("click", () => {
+                const i = Number(b.dataset.fit);
+                Editor.frames[i] = { zoom: 1, ox: 0, oy: 0 };
+                apply(i);
+            }));
+            $$(".shot-frame", host).forEach((frame) => {
+                const i = Number(frame.dataset.frame);
+                frame.addEventListener("wheel", (e) => {
+                    e.preventDefault();
+                    setZoom(i, Editor.frames[i].zoom + (e.deltaY < 0 ? 0.08 : -0.08));
+                }, { passive: false });
+                let start = null;
+                frame.addEventListener("pointerdown", (e) => {
+                    frame.setPointerCapture(e.pointerId);
+                    start = { x: e.clientX, y: e.clientY, ox: Editor.frames[i].ox, oy: Editor.frames[i].oy };
+                    frame.classList.add("is-dragging");
+                });
+                frame.addEventListener("pointermove", (e) => {
+                    if (!start) return;
+                    const rect = frame.getBoundingClientRect();
+                    const fr = Editor.frames[i];
+                    fr.ox = Math.max(-1, Math.min(1, start.ox + (e.clientX - start.x) / rect.width));
+                    fr.oy = Math.max(-1, Math.min(1, start.oy + (e.clientY - start.y) / rect.height));
+                    apply(i);
+                });
+                const end = () => { start = null; frame.classList.remove("is-dragging"); };
+                frame.addEventListener("pointerup", end);
+                frame.addEventListener("pointercancel", end);
             });
         },
 
@@ -550,7 +666,10 @@
                 fd.append("price",            v("f_price") || "0");
                 fd.append("status",           v("f_status") || "available");
                 fd.append("contact_note",     v("f_contact_note"));
-                Editor.files.forEach((f) => fd.append("images", f, f.name));
+                for (let i = 0; i < Editor.files.length; i += 1) {
+                    const framed = await composeFrame(Editor.files[i], Editor.frames[i]);
+                    fd.append("images", framed, framed.name);
+                }
 
                 if (id) {
                     const existing = (Editor.existing || []).filter((u) => !Editor.removed.has(u));

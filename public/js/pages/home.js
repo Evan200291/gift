@@ -298,6 +298,7 @@
             $('#sellerGrid').innerHTML = rows.slice(0, 4).length
                 ? rows.slice(0, 4).map(window.UI.sellerCard).join('')
                 : emptyState('emptyTitle', 'emptyBody', '🛡️');
+            window.UI.paintSellerCards($('#sellerGrid'));
             $('#statSellers').textContent = String(data.total || 0);
             renderHeroHud(rows);
         } catch {

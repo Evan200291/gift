@@ -122,7 +122,7 @@
 
         return `<div class="panel">
             <h3>${esc(t('soldBy'))}</h3>
-            <a class="seller-card" href="/store/${esc(seller.username)}" style="padding:0;border:0;background:none;">
+            <a class="seller-card" href="/store/${esc(seller.username)}"${seller.avatar ? ` data-avatar="${esc(seller.avatar)}"` : ''}>
                 <span class="avatar lg">${seller.avatar ? `<img src="${esc(seller.avatar)}" alt="">` : esc((seller.displayName || '?').charAt(0).toUpperCase())}</span>
                 <span class="seller-meta">
                     <b>${esc(seller.displayName)}${seller.verified ? `<span class="verified">${ICONS.verified}</span>` : ''}</b>
@@ -206,6 +206,7 @@
     }
 
     function wire() {
+        window.UI.paintSellerCards($('#content'));
         const prev = $('#galPrev');
         const next = $('#galNext');
         if (prev) prev.addEventListener('click', () => show(index - 1));

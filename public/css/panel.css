@@ -295,3 +295,43 @@ main.shell { padding-top: 20px; }
        so the page reads as content, not an oversized empty screen. */
     .auth-screen { min-height: auto; justify-content: flex-start; padding-top: 28px; }
 }
+
+/* ---- listing editor: full page ----
+   The editor takes the whole viewport (no floating card) with content in a
+   centred 960px column, so long forms and photo framing have room. */
+#editor { padding: 0; background: var(--bg); backdrop-filter: none; }
+#editor .modal {
+    max-width: none !important; margin: 0 !important; min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column;
+    border: 0; clip-path: none; box-shadow: none; background: var(--bg-soft);
+}
+#editor form { flex: 1; display: flex; flex-direction: column; }
+#editor .modal-body { flex: 1; }
+#editor .modal-head, #editor .modal-body, #editor .modal-foot { padding-inline: max(16px, calc((100% - 960px) / 2)); }
+#editor .modal-head h2 { font-size: 1.2rem; }
+
+/* ---- photo framing tiles (new uploads) ---- */
+#shots { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.shot-item.shot-new { aspect-ratio: auto; overflow: visible; background: var(--surface); border-color: var(--line); padding: 6px; border-radius: 0; }
+.shot-frame {
+    position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #140C28;
+    cursor: grab; touch-action: none; user-select: none;
+}
+.shot-frame.is-dragging { cursor: grabbing; }
+.shot-item .shot-frame img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.shot-frame .shot-bg { object-fit: cover; transform: scale(1.1); filter: blur(14px) brightness(.45) saturate(1.2); }
+.shot-frame .shot-fg {
+    object-fit: contain;
+    transform: translate(calc(var(--ox, 0) * 100%), calc(var(--oy, 0) * 100%)) scale(var(--z, 1));
+}
+.shot-new .kill { top: 10px; right: 10px; }
+.shot-new .tag { top: 10px; left: 10px; bottom: auto; }
+.shot-zoom { display: flex; align-items: center; gap: 6px; padding: 8px 2px 2px; }
+.shot-zoom button {
+    flex: none; display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 8px;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
+    font-family: var(--font-display); font-weight: 700; font-size: .9rem; cursor: pointer;
+}
+.shot-zoom button:hover { border-color: var(--neon); color: var(--neon); }
+.shot-zoom .shot-fit { font-size: .72rem; }
+.shot-zoom input[type="range"] { flex: 1; min-width: 0; accent-color: var(--neon); }

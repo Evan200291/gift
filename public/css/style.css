@@ -298,25 +298,39 @@ body.lang-mm input[data-i18n-ph] {
 }
 .nav-spacer { flex: 1 1 auto; }
 .nav-links { display: flex; align-items: center; gap: 4px; }
-/* Nav links use the site's HUD language: cut-corner hit area, a faint violet
-   wash and a brand-gradient bar that sweeps in under the label. */
+/* Nav links: each section has its own colour (matching the mobile dock) —
+   a small glowing diamond marks it at rest; hover washes the cut-corner
+   hit area in that colour and sweeps a bar under the label; the current
+   page is a solid chip in its colour. */
 .nav-links a {
-    position: relative;
-    padding: 8px 14px;
+    --nav-c: var(--neon);
+    position: relative; display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 13px;
     font-family: var(--font-display); font-size: .86rem; font-weight: 600; color: var(--text-2);
     clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
     transition: color var(--t-fast), background var(--t-fast);
 }
+.nav-links a::before {
+    content: ''; width: 6px; height: 6px; flex: none; transform: rotate(45deg);
+    background: var(--nav-c); box-shadow: 0 0 8px var(--nav-c);
+}
 .nav-links a::after {
     content: ''; position: absolute; left: 12px; right: 12px; bottom: 3px; height: 2px;
-    background: var(--grad); transform: scaleX(0); transform-origin: left;
+    background: var(--nav-c); transform: scaleX(0); transform-origin: left;
     transition: transform var(--t);
 }
-.nav-links a:hover { color: var(--neon); background: var(--neon-faint); }
-.nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
-.nav-links a.active { color: var(--ink); background: var(--neon-faint); }
-.nav-links a:focus-visible { outline: 2px solid var(--neon); outline-offset: -2px; }
-/* Seller login: fills with the brand gradient on hover like the primary CTA. */
+.nav-links a:nth-child(1) { --nav-c: #8B55FF; }
+.nav-links a:nth-child(2) { --nav-c: #F0359A; }
+.nav-links a:nth-child(3) { --nav-c: #0BB4C4; }
+.nav-links a:nth-child(4) { --nav-c: #F2A017; }
+.nav-links a:nth-child(5) { --nav-c: #22C55E; }
+.nav-links a:nth-child(6) { --nav-c: #3B7BFF; }
+.nav-links a:hover { color: var(--ink); background: color-mix(in srgb, var(--nav-c) 14%, transparent); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-links a.active { color: #fff; background: var(--nav-c); box-shadow: 0 6px 16px -8px var(--nav-c); }
+.nav-links a.active::before { background: #fff; box-shadow: none; }
+.nav-links a.active::after { display: none; }
+.nav-links a:focus-visible { outline: 2px solid var(--nav-c); outline-offset: -2px; }/* Seller login: fills with the brand gradient on hover like the primary CTA. */
 .nav-tools .nav-portal:hover { border-color: transparent; background: var(--grad); color: #fff; box-shadow: 0 6px 16px -6px var(--neon-glow); }
 .nav-tools { display: flex; align-items: center; gap: 10px; }
 /* Language toggle — a single cut-corner HUD button: globe + current

@@ -242,28 +242,50 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 
 /* ---------- 5. Seller cards & storefront -------------------------------- */
 .seller-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+/* Seller cards wear the same theme as the seller's profile cover: a vivid
+   gradient in the colour picked from their avatar (UI.paintSellerCards sets
+   --seller-c), brand gradient until then / without a photo, speed stripes. */
 .seller-card {
+    position: relative; isolation: isolate; overflow: hidden;
     display: flex; align-items: center; gap: 13px;
-    padding: 14px;
-    border: 1px solid var(--line);
+    padding: 14px; color: #fff;
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
-    background: var(--surface);
-    transition: transform var(--t-fast), border-color var(--t-fast), box-shadow var(--t);
+    background: var(--grad);
+    box-shadow: 0 10px 22px -14px var(--neon-glow);
+    transition: transform var(--t-fast), box-shadow var(--t), filter var(--t);
 }
-.seller-card:hover { transform: translateY(-3px); border-color: var(--line-strong); box-shadow: var(--sh-2); }
+.seller-card.has-seller-colour {
+    background: linear-gradient(120deg, var(--seller-c) 0%, color-mix(in srgb, var(--seller-c) 55%, #12072A) 100%);
+    box-shadow: 0 10px 22px -14px var(--seller-c);
+}
+.seller-card::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+        radial-gradient(60% 140% at 100% 0%, rgba(255,255,255,.22), transparent 60%),
+        repeating-linear-gradient(-55deg, rgba(255,255,255,.1) 0 2px, transparent 2px 16px);
+    -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000 100%);
+            mask-image: linear-gradient(90deg, transparent 30%, #000 100%);
+}
+.seller-card:hover { color: #fff; transform: translateY(-3px); filter: brightness(1.06); }
+.seller-card .avatar { background: rgba(255,255,255,.2); color: #fff; }
+/* Photo avatars get a white frame so a photo in the card's own colour still reads. */
+.seller-card .avatar:has(img) { padding: 3px; background: rgba(255,255,255,.92); }
+.seller-card .avatar img { clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+.seller-card .verified { color: #fff; }
+.seller-card .dim { color: rgba(255,255,255,.8); }
+.seller-card .spec { background: rgba(255,255,255,.18); border-color: transparent; color: #fff; }
 .seller-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .seller-meta b {
-    font-family: var(--font-display); font-size: .96rem; font-weight: 600; color: var(--neon-deep);
-    display: flex; align-items: center; gap: 4px;
+    font-family: var(--font-display); font-size: .96rem; font-weight: 600; color: #fff;
+    display: flex; align-items: center; gap: 4px; text-shadow: 0 1px 8px rgba(0,0,0,.25);
 }
 .seller-meta > span { font-size: .75rem; }
 .seller-count { text-align: right; flex-shrink: 0; }
 .seller-count b {
     display: block; font-family: var(--font-display); font-size: 1.3rem;
-    color: var(--neon);
+    color: #fff;
 }
-.seller-count span { font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
-
+.seller-count span { font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.8); }
 /* Seller profile (/store/<username>). One card: a gradient "cover" with a
    bar per game the seller stocks, an avatar that overlaps it, then name,
    bio, three stat tiles, game tags and big tappable contact buttons. */
@@ -721,3 +743,52 @@ body.lang-mm .guide-hero h1, body.lang-mm .guide-head h2 { font-family: var(--fo
     .guide-tips { grid-template-columns: 1fr; gap: 8px; }
     .guide-actions .btn { flex: 1 1 auto; }
 }
+
+/* ---------- 12. Advertise page: placement specs ------------------------ */
+.page-head > .shell > .row:first-child { padding-top: 20px; }
+.ad-slot {
+    background: var(--surface); border: 1px solid var(--line);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
+}
+.ad-slot-head { position: relative; padding: 16px 18px 12px; border-bottom: 1px solid var(--line-soft); }
+.ad-slot-head::before { content: ''; position: absolute; left: 0; top: 0; right: 0; height: 3px; background: var(--grad); }
+.ad-slot-head h3 { font-size: 1.02rem; color: var(--ink); }
+.ad-slot-head p { margin-top: 2px; font-size: .84rem; color: var(--text-3); }
+.ad-slot-body { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 20px; padding: 16px 18px 18px; align-items: start; }
+.ad-spec dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 12px; }
+.ad-spec dl > div { padding: 8px 10px; background: var(--bg-soft); box-shadow: inset 3px 0 0 var(--neon); }
+.ad-spec dl > div:nth-child(2) { box-shadow: inset 3px 0 0 var(--pink); }
+.ad-spec dl > div:nth-child(3) { box-shadow: inset 3px 0 0 var(--cyan); }
+.ad-spec dl > div:nth-child(4) { box-shadow: inset 3px 0 0 #22C55E; }
+.ad-spec dt { font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
+.ad-spec dd { margin: 1px 0 0; font-family: var(--font-display); font-size: .82rem; font-weight: 600; color: var(--ink); }
+.sz-diagram {
+    position: relative; width: 100%; overflow: hidden;
+    background: repeating-linear-gradient(45deg, var(--bg-soft) 0 6px, var(--surface-3) 6px 12px);
+    border: 1px solid var(--line-strong);
+}
+.sz-trim { position: absolute; top: 0; bottom: 0; background: rgba(240,53,154,.16); }
+.sz-trim-l { left: 0; border-right: 1px dashed rgba(240,53,154,.6); }
+.sz-trim-r { right: 0; border-left: 1px dashed rgba(240,53,154,.6); }
+.sz-safe { position: absolute; display: grid; place-items: center; border: 2px dashed #16A34A; background: rgba(34,197,94,.12); }
+.sz-safe em { font-style: normal; font-family: var(--font-mono); font-size: .6rem; font-weight: 700; letter-spacing: .1em; color: #16A34A; }
+.sz-flag { position: absolute; top: 3px; right: 3px; z-index: 1; padding: 0 4px; font-size: .5rem; font-weight: 700; color: #fff; background: var(--grad); }
+.ad-notes { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 5px; font-size: .76rem; color: var(--text-2); }
+.ad-notes li { display: flex; gap: 8px; align-items: flex-start; }
+.ad-notes i { flex: none; width: 12px; height: 12px; margin-top: 2px; }
+.sw-trim { background: rgba(240,53,154,.35); border: 1px dashed #F0359A; }
+.sw-safe { background: rgba(34,197,94,.2); border: 1px dashed #16A34A; }
+.sw-flag { background: var(--grad); }
+.ad-preview { min-width: 0; }
+.ad-preview-label { display: block; margin-bottom: 6px; font-size: .64rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
+/* The sidebar slot is ~480px wide on the listing page, so preview it at that. */
+.ad-preview-sidebar > [data-ad] { max-width: 480px; }
+@media (max-width: 860px) {
+    .ad-slot-body { grid-template-columns: 1fr; gap: 14px; padding: 14px; }
+    .ad-slot-head { padding: 14px 14px 10px; }
+}
+
+/* Filled wide banners keep their designed 8:1 shape; on phones they show
+   the central 4:1 of the artwork (see the safe zone on /advertise). */
+.ad-wide.is-filled { aspect-ratio: 8 / 1; min-height: 0; }
+@media (max-width: 720px) { .ad-wide.is-filled { aspect-ratio: 4 / 1; } }

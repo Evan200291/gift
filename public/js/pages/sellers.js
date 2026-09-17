@@ -20,6 +20,7 @@
         host.innerHTML = rows.length
             ? rows.map(window.UI.sellerCard).join('')
             : emptyState(lower ? 'noResultsTitle' : 'emptyTitle', lower ? 'noResultsBody' : 'emptyBody', lower ? '🔍' : '🛡️');
+        window.UI.paintSellerCards(host);
     }
 
     async function load() {

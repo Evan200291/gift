@@ -353,11 +353,80 @@
         });
     }
 
+    /* ================= seller colour ================= */
+
+    /**
+     * A seller's theme colour, taken from their avatar: sample it on a tiny
+     * canvas, bucket pixels by hue weighted by vividness, return the strongest
+     * bucket's average (greyscale photos fall back to the overall average).
+     * Resolves null without an avatar or if the image can't be read. Cached
+     * per URL so a directory of cards decodes each photo once.
+     */
+    const COLOUR_CACHE = new Map();
+    function avatarColor(src) {
+        if (!src) return Promise.resolve(null);
+        if (COLOUR_CACHE.has(src)) return COLOUR_CACHE.get(src);
+        const job = new Promise((resolve) => {
+            const img = new Image();
+            img.decoding = 'async';
+            img.onerror = () => resolve(null);
+            img.onload = () => {
+                try {
+                    const N = 40;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = N; canvas.height = N;
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    ctx.drawImage(img, 0, 0, N, N);
+                    const px = ctx.getImageData(0, 0, N, N).data;
+                    const bins = Array.from({ length: 12 }, () => ({ w: 0, r: 0, g: 0, b: 0 }));
+                    let ar = 0; let ag = 0; let ab = 0; let an = 0;
+                    for (let i = 0; i < px.length; i += 4) {
+                        if (px[i + 3] < 128) continue;
+                        const r = px[i]; const g = px[i + 1]; const b = px[i + 2];
+                        ar += r; ag += g; ab += b; an += 1;
+                        const max = Math.max(r, g, b); const min = Math.min(r, g, b);
+                        const l = (max + min) / 510;
+                        const d = (max - min) / 255;
+                        if (d < 0.12 || l < 0.12 || l > 0.92) continue;
+                        const sat = d / (1 - Math.abs(2 * l - 1));
+                        let h;
+                        if (max === r) h = ((g - b) / (max - min)) % 6;
+                        else if (max === g) h = (b - r) / (max - min) + 2;
+                        else h = (r - g) / (max - min) + 4;
+                        const bin = bins[((Math.round(h * 2) % 12) + 12) % 12];
+                        const w = sat * (1 - Math.abs(l - 0.5));
+                        bin.w += w; bin.r += r * w; bin.g += g * w; bin.b += b * w;
+                    }
+                    if (!an) { resolve(null); return; }
+                    const best = bins.reduce((a, c) => (c.w > a.w ? c : a));
+                    const rgb = best.w > an * 0.04
+                        ? [best.r / best.w, best.g / best.w, best.b / best.w]
+                        : [ar / an, ag / an, ab / an];
+                    resolve(`rgb(${rgb.map((v) => Math.round(v)).join(', ')})`);
+                } catch { resolve(null); }
+            };
+            img.src = src;
+        });
+        COLOUR_CACHE.set(src, job);
+        return job;
+    }
+
+    /** Tint every seller card under root with its avatar's colour. */
+    function paintSellerCards(root) {
+        $$('.seller-card[data-avatar]', root).forEach((card) => {
+            avatarColor(card.dataset.avatar).then((c) => {
+                if (!c) return;
+                card.style.setProperty('--seller-c', c);
+                card.classList.add('has-seller-colour');
+            });
+        });
+    }
+
     /* ================= seller card ================= */
 
     function sellerCard(seller) {
         const games = (seller.games || []).map((g) => `<span class="spec">${esc(gameName(g))}</span>`).join('');
-        return `<a class="seller-card" href="/store/${esc(seller.username)}">
+        return `<a class="seller-card" href="/store/${esc(seller.username)}"${seller.avatar ? ` data-avatar="${esc(seller.avatar)}"` : ''}>
             <span class="avatar lg">${seller.avatar ? `<img src="${esc(seller.avatar)}" alt="">` : esc((seller.displayName || seller.username || '?').charAt(0).toUpperCase())}</span>
             <span class="seller-meta">
                 <b>${esc(seller.displayName || seller.username)}
@@ -400,5 +469,6 @@
     window.UI = {
         boot, mountHeader, mountFooter, mountAds, loadAds, adMarkup, adTelegramUrl,
         listingCard, listingHref, wireCards, pagination, sellerCard, brandBlock, brandMark,
+        avatarColor, paintSellerCards,
     };
 })();

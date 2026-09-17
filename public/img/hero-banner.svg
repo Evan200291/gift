@@ -1,70 +1,344 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 640" role="img" aria-label="EXABYTE game account marketplace">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500" role="img" aria-label="EXABYTE - game account marketplace for eFootball, Mobile Legends, PUBG Mobile and Free Fire" font-family="Arial, Helvetica, sans-serif">
+  <!-- EXABYTE hero banner 1: "the marketplace" - neon arena with perspective floor.
+       SAFE ZONE for essential content: x 280-1320, y 55-410. Background bleeds to all edges. -->
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#15315A"/>
-      <stop offset="55%" stop-color="#0E2140"/>
-      <stop offset="100%" stop-color="#080F1E"/>
+    <linearGradient id="b1-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#080F1E"/>
+      <stop offset=".5" stop-color="#14305A"/>
+      <stop offset=".53" stop-color="#0E2344"/>
+      <stop offset="1" stop-color="#080F1E"/>
     </linearGradient>
-    <radialGradient id="glow" cx="82%" cy="30%" r="60%">
-      <stop offset="0%" stop-color="#1856E8" stop-opacity=".55"/>
-      <stop offset="100%" stop-color="#1856E8" stop-opacity="0"/>
+    <radialGradient id="b1-beam" cx="800" cy="262" r="620" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 262) scale(1 .55) translate(0 -262)">
+      <stop offset="0" stop-color="#1856E8" stop-opacity=".75"/>
+      <stop offset=".45" stop-color="#1856E8" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#1856E8" stop-opacity="0"/>
     </radialGradient>
-    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
-      <path d="M28 0H0V28" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+    <radialGradient id="b1-halo" cx="800" cy="130" r="420" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 130) scale(1 .4) translate(0 -130)">
+      <stop offset="0" stop-color="#4B85FF" stop-opacity=".30"/>
+      <stop offset="1" stop-color="#4B85FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="b1-floor-fade" x1="0" y1="262" x2="0" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".1"/>
+      <stop offset=".35" stop-color="#fff" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#fff" stop-opacity=".35"/>
+    </linearGradient>
+    <mask id="b1-floor-mask" maskUnits="userSpaceOnUse" x="0" y="262" width="1600" height="238">
+      <rect x="0" y="262" width="1600" height="238" fill="url(#b1-floor-fade)"/>
+    </mask>
+    <linearGradient id="b1-horizon" x1="0" y1="0" x2="1600" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22D3EE" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#8FDCFF"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="b1-panel-l" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1856E8" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#1856E8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="b1-panel-r" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#1856E8" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#1856E8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="b1-tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4B85FF"/>
+      <stop offset="1" stop-color="#1856E8"/>
+    </linearGradient>
+    <linearGradient id="b1-word" x1="0" y1="80" x2="0" y2="176" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset=".62" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#A9BBDD"/>
+    </linearGradient>
+    <pattern id="b1-scan" width="8" height="4" patternUnits="userSpaceOnUse">
+      <rect width="8" height="1" fill="#FFFFFF" opacity=".035"/>
     </pattern>
-    <clipPath id="frame"><rect width="1800" height="640"/></clipPath>
+    <filter id="b1-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <linearGradient id="b1-card-ef" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#0FA7A0" stop-opacity=".34"/>
+      <stop offset=".55" stop-color="#12294B" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#0A1830" stop-opacity=".96"/>
+    </linearGradient>
+    <radialGradient id="b1-pool-ef" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0FA7A0" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#0FA7A0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="b1-card-ml" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#7C5CFF" stop-opacity=".34"/>
+      <stop offset=".55" stop-color="#12294B" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#0A1830" stop-opacity=".96"/>
+    </linearGradient>
+    <radialGradient id="b1-pool-ml" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#7C5CFF" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#7C5CFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="b1-card-pg" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#E0961B" stop-opacity=".34"/>
+      <stop offset=".55" stop-color="#12294B" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#0A1830" stop-opacity=".96"/>
+    </linearGradient>
+    <radialGradient id="b1-pool-pg" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#E0961B" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#E0961B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="b1-card-ff" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#E2404F" stop-opacity=".34"/>
+      <stop offset=".55" stop-color="#12294B" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#0A1830" stop-opacity=".96"/>
+    </linearGradient>
+    <radialGradient id="b1-pool-ff" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#E2404F" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#E2404F" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
-  <g clip-path="url(#frame)">
-    <rect width="1800" height="640" fill="url(#bg)"/>
-    <rect width="1800" height="640" fill="url(#grid)"/>
-    <rect width="1800" height="640" fill="url(#glow)"/>
+  <!-- ===== LAYER 1: background (bleeds to all edges) ===== -->
+  <rect width="1600" height="500" fill="url(#b1-sky)"/>
+  <rect width="1600" height="500" fill="url(#b1-beam)"/>
+  <rect width="1600" height="500" fill="url(#b1-halo)"/>
 
-    <!-- Decorative geometry, kept outside the safe zone so cropping never touches it -->
-    <polygon points="1560,0 1800,0 1800,260 1660,400" fill="#1856E8" opacity=".14"/>
-    <polygon points="1800,120 1800,640 1500,640" fill="#4B85FF" opacity=".08"/>
-    <circle cx="1660" cy="470" r="150" fill="#1856E8" opacity=".10"/>
-    <polygon points="0,640 0,430 130,640" fill="#1856E8" opacity=".10"/>
-    <g opacity=".5">
-      <circle cx="1500" cy="150" r="4" fill="#4B85FF"/>
-      <circle cx="1560" cy="230" r="3" fill="#4B85FF"/>
-      <circle cx="1620" cy="120" r="3" fill="#4B85FF"/>
-      <circle cx="200" cy="80" r="3" fill="#4B85FF"/>
-      <circle cx="150" cy="540" r="4" fill="#4B85FF"/>
+  <!-- angular side panels -->
+  <g>
+    <path d="M0 0H360L170 500H0Z" fill="url(#b1-panel-l)" opacity=".55"/>
+    <path d="M0 40H250L110 420H0Z" fill="#0A1830" opacity=".55"/>
+    <path d="M300 0H330L140 500H110Z" fill="#4B85FF" opacity=".16"/>
+    <path d="M1600 0H1240L1430 500H1600Z" fill="url(#b1-panel-r)" opacity=".55"/>
+    <path d="M1600 40H1350L1490 420H1600Z" fill="#0A1830" opacity=".55"/>
+    <path d="M1300 0H1270L1460 500H1490Z" fill="#4B85FF" opacity=".16"/>
+  </g>
+
+  <!-- speed lines -->
+  <g stroke="#8FA9DC" stroke-width="2" opacity=".35">
+    <path d="M40 70h190"/>
+    <path d="M1560 70h-190"/>
+    <path d="M18 118h250"/>
+    <path d="M1582 118h-250"/>
+    <path d="M70 160h150"/>
+    <path d="M1530 160h-150"/>
+    <path d="M10 206h210"/>
+    <path d="M1590 206h-210"/>
+    <path d="M60 238h120"/>
+    <path d="M1540 238h-120"/>
+  </g>
+
+  <!-- particles -->
+  <g>
+    <circle cx="0.1" cy="250.2" r="1.4" fill="#22D3EE" opacity="0.26"/>
+    <circle cx="852.3" cy="102.3" r="2.5" fill="#8FA9DC" opacity="0.53"/>
+    <circle cx="1095.2" cy="179" r="2.6" fill="#8FA9DC" opacity="0.27"/>
+    <circle cx="1132.6" cy="194.5" r="0.9" fill="#8FA9DC" opacity="0.49000000000000005"/>
+    <circle cx="1475.8" cy="221.9" r="1.1" fill="#22D3EE" opacity="0.41"/>
+    <circle cx="1101.6" cy="180.9" r="2.1" fill="#22D3EE" opacity="0.61"/>
+    <circle cx="595.6" cy="103.8" r="2.6" fill="#8FA9DC" opacity="0.32"/>
+    <circle cx="476.2" cy="127.1" r="1.4" fill="#8FA9DC" opacity="0.62"/>
+    <circle cx="1166.8" cy="239.5" r="0.9" fill="#8FA9DC" opacity="0.29"/>
+    <circle cx="814.1" cy="125.4" r="1.2" fill="#8FA9DC" opacity="0.6"/>
+    <circle cx="584.7" cy="106" r="2.3" fill="#8FA9DC" opacity="0.61"/>
+    <circle cx="264.9" cy="121.4" r="1.4" fill="#8FA9DC" opacity="0.32999999999999996"/>
+    <circle cx="532.1" cy="152.9" r="2.2" fill="#22D3EE" opacity="0.27"/>
+    <circle cx="732.5" cy="235.8" r="2.2" fill="#8FA9DC" opacity="0.47000000000000003"/>
+    <circle cx="807.9" cy="192.2" r="2.9" fill="#8FA9DC" opacity="0.35"/>
+    <circle cx="401.8" cy="166.7" r="1.6" fill="#8FA9DC" opacity="0.32"/>
+    <circle cx="1271.6" cy="239.4" r="1" fill="#8FA9DC" opacity="0.5599999999999999"/>
+    <circle cx="650.9" cy="58.4" r="1" fill="#8FA9DC" opacity="0.65"/>
+    <circle cx="1011.8" cy="56.1" r="1.8" fill="#8FA9DC" opacity="0.45"/>
+    <circle cx="1475" cy="241.1" r="2.8" fill="#22D3EE" opacity="0.5900000000000001"/>
+    <circle cx="1217.8" cy="88.9" r="0.8" fill="#8FA9DC" opacity="0.27"/>
+    <circle cx="2.5" cy="174.2" r="1.3" fill="#8FA9DC" opacity="0.52"/>
+    <circle cx="1100" cy="79.5" r="2.7" fill="#8FA9DC" opacity="0.27"/>
+    <circle cx="1430.8" cy="49.6" r="1.9" fill="#22D3EE" opacity="0.15"/>
+    <circle cx="1019.1" cy="250.5" r="0.8" fill="#8FA9DC" opacity="0.6"/>
+    <circle cx="1550" cy="161.3" r="2.3" fill="#8FA9DC" opacity="0.27999999999999997"/>
+    <circle cx="334.3" cy="161.1" r="0.9" fill="#8FA9DC" opacity="0.53"/>
+    <circle cx="1142.5" cy="144.5" r="0.9" fill="#22D3EE" opacity="0.21000000000000002"/>
+    <circle cx="209.2" cy="192" r="2.8" fill="#22D3EE" opacity="0.16999999999999998"/>
+    <circle cx="1378.2" cy="268.2" r="2.9" fill="#8FA9DC" opacity="0.53"/>
+    <circle cx="397.1" cy="201.9" r="2.7" fill="#8FA9DC" opacity="0.35"/>
+    <circle cx="647.8" cy="241.7" r="2" fill="#8FA9DC" opacity="0.32999999999999996"/>
+    <circle cx="1175.8" cy="103.8" r="2.4" fill="#8FA9DC" opacity="0.36"/>
+    <circle cx="498.7" cy="266.4" r="3" fill="#22D3EE" opacity="0.47000000000000003"/>
+    <circle cx="1469.3" cy="69.9" r="2.2" fill="#8FA9DC" opacity="0.22000000000000003"/>
+    <circle cx="891.8" cy="212.9" r="2.9" fill="#8FA9DC" opacity="0.39"/>
+    <circle cx="714.7" cy="61.5" r="2.3" fill="#8FA9DC" opacity="0.41"/>
+    <circle cx="810.8" cy="209.3" r="1.6" fill="#8FA9DC" opacity="0.53"/>
+    <circle cx="478.1" cy="155.4" r="1.2" fill="#8FA9DC" opacity="0.51"/>
+    <circle cx="377.1" cy="184.9" r="1.7" fill="#22D3EE" opacity="0.19"/>
+    <circle cx="1316.6" cy="248.9" r="2.8" fill="#22D3EE" opacity="0.49000000000000005"/>
+    <circle cx="40.3" cy="210.5" r="2.1" fill="#22D3EE" opacity="0.51"/>
+    <circle cx="59.2" cy="54" r="1" fill="#8FA9DC" opacity="0.2"/>
+    <circle cx="15.2" cy="171.3" r="2.9" fill="#8FA9DC" opacity="0.25"/>
+    <circle cx="323.5" cy="188.7" r="1.3" fill="#22D3EE" opacity="0.38"/>
+    <circle cx="676.2" cy="188.4" r="2.5" fill="#8FA9DC" opacity="0.35"/>
+  </g>
+
+  <!-- perspective floor grid -->
+  <g stroke="#4B85FF" stroke-width="1.4" mask="url(#b1-floor-mask)" opacity=".7">
+    <line x1="513" y1="262" x2="-910" y2="500"/>
+    <line x1="544.9" y1="262" x2="-720" y2="500"/>
+    <line x1="576.8" y1="262" x2="-530" y2="500"/>
+    <line x1="608.7" y1="262" x2="-340" y2="500"/>
+    <line x1="640.6" y1="262" x2="-150" y2="500"/>
+    <line x1="672.4" y1="262" x2="40" y2="500"/>
+    <line x1="704.3" y1="262" x2="230" y2="500"/>
+    <line x1="736.2" y1="262" x2="420" y2="500"/>
+    <line x1="768.1" y1="262" x2="610" y2="500"/>
+    <line x1="800" y1="262" x2="800" y2="500"/>
+    <line x1="831.9" y1="262" x2="990" y2="500"/>
+    <line x1="863.8" y1="262" x2="1180" y2="500"/>
+    <line x1="895.7" y1="262" x2="1370" y2="500"/>
+    <line x1="927.6" y1="262" x2="1560" y2="500"/>
+    <line x1="959.4" y1="262" x2="1750" y2="500"/>
+    <line x1="991.3" y1="262" x2="1940" y2="500"/>
+    <line x1="1023.2" y1="262" x2="2130" y2="500"/>
+    <line x1="1055.1" y1="262" x2="2320" y2="500"/>
+    <line x1="1087" y1="262" x2="2510" y2="500"/>
+    <line x1="0" y1="264.4" x2="1600" y2="264.4"/>
+    <line x1="0" y1="272.1" x2="1600" y2="272.1"/>
+    <line x1="0" y1="285.7" x2="1600" y2="285.7"/>
+    <line x1="0" y1="305.4" x2="1600" y2="305.4"/>
+    <line x1="0" y1="331.3" x2="1600" y2="331.3"/>
+    <line x1="0" y1="363.6" x2="1600" y2="363.6"/>
+    <line x1="0" y1="402.4" x2="1600" y2="402.4"/>
+    <line x1="0" y1="447.8" x2="1600" y2="447.8"/>
+    <line x1="0" y1="500" x2="1600" y2="500"/>
+  </g>
+
+  <!-- horizon glow -->
+  <rect x="200" y="252" width="1200" height="20" fill="#22D3EE" opacity=".45" filter="url(#b1-glow)"/>
+  <rect x="0" y="261" width="1600" height="2" fill="url(#b1-horizon)"/>
+
+  <!-- flank account-card stacks (decorative; cropped away on phones) -->
+    <g transform="translate(126 262)">
+      <g transform="translate(-28 16) rotate(-20)" opacity="0.45">
+        <path d="M-66 -100H66L86 -80V100H-66L-86 80V-100Z" transform="translate(0 0)" fill="#12294B" stroke="#0FA7A0" stroke-width="2"/>
+        <path d="M-86 -100H66L86 -80V-62H-86Z" fill="#0FA7A0" opacity=".35"/>
+        <rect x="-64" y="-42" width="46" height="46" fill="none" stroke="#0FA7A0" stroke-width="2"/>
+        <path d="M-6 -36h70M-6 -20h50M-6 -4h60" stroke="#8FA9DC" stroke-width="5" opacity=".45"/>
+        <path d="M-64 30h128M-64 48h96M-64 66h112" stroke="#8FA9DC" stroke-width="4" opacity=".25"/>
+        <rect x="-86" y="84" width="96" height="6" fill="#0FA7A0"/>
+      </g>
+      <g transform="translate(6 0) rotate(-9)" opacity="0.7">
+        <path d="M-66 -100H66L86 -80V100H-66L-86 80V-100Z" transform="translate(0 0)" fill="#12294B" stroke="#7C5CFF" stroke-width="2"/>
+        <path d="M-86 -100H66L86 -80V-62H-86Z" fill="#7C5CFF" opacity=".35"/>
+        <rect x="-64" y="-42" width="46" height="46" fill="none" stroke="#7C5CFF" stroke-width="2"/>
+        <path d="M-6 -36h70M-6 -20h50M-6 -4h60" stroke="#8FA9DC" stroke-width="5" opacity=".45"/>
+        <path d="M-64 30h128M-64 48h96M-64 66h112" stroke="#8FA9DC" stroke-width="4" opacity=".25"/>
+        <rect x="-86" y="84" width="96" height="6" fill="#7C5CFF"/>
+      </g>
+    </g>
+    <g transform="translate(1474 262)">
+      <g transform="translate(28 16) rotate(20)" opacity="0.45">
+        <path d="M-66 -100H66L86 -80V100H-66L-86 80V-100Z" transform="translate(0 0)" fill="#12294B" stroke="#E2404F" stroke-width="2"/>
+        <path d="M-86 -100H66L86 -80V-62H-86Z" fill="#E2404F" opacity=".35"/>
+        <rect x="-64" y="-42" width="46" height="46" fill="none" stroke="#E2404F" stroke-width="2"/>
+        <path d="M-6 -36h70M-6 -20h50M-6 -4h60" stroke="#8FA9DC" stroke-width="5" opacity=".45"/>
+        <path d="M-64 30h128M-64 48h96M-64 66h112" stroke="#8FA9DC" stroke-width="4" opacity=".25"/>
+        <rect x="-86" y="84" width="96" height="6" fill="#E2404F"/>
+      </g>
+      <g transform="translate(-6 0) rotate(9)" opacity="0.7">
+        <path d="M-66 -100H66L86 -80V100H-66L-86 80V-100Z" transform="translate(0 0)" fill="#12294B" stroke="#E0961B" stroke-width="2"/>
+        <path d="M-86 -100H66L86 -80V-62H-86Z" fill="#E0961B" opacity=".35"/>
+        <rect x="-64" y="-42" width="46" height="46" fill="none" stroke="#E0961B" stroke-width="2"/>
+        <path d="M-6 -36h70M-6 -20h50M-6 -4h60" stroke="#8FA9DC" stroke-width="5" opacity=".45"/>
+        <path d="M-64 30h128M-64 48h96M-64 66h112" stroke="#8FA9DC" stroke-width="4" opacity=".25"/>
+        <rect x="-86" y="84" width="96" height="6" fill="#E0961B"/>
+      </g>
     </g>
 
-    <!-- ===== Safe zone: x 324–1476, y 115–525 (≈18% inset every side) ===== -->
+  <!-- scanlines -->
+  <rect width="1600" height="500" fill="url(#b1-scan)"/>
 
-    <!-- Brand mark -->
-    <g transform="translate(360,236) scale(2.1)">
-      <polygon points="0,0 50,0 64,14 64,64 14,64 0,50" fill="#1856E8"/>
-      <path d="M18,16H48V24H27V27H45V33H27V44H48V52H18Z" fill="#ffffff"/>
+  <!-- HUD brackets framing the brand block (decorative) -->
+  <g fill="none" stroke="#4B85FF" stroke-width="2.5" opacity=".55">
+    <path d="M300 92V62H336"/>
+    <path d="M1300 92V62H1264"/>
+  </g>
+
+  <!-- ===== LAYER 2: brand block (SAFE ZONE) ===== -->
+  <!-- mark tile -->
+  <g transform="translate(404 64)">
+    <path d="M0 0H100L118 18V118H18L0 100Z" fill="#1856E8" opacity=".8" filter="url(#b1-glow)"/>
+    <path d="M0 0H100L118 18V118H18L0 100Z" fill="url(#b1-tile)"/>
+    <path d="M4 4H98L114 20" fill="none" stroke="#FFFFFF" stroke-width="2" opacity=".45"/>
+    <g transform="translate(20.5 17) scale(.97)" fill="#FFFFFF">
+      <path d="M0 0h19.91v86.58H0Z"/><path d="M26.84 0h56.28L69.26 19.91H26.84Z"/><path d="M26.84 33.33h35.5L48.49 53.25H26.84Z"/><path d="M26.84 66.67h56.28L69.26 86.58H26.84Z"/>
     </g>
+  </g>
 
-    <!-- Wordmark -->
-    <text x="524" y="322" font-family="Arial, Helvetica, sans-serif" font-weight="700"
-          font-size="88" letter-spacing="1" fill="#ffffff">EXABYTE</text>
-    <text x="526" y="358" font-family="Arial, Helvetica, sans-serif" font-weight="600"
-          font-size="22" letter-spacing="4" fill="#8FA9DC">GAME ACCOUNT MARKETPLACE</text>
+  <!-- wordmark: blue offset shadow + gradient face -->
+  <text x="556" y="176" font-size="128" font-weight="700" letter-spacing="5" fill="#1856E8" transform="translate(5 5)">EXABYTE</text>
+  <text x="556" y="176" font-size="128" font-weight="700" letter-spacing="5" fill="url(#b1-word)">EXABYTE</text>
 
-    <!-- Game chips -->
-    <g font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="24" letter-spacing=".5">
-      <g transform="translate(360,410)">
-        <rect width="230" height="56" rx="6" fill="#0FA7A0"/>
-        <text x="115" y="36" text-anchor="middle" fill="#052421">eFootball</text>
+  <!-- tagline -->
+  <g>
+    <path d="M388 227H468L476 235H388Z" fill="#4B85FF"/>
+    <path d="M1212 227H1132L1124 235H1212Z" fill="#4B85FF"/>
+    <text x="804" y="242" font-size="28" font-weight="700" letter-spacing="8" text-anchor="middle" fill="#A9BBDD">GAME ACCOUNT <tspan fill="#FFFFFF">MARKETPLACE</tspan></text>
+  </g>
+
+  <!-- ===== LAYER 3: game cards (SAFE ZONE) ===== -->
+  <g>
+    <!-- card: eFootball -->
+    <ellipse cx="413" cy="402" rx="150.04" ry="26" fill="url(#b1-pool-ef)"/>
+    <g transform="translate(292 284)">
+      <path d="M18 0H242V94L224 112H0V18Z" fill="url(#b1-card-ef)" stroke="#0FA7A0" stroke-width="2"/>
+      <path d="M20 1.5H240.5" stroke="#3FD6CD" stroke-width="3" opacity=".9"/>
+      <path d="M0 18L18 0" stroke="#3FD6CD" stroke-width="3"/>
+      <path d="M242 94L224 112" stroke="#3FD6CD" stroke-width="3"/>
+      <rect x="0" y="105" width="218" height="7" fill="#0FA7A0"/>
+      <text x="20" y="36" font-size="15" font-weight="700" letter-spacing="2.5" fill="#3FD6CD">FOOTBALL</text>
+      <g transform="translate(190 14)" fill="#3FD6CD" stroke="#3FD6CD" opacity=".95">
+        <circle cx="17" cy="17" r="15" fill="none" stroke-width="2.5"/>
+        <path d="M17 9l7 5-2.7 8.3h-8.6L10 14Z" stroke="none"/>
+        <path d="M17 9V2M24 14l6.5-2.5M21.3 22.3l4.2 6M12.7 22.3l-4.2 6M10 14l-6.5-2.5" fill="none" stroke-width="2"/>
       </g>
-      <g transform="translate(606,410)">
-        <rect width="230" height="56" rx="6" fill="#7C5CFF"/>
-        <text x="115" y="36" text-anchor="middle" fill="#1A1240">Mobile Legends</text>
+      <text x="20" y="84" font-size="29" font-weight="700" fill="#FFFFFF">eFootball</text>
+    </g>
+    <!-- card: MOBILE LEGENDS -->
+    <ellipse cx="671" cy="402" rx="150.04" ry="26" fill="url(#b1-pool-ml)"/>
+    <g transform="translate(550 284)">
+      <path d="M18 0H242V94L224 112H0V18Z" fill="url(#b1-card-ml)" stroke="#7C5CFF" stroke-width="2"/>
+      <path d="M20 1.5H240.5" stroke="#A48DFF" stroke-width="3" opacity=".9"/>
+      <path d="M0 18L18 0" stroke="#A48DFF" stroke-width="3"/>
+      <path d="M242 94L224 112" stroke="#A48DFF" stroke-width="3"/>
+      <rect x="0" y="105" width="218" height="7" fill="#7C5CFF"/>
+      <text x="20" y="36" font-size="15" font-weight="700" letter-spacing="2.5" fill="#A48DFF">MOBA 5V5</text>
+      <g transform="translate(190 14)" fill="#A48DFF" stroke="#A48DFF" opacity=".95">
+        <path d="M4 4l19 19M30 4L11 23" fill="none" stroke-width="3.2" stroke-linecap="square"/>
+        <path d="M17 19l-4 4 4 4 4-4Z" stroke="none"/>
+        <path d="M7 24l-4 4 3 3 4-4M27 24l4 4-3 3-4-4" fill="none" stroke-width="2.4"/>
       </g>
-      <g transform="translate(852,410)">
-        <rect width="180" height="56" rx="6" fill="#E0961B"/>
-        <text x="90" y="36" text-anchor="middle" fill="#3A2400">PUBG Mobile</text>
+      <text x="20" y="84" font-size="29" font-weight="700" fill="#FFFFFF" textLength="206" lengthAdjust="spacingAndGlyphs">MOBILE LEGENDS</text>
+    </g>
+    <!-- card: PUBG MOBILE -->
+    <ellipse cx="929" cy="402" rx="150.04" ry="26" fill="url(#b1-pool-pg)"/>
+    <g transform="translate(808 284)">
+      <path d="M18 0H242V94L224 112H0V18Z" fill="url(#b1-card-pg)" stroke="#E0961B" stroke-width="2"/>
+      <path d="M20 1.5H240.5" stroke="#FFBE4D" stroke-width="3" opacity=".9"/>
+      <path d="M0 18L18 0" stroke="#FFBE4D" stroke-width="3"/>
+      <path d="M242 94L224 112" stroke="#FFBE4D" stroke-width="3"/>
+      <rect x="0" y="105" width="218" height="7" fill="#E0961B"/>
+      <text x="20" y="36" font-size="15" font-weight="700" letter-spacing="2.5" fill="#FFBE4D">BATTLE ROYALE</text>
+      <g transform="translate(190 14)" fill="#FFBE4D" stroke="#FFBE4D" opacity=".95">
+        <circle cx="17" cy="17" r="11.5" fill="none" stroke-width="2.5"/>
+        <path d="M17 0v10M17 24v10M0 17h10M24 17h10" fill="none" stroke-width="2.5"/>
+        <circle cx="17" cy="17" r="2.6" stroke="none"/>
       </g>
-      <g transform="translate(1048,410)">
-        <rect width="180" height="56" rx="6" fill="#E2404F"/>
-        <text x="90" y="36" text-anchor="middle" fill="#3A0207">Free Fire</text>
+      <text x="20" y="84" font-size="29" font-weight="700" fill="#FFFFFF">PUBG MOBILE</text>
+    </g>
+    <!-- card: FREE FIRE -->
+    <ellipse cx="1187" cy="402" rx="150.04" ry="26" fill="url(#b1-pool-ff)"/>
+    <g transform="translate(1066 284)">
+      <path d="M18 0H242V94L224 112H0V18Z" fill="url(#b1-card-ff)" stroke="#E2404F" stroke-width="2"/>
+      <path d="M20 1.5H240.5" stroke="#FF6B78" stroke-width="3" opacity=".9"/>
+      <path d="M0 18L18 0" stroke="#FF6B78" stroke-width="3"/>
+      <path d="M242 94L224 112" stroke="#FF6B78" stroke-width="3"/>
+      <rect x="0" y="105" width="218" height="7" fill="#E2404F"/>
+      <text x="20" y="36" font-size="15" font-weight="700" letter-spacing="2.5" fill="#FF6B78">SHOOTER</text>
+      <g transform="translate(190 14)" fill="#FF6B78" stroke="#FF6B78" opacity=".95">
+        <path d="M17 1c2 7 11 11 11 21a11 11 0 0 1-22 0c0-5 3-8 5-10 0 4 2 6 4 6-2-6 0-12 2-17Z" stroke="none"/>
+        <path d="M17 33a5 5 0 0 1-5-5c0-3 3-5 4-8 1 3 6 5 6 8a5 5 0 0 1-5 5Z" fill="#0A1830" stroke="none" opacity=".55"/>
       </g>
+      <text x="20" y="84" font-size="29" font-weight="700" fill="#FFFFFF">FREE FIRE</text>
     </g>
   </g>
 </svg>

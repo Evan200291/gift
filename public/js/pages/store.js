@@ -31,6 +31,57 @@
             </a>`).join('');
     }
 
+    /**
+     * Pick the profile cover colours from the avatar: sample it on a tiny
+     * canvas, bucket pixels by hue weighted by how vivid they are, and use
+     * the strongest bucket's average colour. Greyscale photos fall back to
+     * their overall average. Leaves the brand gradient if anything fails.
+     */
+    function applyCoverFromAvatar(src) {
+        const cover = $('.profile-cover');
+        if (!src || !cover) return;
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => {
+            try {
+                const N = 40;
+                const canvas = document.createElement('canvas');
+                canvas.width = N; canvas.height = N;
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                ctx.drawImage(img, 0, 0, N, N);
+                const px = ctx.getImageData(0, 0, N, N).data;
+                const bins = Array.from({ length: 12 }, () => ({ w: 0, r: 0, g: 0, b: 0 }));
+                let ar = 0; let ag = 0; let ab = 0; let an = 0;
+                for (let i = 0; i < px.length; i += 4) {
+                    if (px[i + 3] < 128) continue;
+                    const r = px[i]; const g = px[i + 1]; const b = px[i + 2];
+                    ar += r; ag += g; ab += b; an += 1;
+                    const max = Math.max(r, g, b); const min = Math.min(r, g, b);
+                    const l = (max + min) / 510;
+                    const d = (max - min) / 255;
+                    if (d < 0.12 || l < 0.12 || l > 0.92) continue;
+                    const sat = d / (1 - Math.abs(2 * l - 1));
+                    let h;
+                    if (max === r) h = ((g - b) / (max - min)) % 6;
+                    else if (max === g) h = (b - r) / (max - min) + 2;
+                    else h = (r - g) / (max - min) + 4;
+                    const bin = bins[((Math.round(h * 2) % 12) + 12) % 12];
+                    const w = sat * (1 - Math.abs(l - 0.5));
+                    bin.w += w; bin.r += r * w; bin.g += g * w; bin.b += b * w;
+                }
+                if (!an) return;
+                const best = bins.reduce((a, c) => (c.w > a.w ? c : a));
+                const rgb = best.w > an * 0.04
+                    ? [best.r / best.w, best.g / best.w, best.b / best.w]
+                    : [ar / an, ag / an, ab / an];
+                const [r, g, b] = rgb.map((v) => Math.round(v));
+                cover.style.setProperty('--cover-a', `rgb(${r}, ${g}, ${b})`);
+                cover.classList.add('has-photo-colour');
+            } catch { /* tainted canvas or decode error: keep brand gradient */ }
+        };
+        img.src = src;
+    }
+
     function renderHead() {
         const s = data.seller;
         const name = s.displayName || s.username;
@@ -72,6 +123,7 @@
             </div>
         </section>`;
 
+        applyCoverFromAvatar(s.avatar);
         $('#crumbName').textContent = name;
         document.title = `${name} — ${window.EX.site().brand || ''}`;
 

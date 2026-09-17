@@ -102,70 +102,64 @@
 .ts-av:not([data-game]), .ts-av[data-game=""] { background: var(--grad); }
 
 /* ---------- 3. Category rail --------------------------------------------
-   Each game is a vivid tile in its own colour: logo top-left, arrow
-   top-right, name + count underneath. The stacked layout keeps full game
-   names readable in the 2-across phone grid. */
-.cat-rail { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+   Compact horizontal tiles: logo plate, name + count beside it, arrow on
+   the right. Each card's colours come from its game's own logo (eFootball
+   navy + yellow, MLBB bronze + gold, PUBG black + amber, Free Fire orange),
+   and the logo sits uncropped on a plate matching its artwork. */
+.cat-rail { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .cat-card {
-    --cat-ground: color-mix(in srgb, var(--cat, var(--neon)) 72%, #12072A);
+    --card-a: var(--neon); --card-b: var(--arcade-solid); --plate: #fff; --arrow: #fff; --arrow-ink: #12072A;
     position: relative; isolation: isolate;
-    display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto;
-    align-items: start; gap: 14px 10px;
-    padding: 16px; min-width: 0; text-align: left; cursor: pointer;
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
+    padding: 12px; min-width: 0; text-align: left; cursor: pointer;
     border: 0; color: #fff;
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
     background:
-        radial-gradient(120% 90% at 100% 0%, rgba(255,255,255,.22), transparent 55%),
-        linear-gradient(145deg, var(--cat, var(--neon)) 0%, var(--cat-ground) 100%);
+        radial-gradient(120% 120% at 100% 0%, rgba(255,255,255,.16), transparent 55%),
+        linear-gradient(135deg, var(--card-a) 0%, var(--card-b) 100%);
     overflow: hidden;
     transition: transform var(--t), box-shadow var(--t), filter var(--t);
-    box-shadow: 0 10px 24px -14px var(--cat, var(--neon));
+    box-shadow: 0 10px 22px -14px var(--card-a);
 }
+.cat-card[data-game="efootball"] { --card-a: #2430D6; --card-b: #070A5C; --plate: #000096; --arrow: #FFEA00; }
+.cat-card[data-game="mlbb"]      { --card-a: #8A6630; --card-b: #1F1608; --plate: #150F06; --arrow: #E4C482; }
+.cat-card[data-game="pubg"]      { --card-a: #4A4A4A; --card-b: #0D0D0D; --plate: #000;    --arrow: #F2A900; }
+.cat-card[data-game="freefire"]  { --card-a: #FF9A1F; --card-b: #D1321E; --plate: #fff;    --arrow: #FFE45C; }
 /* Diagonal speed stripes, fading out toward the text. */
 .cat-card::before {
     content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-    background: repeating-linear-gradient(-55deg, rgba(255,255,255,.09) 0 2px, transparent 2px 14px);
-    -webkit-mask-image: linear-gradient(90deg, transparent 20%, #000 100%);
-            mask-image: linear-gradient(90deg, transparent 20%, #000 100%);
+    background: repeating-linear-gradient(-55deg, rgba(255,255,255,.08) 0 2px, transparent 2px 14px);
+    -webkit-mask-image: linear-gradient(90deg, transparent 35%, #000 100%);
+            mask-image: linear-gradient(90deg, transparent 35%, #000 100%);
 }
-.cat-card:hover { transform: translateY(-3px); filter: saturate(1.12) brightness(1.05); box-shadow: 0 16px 30px -14px var(--cat, var(--neon)); }
-.cat-card.active {
-    transform: translateY(-3px);
-    box-shadow: inset 0 0 0 2px #fff, 0 16px 30px -12px var(--cat, var(--neon));
-}
-.cat-card:focus-visible { outline: 3px solid var(--cat, var(--neon)); outline-offset: 3px; }
+.cat-card:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 14px 28px -14px var(--card-a); }
+.cat-card.active { transform: translateY(-2px); box-shadow: inset 0 0 0 2px var(--arrow), 0 14px 28px -12px var(--card-a); }
+.cat-card:focus-visible { outline: 3px solid var(--arrow); outline-offset: 3px; }
 .cat-glyph {
-    width: 48px; height: 48px;
-    clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
-    display: grid; place-items: center;
-    /* Light plate so every logo reads on every game colour — the MLBB and
-       Free Fire marks are transparent with gold/black lettering. */
-    background: rgba(255,255,255,.94);
-    box-shadow: 0 4px 12px -4px rgba(0,0,0,.35);
-    color: var(--cat-ground); overflow: hidden;
-    grid-column: 1; grid-row: 1;
+    width: 52px; height: 52px; padding: 4px;
+    display: grid; place-items: center; overflow: hidden;
+    background: var(--plate); color: var(--arrow);
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.28), 0 6px 14px -6px rgba(0,0,0,.5);
 }
 .cat-glyph svg { width: 24px; height: 24px; }
-.cat-glyph img { width: 84%; height: 84%; object-fit: contain; }
+.cat-glyph img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cat-meta { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.cat-meta b {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    font-family: var(--font-display); font-size: .98rem; font-weight: 700; color: #fff; line-height: 1.15;
+    text-shadow: 0 1px 8px rgba(0,0,0,.3);
+}
+.cat-meta span { font-size: .74rem; font-weight: 600; color: rgba(255,255,255,.8); white-space: nowrap; }
+body.lang-mm .cat-meta span { font-family: var(--font-mm); font-size: .68rem; }
 .cat-go {
-    grid-column: 2; grid-row: 1;
-    justify-self: end; display: grid; place-items: center;
-    width: 28px; height: 28px; border-radius: 50%;
-    background: rgba(255,255,255,.18); color: #fff;
-    transition: background var(--t-fast), transform var(--t-fast);
+    display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--arrow); color: var(--arrow-ink);
+    box-shadow: 0 0 14px -3px var(--arrow);
+    transition: transform var(--t-fast);
 }
 .cat-go svg { width: 14px; height: 14px; }
-.cat-card:hover .cat-go, .cat-card.active .cat-go { background: #fff; color: var(--cat-ground); transform: translateX(2px); }
-.cat-meta { grid-column: 1 / -1; grid-row: 2; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.cat-meta b {
-    display: block; font-family: var(--font-display);
-    font-size: 1.02rem; font-weight: 700; color: #fff; line-height: 1.2;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    text-shadow: 0 1px 8px rgba(0,0,0,.25);
-}
-.cat-meta span { font-size: .76rem; font-weight: 600; color: rgba(255,255,255,.82); }
-body.lang-mm .cat-meta span { font-family: var(--font-mm); font-size: .7rem; }
-
+.cat-card:hover .cat-go, .cat-card.active .cat-go { transform: translateX(2px); }
 /* ---------- 4. Advertising slots ----------------------------------------
    Ads use the site's own arcade language — dark violet panel, cut corners,
    grid texture, brand-gradient accents — so a slot reads as part of the
@@ -274,7 +268,7 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
    bar per game the seller stocks, an avatar that overlaps it, then name,
    bio, three stat tiles, game tags and big tappable contact buttons. */
 .profile {
-    position: relative; margin-block: 8px 26px;
+    position: relative; margin-block: 4px 16px;
     background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-2);
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
 }
@@ -289,6 +283,11 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
     background: repeating-linear-gradient(-55deg, rgba(255,255,255,.12) 0 2px, transparent 2px 16px);
     -webkit-mask-image: linear-gradient(90deg, transparent 25%, #000 100%);
             mask-image: linear-gradient(90deg, transparent 25%, #000 100%);
+}
+.profile-cover.has-photo-colour {
+    background:
+        radial-gradient(60% 120% at 85% 0%, rgba(255,255,255,.28), transparent 60%),
+        linear-gradient(120deg, var(--cover-a) 0%, color-mix(in srgb, var(--cover-a) 55%, #12072A) 100%);
 }
 .profile-cover-bars { position: absolute; right: 18px; bottom: 16px; display: flex; gap: 5px; }
 .profile-cover-bars i { width: 26px; height: 6px; background: var(--cat); box-shadow: 0 0 10px var(--cat); transform: skewX(-30deg); }
@@ -307,7 +306,7 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 .profile-av-inner img { width: 100%; height: 100%; object-fit: cover; }
 .profile-id { flex: 1 1 auto; min-width: 0; margin-top: 50px; }
 .profile-id h1 {
-    display: flex; align-items: center; gap: 6px; min-width: 0;
+    display: block; min-width: 0;
     font-size: clamp(1.3rem, 3.4vw, 1.75rem); line-height: 1.15; color: var(--ink);
     overflow-wrap: anywhere;
 }
@@ -342,10 +341,10 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 body.lang-mm .pstat span { font-size: .66rem; letter-spacing: 0; text-transform: none; }
 .profile-games { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
 .profile-games .pill { font-size: .72rem; padding: 5px 11px; }
-.profile-contact { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line-soft); }
+.profile-contact { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line-soft); }
 .profile-label { display: block; margin-bottom: 10px; font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); }
 body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transform: none; }
-.pcontacts { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.pcontacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .pcontact {
     display: flex; align-items: center; gap: 12px; min-width: 0;
     padding: 10px 12px; color: var(--text);
@@ -367,7 +366,8 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
 .pcontact-go { flex: none; display: flex; color: var(--ch, var(--neon)); transition: transform var(--t-fast); }
 .pcontact-go svg { width: 16px; height: 16px; }
 .pcontact:hover .pcontact-go { transform: translateX(3px); }
-.store-listings-head { margin-bottom: 12px; }
+.store-listings-head { margin-bottom: 10px; }
+.store-ad { padding-block: 16px 0; }
 .store-count {
     display: inline-grid; place-items: center; min-width: 26px; height: 22px; padding: 0 7px; margin-left: 6px;
     vertical-align: middle; font-family: var(--font-mono); font-size: .72rem; color: #fff; background: var(--grad);
@@ -586,16 +586,23 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     .pstat { padding: 9px 8px 9px 11px; }
     .pstat b { font-size: 1.05rem; }
     .pstat span { font-size: .58rem; letter-spacing: .04em; }
-    .pcontacts { grid-template-columns: 1fr; }
+    .pcontact { gap: 8px; padding: 8px; }
+    .pcontact-ico { width: 32px; height: 32px; }
+    .pcontact-ico svg { width: 16px; height: 16px; }
+    .pcontact-go { display: none; }
+    .pcontact-meta b { font-size: .82rem; }
+    .pcontact-meta span { font-size: .7rem; }
+    .profile { margin-bottom: 12px; }
     .article { padding-block: 14px 34px; }
     /* 2-up on tablets and phones: the stacked tile layout puts the name on
        its own full-width row, so "Mobile Legends" fits a ~165px column. */
-    .cat-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .cat-card { padding: 12px; gap: 10px 8px; }
-    .cat-glyph { width: 40px; height: 40px; }
-    .cat-go { width: 24px; height: 24px; }
-    .cat-meta b { font-size: .9rem; }
-    .cat-meta span { font-size: .7rem; }
+    .cat-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .cat-card { padding: 9px; gap: 8px; }
+    .cat-glyph { width: 40px; height: 40px; padding: 3px; border-radius: 6px; }
+    .cat-go { width: 22px; height: 22px; }
+    .cat-go svg { width: 12px; height: 12px; }
+    .cat-meta b { font-size: .82rem; }
+    .cat-meta span { font-size: .66rem; }
 }
 @media (max-width: 480px) {
     .seller-grid { grid-template-columns: 1fr; }

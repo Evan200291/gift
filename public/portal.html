@@ -200,6 +200,7 @@
         <form id="editorForm">
             <div class="modal-body">
                 <div class="form-grid">
+                    <div class="form-section" data-step="1">Account</div>
                     <div class="field">
                         <label for="f_game">Game</label>
                         <select id="f_game" required></select>
@@ -213,6 +214,7 @@
                         </select>
                     </div>
 
+                    <div class="form-section" data-step="2">Details</div>
                     <div class="field full">
                         <label for="f_title_en">Title</label>
                         <input type="text" id="f_title_en" maxlength="120" required placeholder="Mythic Glory · 120 skins">
@@ -236,8 +238,8 @@
                         <input type="text" id="f_contact_note" maxlength="160" placeholder="e.g. Only available after 6pm">
                     </div>
 
+                    <div class="form-section" data-step="3">Screenshots</div>
                     <div class="field full">
-                        <label>Screenshots</label>
                         <div class="dropzone" id="dropzone">
                             <div class="glyph">🖼️</div>
                             <p>Click or drop images here</p>

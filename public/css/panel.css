@@ -43,11 +43,23 @@ main.shell { padding-top: 20px; }
 .auth-foot a { color: var(--neon); font-weight: 600; }
 
 /* ---- portal dashboard: tiles + tabs (mirrors the admin panel's own inline styles) ---- */
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
-.tile { padding: 15px; border: 1px solid var(--line); background: var(--surface); }
-.tile label { display: block; font-family: var(--font-mono); font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 7px; }
-.tile b { font-family: var(--font-display); font-size: 1.4rem; color: var(--neon-deep); }
-.tile.accent b { color: var(--neon); }
+/* Four compact stat tiles in one row at every width, each keyed to what it
+   counts: total (brand), available (ok), reserved (warn), sold (pink). */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+.tile {
+    --tile-c: var(--neon);
+    position: relative; min-width: 0; padding: 10px 12px 10px 15px;
+    border: 1px solid color-mix(in srgb, var(--tile-c) 22%, var(--line));
+    background: color-mix(in srgb, var(--tile-c) 7%, var(--surface));
+    clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+}
+.tile::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--tile-c); }
+.tile:nth-child(2) { --tile-c: var(--ok); }
+.tile:nth-child(3) { --tile-c: var(--warn); }
+.tile:nth-child(4) { --tile-c: var(--pink); }
+.tile label { display: block; font-size: .6rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile b { display: block; font-family: var(--font-display); font-size: 1.35rem; line-height: 1.1; color: var(--tile-c); font-variant-numeric: tabular-nums; }
+.tile.accent b { color: var(--tile-c); }
 
 /* Equal-width segmented row instead of wrap: at 3 tabs (portal) or 4 (admin),
    a longer Myanmar label used to push the row past its available width and
@@ -66,9 +78,16 @@ main.shell { padding-top: 20px; }
 }
 .tab.active { background: var(--grad); border-color: transparent; color: #fff; }
 
-.card-block { padding: 18px; border: 1px solid var(--line); background: var(--surface); }
+.card-block {
+    position: relative; padding: 20px 18px 18px; border: 1px solid var(--line); background: var(--surface);
+    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
+}
+.card-block::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--grad); }
 .card-block h3 { font-size: 1.05rem; color: var(--neon-deep); margin-bottom: 4px; }
 .card-block .sub { font-size: .84rem; color: var(--text-3); margin-bottom: 16px; }
+.card-block .avatar-upload { margin-bottom: 18px; }
+/* Submit row: it sat flush under the last input. */
+.card-block .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
 
 .copyline { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); background: var(--surface-2); font-size: .82rem; }
 .copyline span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); }
@@ -113,23 +132,48 @@ main.shell { padding-top: 20px; }
     animation: modalIn var(--t-slow) both;
 }
 @keyframes modalIn { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+/* Arcade header bar with the brand rule, a tinted body so white inputs
+   stand out as fields (the all-white card read as a blank sheet), and a
+   sticky footer for the actions. */
 .modal-head {
     display: flex; align-items: center; justify-content: space-between; gap: 14px;
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--line);
+    padding: 16px 22px;
     position: sticky; top: 0;
-    background: var(--surface);
+    background: var(--arcade); color: #fff;
     z-index: 2;
 }
-.modal-head h2 { font-size: 1.1rem; }
-.modal-body { padding: 24px; background: var(--surface); }
+.modal-head::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--grad); }
+.modal-head h2 { font-size: 1.1rem; color: #fff; }
+.modal-head .btn-ghost { --btn-fg: var(--arcade-text); font-size: 1.4rem; line-height: 1; }
+.modal-head .btn-ghost:hover { --btn-fg: #fff; --btn-bg: rgba(255,255,255,.12); }
+.modal-body { padding: 22px; background: var(--bg-soft); }
+.modal-body .field label { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); }
+.modal-body .field input, .modal-body .field textarea, .modal-body .field select,
+.modal-body .field .csel-trigger { background: var(--surface); border-color: var(--line); }
+.modal-body .field input:hover, .modal-body .field textarea:hover,
+.modal-body .field .csel-trigger:hover { border-color: var(--line-strong); }
+/* Section headings inside the editor form. */
+.form-section {
+    grid-column: 1 / -1; display: flex; align-items: center; gap: 10px;
+    margin-top: 6px; font-family: var(--font-display); font-size: .78rem; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--neon);
+}
+.form-section:first-child { margin-top: 0; }
+.form-section::before {
+    content: attr(data-step); display: grid; place-items: center; width: 22px; height: 22px;
+    font-size: .72rem; letter-spacing: 0; color: #fff; background: var(--grad);
+    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+}
+.form-section::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 .modal-foot {
     display: flex; justify-content: flex-end; gap: 10px;
-    padding: 16px 24px;
+    padding: 14px 22px;
     border-top: 1px solid var(--line);
     position: sticky; bottom: 0;
     background: var(--surface);
 }
+.modal .dropzone { border-color: color-mix(in srgb, var(--neon) 45%, var(--line)); background: var(--surface); }
+.modal .dropzone:hover, .modal .dropzone.over { background: var(--neon-faint); border-color: var(--neon); }
 .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 10px; margin-top: 12px; }
 .shot-item { position: relative; aspect-ratio: 16/9; border: 1px solid var(--line); clip-path: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm))); overflow: hidden; }
 .shot-item img { width: 100%; height: 100%; object-fit: cover; }
@@ -237,6 +281,11 @@ main.shell { padding-top: 20px; }
        their default size, so Delete wrapped onto its own line, right-aligned
        under a ragged gap — reads as broken spacing rather than one control
        row. Tighten just enough for all five to sit on one line. */
+    .tiles { gap: 6px; margin-bottom: 14px; }
+    .tile { padding: 8px 5px 8px 9px; }
+    .tile label { font-size: .5rem; letter-spacing: .02em; }
+    .tile b { font-size: 1.05rem; }
+    .modal-body { padding: 16px; }
     .portal-row .acts { gap: 4px; flex-wrap: nowrap; }
     .portal-row .acts .status-chip { padding: 2px 7px; font-size: .62rem; }
     .portal-row .acts .btn { padding: 5px 7px; font-size: .68rem; }

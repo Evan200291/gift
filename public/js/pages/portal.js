@@ -244,18 +244,9 @@
                 if (window.Panel && Panel.setPlansCache) Panel.setPlansCache(PLANS);
                 STORE_URL = o.storeUrl || "";
 
-                const sub = o.subscription || {};
-                const daysLabel = sub.unlimited ? "∞" : (String(sub.daysLeft || 0) + " " + t("daysLeft"));
-                let statusKey = "subActive";
-                if (!sub.active) statusKey = sub.expired ? "subExpired" : "subUnpaid";
-                else if (sub.expiringSoon) statusKey = "subExpiringSoon";
-                const statusLabel = t(statusKey);
-
-                host.innerHTML = ""
-                    + "<div class=\"sub-banner " + (sub.active ? (sub.expiringSoon ? "is-warn" : "") : "is-danger") + "\">"
-                    +   "<span class=\"sub-days\">" + esc(daysLabel) + "</span>"
-                    +   "<span class=\"sub-status\">" + esc(statusLabel) + "</span>"
-                    + "</div>";
+                // Subscription status (days left / active) is hidden for now;
+                // the overview call is still needed for plans + store URL.
+                host.innerHTML = "";
             } catch (err) {
                 host.innerHTML = "";
             }

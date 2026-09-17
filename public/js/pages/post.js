@@ -29,7 +29,7 @@
             <div class="prose${mm ? ' mm' : ''}"${mm ? ' lang="my"' : ''}>${esc(body)}</div>
             <p class="mt-24"><a class="btn btn-outline btn-sm" href="/blog">← ${esc(t('backToBlog'))}</a></p>`;
 
-        $('#crumbTitle').textContent = title;
+        const crumb = $('#crumbTitle'); if (crumb) crumb.textContent = title;
         document.title = `${title} — ${window.EX.site().brand || ''}`;
 
         const related = payload.related || [];

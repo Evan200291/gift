@@ -39,7 +39,8 @@ const LETTERBOX_BG = { r: 250, g: 251, b: 253, alpha: 1 }; // matches --surface-
 const PRESETS = {
     listing: { width: 1600, height: 900, thumb: { width: 640, height: 360 }, fit: 'contain' },
     cover: { width: 1600, height: 900, thumb: { width: 640, height: 360 }, fit: 'contain' },
-    'ad-wide': { width: 1440, height: 240, thumb: null },
+    'ad-wide': { width: 1600, height: 200, thumb: null },
+    'ad-mini': { width: 800, height: 200, thumb: null },
     'ad-card': { width: 1280, height: 720, thumb: null },
     'ad-portrait': { width: 800, height: 600, thumb: null },
     avatar: { width: 256, height: 256, thumb: null },

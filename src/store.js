@@ -39,20 +39,23 @@ const GAMES = [
 ];
 const GAME_IDS = GAMES.map((g) => g.id);
 
+// ratio + recommended match how each slot actually renders on the site
+// (see /advertise and components.css .ad-*): wide banners 8:1, the footer
+// logo slot 4:1, the listing sidebar 4:3.
 const AD_SLOTS = [
     {
         id: 'home-leaderboard',
         name: 'Home — top banner',
         blurb: 'Full-width strip directly under the hero. The most visible slot on the site.',
-        ratio: '6 / 1',
-        recommended: '1440 × 240',
+        ratio: '8 / 1',
+        recommended: '1600 × 200',
     },
     {
         id: 'home-inline',
         name: 'Home — inside the listings grid',
-        blurb: 'Appears between listing rows, styled like a card so it reads as part of the grid.',
-        ratio: '16 / 9',
-        recommended: '1280 × 720',
+        blurb: 'Full-width banner between rows of listings, right where buyers are browsing.',
+        ratio: '8 / 1',
+        recommended: '1600 × 200',
     },
     {
         id: 'listing-sidebar',
@@ -65,11 +68,17 @@ const AD_SLOTS = [
         id: 'footer',
         name: 'Site-wide — footer banner',
         blurb: 'Shown above the footer on every page of the site.',
-        ratio: '6 / 1',
-        recommended: '1440 × 240',
+        ratio: '8 / 1',
+        recommended: '1600 × 200',
     },
-];
-const AD_SLOT_IDS = AD_SLOTS.map((s) => s.id);
+    {
+        id: 'footer-brand',
+        name: 'Site-wide — beside the footer logo',
+        blurb: 'Compact spot next to the EXABYTE logo in the footer of every page.',
+        ratio: '4 / 1',
+        recommended: '800 × 200',
+    },
+];const AD_SLOT_IDS = AD_SLOTS.map((s) => s.id);
 
 const LISTING_STATUSES = ['available', 'reserved', 'sold'];
 const USER_ROLES = ['admin', 'reseller'];

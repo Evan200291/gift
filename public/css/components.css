@@ -139,7 +139,7 @@
     width: 52px; height: 52px; padding: 4px;
     display: grid; place-items: center; overflow: hidden;
     background: var(--plate); color: var(--arrow);
-    border-radius: 8px;
+    border-radius: 0;
     box-shadow: 0 0 0 1px rgba(255,255,255,.28), 0 6px 14px -6px rgba(0,0,0,.5);
 }
 .cat-glyph svg { width: 24px; height: 24px; }
@@ -190,7 +190,7 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 .ad .ad-copy span { font-size: .8rem; color: rgba(255,255,255,.85); }
 .ad-flag {
     position: absolute; top: 8px; right: 9px; z-index: 2;
-    padding: 2px 7px; border-radius: 5px;
+    padding: 2px 7px; border-radius: 0;
     background: rgba(20,10,40,.5); color: #fff;
     font-size: .56rem; font-weight: 700;
     letter-spacing: .12em; text-transform: uppercase;
@@ -422,7 +422,7 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     font-size: .76rem; color: var(--text-3);
 }
 .tag-chip {
-    padding: 3px 10px; border-radius: var(--r-xs);
+    padding: 3px 10px; border-radius: 0;
     background: var(--neon-faint);
     border: 1px solid transparent;
     font-size: .66rem; font-weight: 700;
@@ -454,7 +454,7 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     display: flex; flex-direction: column; gap: 12px;
     padding: 22px 19px;
     border: 1px solid var(--line);
-    border-radius: var(--r-xl);
+    border-radius: 0;
     background: var(--surface);
     transition: transform var(--t), border-color var(--t), box-shadow var(--t);
 }
@@ -504,7 +504,7 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     padding: 13px 15px;
     border: 1px solid var(--line-strong);
     border-left-width: 3px;
-    border-radius: var(--r);
+    border-radius: 0;
     background: var(--surface-2);
     font-size: .86rem; line-height: 1.55;
 }
@@ -564,7 +564,7 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
 }
 .portal-row:hover { border-color: var(--line-strong); }
 .portal-row .shot {
-    aspect-ratio: 16/9; border-radius: var(--r-sm);
+    aspect-ratio: 16/9; border-radius: 0;
     overflow: hidden; background: var(--surface-3);
     display: grid; place-items: center; color: var(--text-3);
 }
@@ -616,7 +616,7 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
        its own full-width row, so "Mobile Legends" fits a ~165px column. */
     .cat-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
     .cat-card { padding: 9px; gap: 8px; }
-    .cat-glyph { width: 40px; height: 40px; padding: 3px; border-radius: 6px; }
+    .cat-glyph { width: 40px; height: 40px; padding: 3px; border-radius: 0; }
     .cat-go { width: 22px; height: 22px; }
     .cat-go svg { width: 12px; height: 12px; }
     .cat-meta b { font-size: .82rem; }
@@ -626,7 +626,7 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     .seller-grid { grid-template-columns: 1fr; }
     .post-grid { grid-template-columns: 1fr; }
     .avatar-upload { gap: 11px; }
-    .avatar-upload .preview { width: 56px; height: 56px; border-radius: 14px; font-size: 1.2rem; }
+    .avatar-upload .preview { width: 56px; height: 56px; border-radius: 0; font-size: 1.2rem; }
     .portal-top .who b { display: none; }
     .portal-top .lang-trigger { display: none; }
 }
@@ -783,6 +783,8 @@ body.lang-mm .guide-hero h1, body.lang-mm .guide-head h2 { font-family: var(--fo
 .ad-preview-label { display: block; margin-bottom: 6px; font-size: .64rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
 /* The sidebar slot is ~480px wide on the listing page, so preview it at that. */
 .ad-preview-sidebar > [data-ad] { max-width: 480px; }
+/* The footer logo slot is ~180px (phone) to ~320px wide on the site. */
+.ad-preview-mini > [data-ad] { max-width: 320px; }
 @media (max-width: 860px) {
     .ad-slot-body { grid-template-columns: 1fr; gap: 14px; padding: 14px; }
     .ad-slot-head { padding: 14px 14px 10px; }
@@ -792,3 +794,21 @@ body.lang-mm .guide-hero h1, body.lang-mm .guide-head h2 { font-family: var(--fo
    the central 4:1 of the artwork (see the safe zone on /advertise). */
 .ad-wide.is-filled { aspect-ratio: 8 / 1; min-height: 0; }
 @media (max-width: 720px) { .ad-wide.is-filled { aspect-ratio: 4 / 1; } }
+
+/* ---------- 13. Footer logo ad (slot "footer-brand") -------------------
+   Sits beside the EXABYTE logo so the row has no dead space on phones;
+   drops under the about text on desktop's narrow first column. 4:1. */
+.footer-brand-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.footer-brand-row .brand { flex: none; }
+.footer-brand-ad { flex: 1 1 180px; min-width: 160px; max-width: 320px; margin-left: auto; }
+.ad-mini { aspect-ratio: 4 / 1; }
+.ad-mini.is-empty {
+    display: flex; align-items: center; gap: 8px; aspect-ratio: auto; min-height: 44px;
+    padding: 8px 12px; color: #fff;
+    clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+}
+.ad-mini.is-empty .ad-flag-inline { margin: 0; align-self: center; font-size: .5rem; }
+.ad-mini.is-empty b { flex: 1; min-width: 0; font-family: var(--font-display); font-size: .82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+.ad-mini-go { flex: none; display: grid; place-items: center; width: 26px; height: 26px; background: var(--grad); color: #fff; }
+.ad-mini-go svg { width: 14px; height: 14px; }
+a.ad-mini.is-empty:hover { color: #fff; filter: brightness(1.12); }

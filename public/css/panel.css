@@ -188,7 +188,7 @@ main.shell { padding-top: 20px; }
 .shot-item .kill:hover { background: var(--danger); border-color: var(--danger); }
 .shot-item .tag {
     position: absolute; left: 5px; bottom: 5px;
-    padding: 2px 7px; border-radius: 5px;
+    padding: 2px 7px; border-radius: 0;
     background: var(--grad); color: #fff;
     font-size: .6rem; font-weight: 800; letter-spacing: .08em;
 }
@@ -211,7 +211,7 @@ main.shell { padding-top: 20px; }
 .status-chip {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 9px;
-    border-radius: var(--r-xs);
+    border-radius: 0;
     font-size: .68rem; font-weight: 600;
     letter-spacing: .04em; text-transform: uppercase;
     border: 1px solid var(--line);
@@ -234,7 +234,7 @@ main.shell { padding-top: 20px; }
 #shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px,1fr)); gap: 10px; margin-top: 10px; }
 .shot-item {
     position: relative; aspect-ratio: 16/9; overflow: hidden;
-    border-radius: 8px; background: var(--surface-2);
+    border-radius: 0; background: var(--surface-2);
     border: 1px solid var(--line);
 }
 .shot-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -250,7 +250,7 @@ main.shell { padding-top: 20px; }
     position: absolute; top: 4px; left: 4px;
     font-size: .6rem; font-weight: 700; letter-spacing: .12em;
     background: var(--neon); color: #fff;
-    padding: 2px 6px; border-radius: 4px;
+    padding: 2px 6px; border-radius: 0;
 }
 
 /* the language-aware label of "level" / "currency" / "highlights" */

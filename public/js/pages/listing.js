@@ -41,9 +41,14 @@
 
         const nav = images.length > 1
             ? `<button type="button" class="gallery-nav prev" id="galPrev" aria-label="Previous">${ICONS.chevronLeft}</button>
-               <button type="button" class="gallery-nav next" id="galNext" aria-label="Next">${ICONS.chevronRight}</button>
-               <span class="gallery-index"><span id="galIndex">${index + 1}</span> / ${images.length}</span>`
+               <button type="button" class="gallery-nav next" id="galNext" aria-label="Next">${ICONS.chevronRight}</button>`
             : '';
+
+        // Stage, a game-coloured bar and the thumbnail rail form one unit.
+        const bar = `<div class="gallery-bar">
+                <span class="gallery-bar-game">${esc(gameName(listing.game))}</span>
+                ${images.length ? `<span class="gallery-bar-count"><span id="galIndex">${index + 1}</span> / ${images.length}</span>` : ''}
+            </div>`;
 
         const rail = images.length > 1
             ? `<div class="thumbs" id="thumbRail">${images.map((src, i) => `
@@ -52,9 +57,8 @@
                 </button>`).join('')}</div>`
             : '';
 
-        return `<div class="gallery"><div class="gallery-stage">${stage}${nav}</div>${rail}</div>`;
+        return `<div class="gallery"><div class="gallery-stage">${stage}${nav}</div>${bar}${rail}</div>`;
     }
-
     function specs() {
         const rows = [];
         if (listing.level) {
@@ -144,54 +148,47 @@
     function buyPanel() {
         return `<div class="panel buy-panel">
             ${statusNotice()}
-            <div class="row gap-8" style="flex-wrap:wrap;">
-                <span class="pill pill-game" data-game="${esc(listing.game)}">${esc(gameName(listing.game))}</span>
-                ${statusPill(listing.status)}
-                ${listing.featured ? `<span class="pill pill-hot">${esc(t('featured'))}</span>` : ''}
+            <div class="buy-top">
+                <div class="buy-tags">
+                    <span class="pill pill-game" data-game="${esc(listing.game)}">${esc(gameName(listing.game))}</span>
+                    ${statusPill(listing.status)}
+                    ${listing.featured ? `<span class="pill pill-hot">${esc(t('featured'))}</span>` : ''}
+                </div>
+                <span class="product-code" title="${esc(t('productCode'))}"># <span class="tabular">${esc(productCode(listing.id))}</span></span>
             </div>
 
-            ${listing.title_en ? `<h1 class="detail-title display mt-16">${esc(listing.title_en)}</h1>` : ''}
+            ${listing.title_en ? `<h1 class="detail-title display">${esc(listing.title_en)}</h1>` : ''}
             ${listing.title_mm ? `<div class="detail-title-mm" lang="my">${esc(listing.title_mm)}</div>` : ''}
-            <div class="product-code dim">${esc(t('productCode'))}: <span class="tabular">${esc(productCode(listing.id))}</span></div>
 
             <div class="price-block">
                 <span class="amount">${esc(money(listing.price))}</span>
                 <span class="cur">${esc(window.EX.site().currency || 'USD')}</span>
-            </div>
-
-            <div class="share-row">
-                <button type="button" class="btn btn-outline btn-sm" id="copyLink">${ICONS.copy} ${esc(t('copyLink'))}</button>
-                <button type="button" class="btn btn-outline btn-sm" id="shareBtn">${ICONS.share} ${esc(t('share'))}</button>
+                <span class="price-actions">
+                    <button type="button" class="icon-action" id="copyLink" aria-label="${esc(t('copyLink'))}" title="${esc(t('copyLink'))}">${ICONS.copy}</button>
+                    <button type="button" class="icon-action" id="shareBtn" aria-label="${esc(t('share'))}" title="${esc(t('share'))}">${ICONS.share}</button>
+                </span>
             </div>
         </div>`;
     }
 
     function render() {
-        $('#content').innerHTML = `<div class="detail fade-up">
-            <div>
+        $('#content').innerHTML = `<div class="detail fade-up" data-game="${esc(listing.game)}">
+            <div class="detail-main">
                 ${gallery()}
-                <div class="mt-16">
-                    ${specs()}
-                    ${highlights()}
-                    ${description()}
-                </div>
+                ${specs()}
+                ${highlights()}
+                ${description()}
             </div>
-            <aside>
+            <aside class="detail-side">
                 ${buyPanel()}
                 ${sellerPanel()}
-                <div class="mt-16" data-ad="listing-sidebar" data-ad-variant="portrait"></div>
+                <div data-ad="listing-sidebar" data-ad-variant="portrait"></div>
             </aside>
         </div>`;
-
-        $('#crumbTitle').textContent = listing.title_en || listing.title_mm || t('navBrowse');
-        const crumbGame = $('#crumbGame');
-        crumbGame.textContent = gameName(listing.game);
-        crumbGame.href = `/browse?game=${encodeURIComponent(listing.game)}`;
 
         window.UI.mountAds();
         wire();
     }
-
     /* ---------------- interactions ---------------- */
 
     function show(next) {
@@ -207,6 +204,13 @@
 
     function wire() {
         window.UI.paintSellerCards($('#content'));
+        // Count taps on the seller's contact buttons for the admin stats.
+        $$('#content .channel').forEach((a) => a.addEventListener('click', () => {
+            if (!listing) return;
+            try {
+                fetch(`/api/listings/${encodeURIComponent(listing.id)}/contact`, { method: 'POST', keepalive: true });
+            } catch { /* stats are best-effort */ }
+        }));
         const prev = $('#galPrev');
         const next = $('#galNext');
         if (prev) prev.addEventListener('click', () => show(index - 1));

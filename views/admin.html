@@ -180,6 +180,10 @@
 .rowcard .info .meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: .8rem; color: var(--text-3); }
 .rowcard .info .meta b { color: var(--amber); font-family: var(--font-display); font-size: .95rem; }
 .rowcard .acts { display: flex; gap: 6px; }
+/* Engagement: views and contact-button taps per listing (src/stats.js). */
+.rowcard .engagement { display: flex; flex-wrap: wrap; gap: 6px; }
+.rowcard .eng { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; font-size: .72rem; font-weight: 600; color: var(--neon); background: var(--neon-faint); }
+.rowcard .eng-contact { color: var(--ok); background: var(--ok-bg); }
 
 .modal-scrim {
     position: fixed; inset: 0; z-index: 220;
@@ -300,7 +304,7 @@
     .tabs { display: none; }
     .admin-tabbar { display: grid; grid-template-columns: repeat(5, 1fr); }
 
-    .tiles { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .tiles { grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .tile { padding: 8px 6px; }
     .tile label { font-size: .56rem; letter-spacing: .06em; margin-bottom: 4px; }
     .tile b { font-size: 1.02rem; }

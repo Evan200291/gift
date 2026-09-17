@@ -20,6 +20,8 @@
     'use strict';
 
     const EX = window.EX;
+    const ICON_EYE = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const ICON_CHAT = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>';
     const { api, token, esc, money, t, toast, statusPill, ICONS, fieldLabel, gameName, shortDate, truncate, productCode } = EX;
     const $ = (sel, root) => (root || document).querySelector(sel);
     const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
@@ -182,6 +184,8 @@
                     Listings.tile('Available', l.available || 0),
                     Listings.tile('Reserved', l.reserved || 0),
                     Listings.tile('Sold', l.sold || 0),
+                    Listings.tile('Total views', (l.engagement && l.engagement.views) || 0),
+                    Listings.tile('Contact taps', (l.engagement && l.engagement.contacts) || 0),
                 ].join('');
             } catch (err) {
                 toast(err.message || 'Could not load overview', 'error');
@@ -231,11 +235,15 @@
                 l.currency_amount ? '<span>·</span><span>' + esc(l.currency_amount) + '</span>' : '',
                 '<span>·</span><b>' + esc(money(l.price)) + '</b>',
             ].join('');
+            const st = l.stats || { views: 0, contacts: 0 };
+            const engagement = '<span class="eng" title="Listing page views">' + ICON_EYE + ' ' + st.views + ' views</span>'
+                + '<span class="eng eng-contact" title="Taps on the seller\'s contact buttons">' + ICON_CHAT + ' ' + st.contacts + ' contacts</span>';
             return '<div class="rowcard" data-id="' + esc(l.id) + '">'
                 + '<div class="shot">' + (thumb ? '<img src="' + esc(thumb) + '" alt="" loading="lazy">' : '🎮') + '</div>'
                 + '<div class="info">'
                 +   '<div class="name">' + esc(title) + '</div>'
                 +   '<div class="meta">' + statusPill(l.status) + ' ' + meta + '</div>'
+                +   '<div class="engagement">' + engagement + '</div>'
                 + '</div>'
                 + '<div class="acts">'
                 +   '<button type="button" class="btn btn-ghost btn-sm" data-act="edit">Edit</button>'

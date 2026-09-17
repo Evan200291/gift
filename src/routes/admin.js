@@ -10,6 +10,7 @@ const store = require('../store');
 const auth = require('../auth');
 const images = require('../images');
 const listings = require('../listings');
+const stats = require('../stats');
 const { mergeImages } = require('./seller');
 const {
     text, bool, num, intIn, slugify, uniqueSlug,
@@ -50,6 +51,7 @@ router.get('/overview', (req, res) => {
             reserved: all.filter((l) => l.status === 'reserved').length,
             sold: all.filter((l) => l.status === 'sold').length,
             byGame,
+            engagement: stats.totals(),
         },
         posts: {
             total: store.readPosts().length,
@@ -344,6 +346,7 @@ router.get('/listings', (req, res) => {
             sellerName: s ? (s.displayName || s.username) : 'Unknown seller',
             sellerUsername: s ? s.username : '',
             sellerLive: s ? store.sellerIsPublic(s) : false,
+            stats: stats.get(l.id),
         };
     });
     res.json(paged);
@@ -561,7 +564,7 @@ router.put('/ads/:slot', images.uploader.single('image'), wrap(async (req, res) 
     if (body.enabled !== undefined) ad.enabled = bool(body.enabled);
 
     if (req.file) {
-        const preset = slot.ratio === '6 / 1' ? 'ad-wide' : (slot.ratio === '4 / 3' ? 'ad-portrait' : 'ad-card');
+        const preset = { '8 / 1': 'ad-wide', '4 / 1': 'ad-mini', '4 / 3': 'ad-portrait' }[slot.ratio] || 'ad-card';
         const old = ad.image;
         const stored = await images.store(req.file.buffer, preset);
         ad.image = stored.full;

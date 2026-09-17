@@ -8,6 +8,7 @@ const express = require('express');
 
 const store = require('../store');
 const listings = require('../listings');
+const stats = require('../stats');
 const { paginate, sortListings, matches, intIn } = require('../util');
 
 const router = express.Router();
@@ -86,7 +87,15 @@ router.get('/listings/:id', (req, res) => {
     const { live, sellerById } = liveCatalogue();
     const found = live.find((l) => l.id === req.params.id);
     if (!found) return res.status(404).json({ error: 'Listing not found' });
+    stats.bump(found.id, 'views', req.ip);
     return res.json(listings.withSeller(found, sellerById));
+});
+
+/** A buyer tapped one of the seller's contact buttons on a listing. */
+router.post('/listings/:id/contact', (req, res) => {
+    const { live } = liveCatalogue();
+    if (live.some((l) => l.id === req.params.id)) stats.bump(req.params.id, 'contacts', req.ip);
+    res.status(204).end();
 });
 
 /** Counts per game, used by the storefront category rail. */

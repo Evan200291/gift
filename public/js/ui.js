@@ -130,7 +130,10 @@
 
         return `<div class="shell footer-grid">
             <div class="footer-about">
-                ${brandBlock()}
+                <div class="footer-brand-row">
+                    ${brandBlock()}
+                    <div class="footer-brand-ad" data-ad="footer-brand" data-ad-variant="mini"></div>
+                </div>
                 <p data-i18n="footerAboutBody">${esc(t('footerAboutBody'))}</p>
                 ${note}
             </div>
@@ -157,7 +160,6 @@
         </div>
         <div class="shell footer-bottom">
             <span>© ${new Date().getFullYear()} ${esc(site().brand || 'EXABYTE')}. <span data-i18n="rights">${esc(t('rights'))}</span></span>
-            <span class="dim">${esc(site().tagline || '')}</span>
         </div>`;
     }
 
@@ -222,6 +224,15 @@
 
         const url = adTelegramUrl();
         const handle = (ADS && ADS.contact) || site().adsContact || '';
+        // Compact slot (beside the footer logo): too small for the full
+        // title/body/button, so the empty state is one tappable line.
+        if (shape === 'mini') {
+            const inner = `<span class="ad-flag ad-flag-inline">AD</span><b>Your ad here</b>`
+                + (url ? `<span class="ad-mini-go">${ICONS.telegram}</span>` : '');
+            return url
+                ? `<a class="ad ad-mini is-empty" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${inner}</a>`
+                : `<div class="ad ad-mini is-empty">${inner}</div>`;
+        }
         return `<div class="ad ad-${shape} is-empty">
             <div class="ad-empty">
                 <div class="ad-empty-copy">
@@ -271,7 +282,7 @@
         const gameTag = gameById(listing.game).short || game;
 
         const media = thumb
-            ? `<img src="${esc(thumb)}" alt="${esc(listing.title_en || game)}" loading="lazy" decoding="async" width="640" height="360">`
+            ? `<img class="card-media-bg" src="${esc(thumb)}" alt="" aria-hidden="true" loading="lazy" decoding="async"><img class="card-media-img" src="${esc(thumb)}" alt="${esc(listing.title_en || game)}" loading="lazy" decoding="async" width="640" height="360">`
             : '<div class="fallback">🎮</div>';
 
         const sellerRow = !opts.hideSeller && listing.seller

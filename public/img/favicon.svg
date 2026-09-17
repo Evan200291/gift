@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <polygon points="0,0 50,0 64,14 64,64 14,64 0,50" fill="#1A5FE0"/>
+  <polygon points="0,0 50,0 64,14 64,64 14,64 0,50" fill="#7B3FF2"/>
   <path d="M18,16H48V24H27V27H45V33H27V44H48V52H18Z" fill="#fff"/>
 </svg>

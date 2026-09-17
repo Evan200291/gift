@@ -50,6 +50,13 @@
             upload: '1600 × 200 px', desktop: '≈ 1156 × 145 px (8:1)', phone: '≈ 350 × 88 px (4:1, sides trimmed)',
             safe: { x: 400, y: 24, w: 800, h: 152, W: 1600, H: 200 }, safeLabel: 'Centre 800 × 152 px',
         },
+        {
+            id: 'footer-brand', variant: 'mini', preview: 'mini',
+            name: 'Site-wide — beside the footer logo',
+            blurb: 'Compact spot right next to the EXABYTE logo in the footer of every page. Small on phones, so use a logo or 2–3 big words.',
+            upload: '800 × 200 px', desktop: '≈ 300 × 75 px (4:1)', phone: '≈ 180 × 45 px (4:1, no crop)',
+            safe: { x: 40, y: 30, w: 720, h: 140, W: 800, H: 200 }, safeLabel: 'Inner 720 × 140 px',
+        },
     ];
 
     const pct = (v, of) => `${(v / of * 100).toFixed(2)}%`;

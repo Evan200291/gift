@@ -25,8 +25,10 @@
         load();
     }
 
+    /** Picking a specific game opens Browse filtered to it; "All" stays here. */
     function setGame(id) {
-        applyGame(state.game === id ? '' : id);
+        if (id) { window.location.href = `/browse?game=${encodeURIComponent(id)}`; return; }
+        applyGame('');
     }
 
     function renderCategories(counts) {
@@ -96,7 +98,7 @@
         $('.chip-more', wrap).addEventListener('click', () => toggleGameMenu());
         $$('.game-menu-opt', wrap).forEach((opt) => opt.addEventListener('click', () => {
             toggleGameMenu(false);
-            applyGame(opt.dataset.game);
+            setGame(opt.dataset.game);
         }));
     }
 
@@ -220,19 +222,56 @@
         return qs ? `/browse?${qs}` : '/browse';
     }
 
+    /**
+     * Home showcase. With no search, "All games" shows the two most expensive
+     * live accounts of each game; a game with fewer than two leaves its gap
+     * filled by the next most expensive accounts from any game. The total is
+     * then trimmed to whole grid rows so the last row is never ragged.
+     */
+    const PER_GAME = 2;
+
+    function gridColumns() {
+        const cols = getComputedStyle($('#grid')).gridTemplateColumns.split(' ').filter(Boolean).length;
+        return cols || 1;
+    }
+
+    async function loadShowcase() {
+        const ids = games().map((g) => g.id);
+        const [perGame, pool] = await Promise.all([
+            Promise.all(ids.map((id) => api(`/api/listings?game=${encodeURIComponent(id)}&sort=price_desc&limit=${Math.max(3, PER_GAME)}`)
+                .then((d) => (d.items || []).slice(0, PER_GAME)).catch(() => []))),
+            api(`/api/listings?sort=price_desc&limit=24`).then((d) => d.items || []).catch(() => []),
+        ]);
+        const picked = [].concat(...perGame);
+        const target = ids.length * PER_GAME;
+        const taken = new Set(picked.map((l) => l.id));
+        for (const l of pool) {
+            if (picked.length >= target) break;
+            if (!taken.has(l.id)) { picked.push(l); taken.add(l.id); }
+        }
+        picked.sort((a, b) => b.price - a.price);
+        const cols = gridColumns();
+        const whole = picked.length >= cols ? picked.length - (picked.length % cols) : picked.length;
+        return picked.slice(0, whole);
+    }
+
     async function load() {
         if (state.busy) return;
         state.busy = true;
         $('#grid').innerHTML = skeletonCards(PREVIEW_LIMIT);
 
         try {
-            const params = new URLSearchParams();
-            if (state.game) params.set('game', state.game);
-            if (state.q) params.set('q', state.q);
-            params.set('limit', String(PREVIEW_LIMIT));
-
-            const data = await api(`/api/listings?${params}`);
-            renderGrid(data.items || []);
+            let items;
+            if (!state.game && !state.q) {
+                items = await loadShowcase();
+            } else {
+                const params = new URLSearchParams();
+                if (state.game) params.set('game', state.game);
+                if (state.q) params.set('q', state.q);
+                params.set('limit', String(PREVIEW_LIMIT));
+                items = ((await api(`/api/listings?${params}`)).items) || [];
+            }
+            renderGrid(items);
 
             const more = $('#viewMoreBtn');
             if (more) more.href = browseHref();
@@ -242,7 +281,6 @@
             state.busy = false;
         }
     }
-
     function initSearch() {
         const wrap = $('#searchWrap');
         const input = $('#searchInput');

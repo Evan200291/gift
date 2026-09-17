@@ -308,30 +308,28 @@ body.lang-mm input[data-i18n-ph] {
 .btn-danger:hover { --btn-bg: #A8232F; }
 
 /* ---------- 7. Hero ------------------------------------------------------ */
-.hero { position: relative; padding-block: 44px 30px; overflow: hidden; }
+.hero { position: relative; padding-block: 0 30px; overflow: hidden; }
 .hero::before {
     content: ''; position: absolute; inset: 0;
     background: linear-gradient(180deg, var(--neon-faint), transparent 70%);
     border-bottom: 1px solid var(--line);
     z-index: -1;
 }
+/* Sits flush under the sticky header — no gap, full-bleed width — then the
+   copy/HUD grid below picks its own top spacing back up. Source art is a
+   2.6:1 canvas with all essential content (wordmark, glyphs) kept inside a
+   safe zone at least ~18% in from every edge, so object-fit:cover cropping
+   it down to a narrower box (the mobile 1.9:1 override below only trims the
+   sides, see the breakpoint) never cuts into anything that matters. */
+.hero-banner { width: 100%; aspect-ratio: 2.6 / 1; overflow: hidden; background: #0A1830; }
+.hero-banner-img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 .hero-inner {
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
     gap: 34px; align-items: center;
+    padding-top: 30px;
 }
 .hero-copy { max-width: 580px; }
-.hero h1 { font-size: clamp(1.9rem, 4vw, 2.85rem); line-height: 1.1; margin-bottom: 12px; }
-.hero h1 .accent { color: var(--neon); }
-/* .hero h1's own line-height:1.1 (tuned for the large Latin display face)
-   otherwise beats .mm's line-height:1.5 on specificity, so Myanmar's taller
-   stacked glyph clusters had no room and visibly clipped into .hero-sub
-   right below. Also sized down a step — Myanmar reads bigger than Latin
-   at an identical font-size, and the Latin clamp() max was tuned without
-   that in mind. */
-.hero h1.mm { font-size: clamp(1.5rem, 3.4vw, 2.3rem); line-height: 1.5; margin-bottom: 16px; }
-.hero-sub { color: var(--text-2); font-size: 1rem; max-width: 54ch; margin-bottom: 20px; }
-.hero-sub.mm { font-size: .88rem; }
 .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .hero-stats { display: flex; flex-wrap: wrap; gap: 0; margin-top: 22px; }
 .stat-chip {
@@ -871,6 +869,7 @@ select option { background: var(--surface); color: var(--text); }
 @media (max-width: 980px) {
     .hero-inner { grid-template-columns: 1fr; }
     .hero-visual { max-width: 460px; min-height: 0; }
+    .hero-banner { aspect-ratio: 1.9 / 1; }
     .detail { grid-template-columns: 1fr; gap: 22px; }
     .buy-panel { position: static; }
     .footer-grid { grid-template-columns: 1fr 1fr; }

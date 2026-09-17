@@ -5,7 +5,7 @@
     'use strict';
 
     const {
-        t, esc, api, site, siteText, games, gameName, gameById, gameIcon, gameLogo,
+        t, esc, api, site, games, gameName, gameById, gameIcon, gameLogo,
         ICONS, skeletonCards, emptyState, applyTranslations,
         getLang, $, $$, shortDate, truncate, debounce,
     } = window.EX;
@@ -226,15 +226,6 @@
     /* ---------------- copy from settings ---------------- */
 
     function applyCopy() {
-        const mm = getLang() === 'mm';
-        const title = siteText('heroTitle', 'heroTitle');
-        const sub = siteText('heroSubtitle', 'heroSubtitle');
-        const h1 = $('#heroTitle');
-        const p = $('#heroSub');
-        h1.textContent = title;
-        h1.classList.toggle('mm', mm);
-        p.textContent = sub;
-        p.classList.toggle('mm', mm);
         if (site().sellerPitch) $('#sellPitch').textContent = site().sellerPitch;
     }
 

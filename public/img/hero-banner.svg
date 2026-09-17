@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 640" role="img" aria-label="EXABYTE game account marketplace">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#15315A"/>
+      <stop offset="55%" stop-color="#0E2140"/>
+      <stop offset="100%" stop-color="#080F1E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="82%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#1856E8" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#1856E8" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+    </pattern>
+    <clipPath id="frame"><rect width="1800" height="640"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="1800" height="640" fill="url(#bg)"/>
+    <rect width="1800" height="640" fill="url(#grid)"/>
+    <rect width="1800" height="640" fill="url(#glow)"/>
+
+    <!-- Decorative geometry, kept outside the safe zone so cropping never touches it -->
+    <polygon points="1560,0 1800,0 1800,260 1660,400" fill="#1856E8" opacity=".14"/>
+    <polygon points="1800,120 1800,640 1500,640" fill="#4B85FF" opacity=".08"/>
+    <circle cx="1660" cy="470" r="150" fill="#1856E8" opacity=".10"/>
+    <polygon points="0,640 0,430 130,640" fill="#1856E8" opacity=".10"/>
+    <g opacity=".5">
+      <circle cx="1500" cy="150" r="4" fill="#4B85FF"/>
+      <circle cx="1560" cy="230" r="3" fill="#4B85FF"/>
+      <circle cx="1620" cy="120" r="3" fill="#4B85FF"/>
+      <circle cx="200" cy="80" r="3" fill="#4B85FF"/>
+      <circle cx="150" cy="540" r="4" fill="#4B85FF"/>
+    </g>
+
+    <!-- ===== Safe zone: x 324–1476, y 115–525 (≈18% inset every side) ===== -->
+
+    <!-- Brand mark -->
+    <g transform="translate(360,236) scale(2.1)">
+      <polygon points="0,0 50,0 64,14 64,64 14,64 0,50" fill="#1856E8"/>
+      <path d="M18,16H48V24H27V27H45V33H27V44H48V52H18Z" fill="#ffffff"/>
+    </g>
+
+    <!-- Wordmark -->
+    <text x="524" y="322" font-family="Arial, Helvetica, sans-serif" font-weight="700"
+          font-size="88" letter-spacing="1" fill="#ffffff">EXABYTE</text>
+    <text x="526" y="358" font-family="Arial, Helvetica, sans-serif" font-weight="600"
+          font-size="22" letter-spacing="4" fill="#8FA9DC">GAME ACCOUNT MARKETPLACE</text>
+
+    <!-- Game chips -->
+    <g font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="24" letter-spacing=".5">
+      <g transform="translate(360,410)">
+        <rect width="230" height="56" rx="6" fill="#0FA7A0"/>
+        <text x="115" y="36" text-anchor="middle" fill="#052421">eFootball</text>
+      </g>
+      <g transform="translate(606,410)">
+        <rect width="230" height="56" rx="6" fill="#7C5CFF"/>
+        <text x="115" y="36" text-anchor="middle" fill="#1A1240">Mobile Legends</text>
+      </g>
+      <g transform="translate(852,410)">
+        <rect width="180" height="56" rx="6" fill="#E0961B"/>
+        <text x="90" y="36" text-anchor="middle" fill="#3A2400">PUBG Mobile</text>
+      </g>
+      <g transform="translate(1048,410)">
+        <rect width="180" height="56" rx="6" fill="#E2404F"/>
+        <text x="90" y="36" text-anchor="middle" fill="#3A0207">Free Fire</text>
+      </g>
+    </g>
+  </g>
+</svg>

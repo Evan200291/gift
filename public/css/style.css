@@ -513,6 +513,15 @@ select option { background: var(--surface); color: var(--text); }
 .result-count { font-size: .8rem; color: var(--text-3); margin-left: auto; padding-right: 4px; }
 /* ---------- 9. Product grid + cards -------------------------------------- */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
+/* Bare `1fr` grid tracks default to minmax(auto, 1fr) — a track only
+   shrinks below its content's natural width if every item in it opts in
+   with min-width:0. The in-feed ad card (home.js mounts one directly as
+   a grid item, mixed in with .card items) never did, and its "@handle"
+   contact button carries white-space:nowrap same as every .btn, so its
+   un-shrinkable width was winning: that one column ballooned while the
+   other two got squeezed down to their own min-content, well below the
+   card content that then visibly overflowed them. */
+.grid > [data-ad] { min-width: 0; }
 .listings-more { display: flex; justify-content: center; margin-top: 24px; }
 /* Full browse page: two wide columns instead of many small ones. */
 .browse-grid { grid-template-columns: 1fr; }

@@ -1065,6 +1065,11 @@ select option { background: var(--surface); color: var(--text); }
 .lightbox .rotate { right: 68px; font-size: 1.15rem; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 /* ---------- 13. Footer --------------------------------------------------- */
+/* Sticky footer: on short pages (empty browse results, 404) the footer used to
+   stop mid-screen with bare page background below it. Pages with the shared
+   footer lay out as a column where <main> takes the spare height. */
+body:has(> .site-footer) { display: flex; flex-direction: column; }
+body:has(> .site-footer) > main { flex: 1 0 auto; width: 100%; }
 .site-footer { position: relative; margin-top: 30px; border-top: 1px solid var(--line); background: var(--surface); }
 .site-footer::before { content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 2px; background: var(--grad); }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 26px; padding-block: 36px 26px; }
@@ -1304,7 +1309,13 @@ select option { background: var(--surface); color: var(--text); }
 
     .mtabbar { display: grid; grid-template-columns: repeat(4, 1fr); }
     body { padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)); }
-    .site-footer { margin-bottom: 0; }
+    /* The body's bottom padding reserves room for the fixed tab bar; pull the
+       footer down into it so that strip is footer-coloured, not a band of
+       page background between the footer and the tab bar. */
+    .site-footer {
+        margin-bottom: calc(-48px - env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+    }
 }
 @media (max-width: 420px) {
     .footer-grid { grid-template-columns: 1fr; }

@@ -1,4 +1,4 @@
-﻿/* =============================================================
+/* =============================================================
    views/admin.js â€” control panel client-side controller.
 
    Loaded by views/admin.html at /<adminPath>/admin.js after
@@ -695,7 +695,7 @@
                 ? '<span class="plan-badge">' + esc(plan) + '</span>'
                 : '<span class="plan-badge none">No plan</span>';
             const verified = s.verified
-                ? '<span class="plan-badge" style="color:#22d3ee;background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.3);">✓ Verified</span>'
+                ? '<span class="plan-badge verified">✓ Verified</span>'
                 : '';
             const listingCount = s.listingCount;
             const listingsBadge = Number.isFinite(listingCount)

@@ -307,17 +307,21 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
     -webkit-mask-image: linear-gradient(90deg, transparent 25%, #000 100%);
             mask-image: linear-gradient(90deg, transparent 25%, #000 100%);
 }
+/* The avatar is what the cover colour was sampled from, so a cover in that
+   same tone swallows the photo. Keep the hue, but push the cover well
+   darker than anything in the avatar and ring the avatar in page colour. */
 .profile-cover.has-photo-colour {
     background:
-        radial-gradient(60% 120% at 85% 0%, rgba(255,255,255,.28), transparent 60%),
-        linear-gradient(120deg, var(--cover-a) 0%, color-mix(in srgb, var(--cover-a) 55%, #12072A) 100%);
+        radial-gradient(60% 120% at 85% 0%, rgba(255,255,255,.16), transparent 60%),
+        linear-gradient(120deg, color-mix(in srgb, var(--cover-a) 62%, #0E0524) 0%, color-mix(in srgb, var(--cover-a) 26%, #0B0420) 100%);
 }
 .profile-cover-bars { position: absolute; right: max(22px, calc((100% - var(--shell)) / 2 + 22px)); bottom: 16px; display: flex; gap: 5px; }
 .profile-cover-bars i { width: 26px; height: 6px; background: var(--cat); box-shadow: 0 0 10px var(--cat); transform: skewX(-30deg); }
 .profile-body { position: relative; padding-block: 0; }
 .profile-top { display: flex; align-items: flex-start; gap: 16px; margin-top: -40px; }
 .profile-av {
-    flex: none; width: 92px; height: 92px; padding: 4px; background: var(--bg);
+    flex: none; width: 92px; height: 92px; padding: 5px; background: var(--bg);
+    filter: drop-shadow(0 6px 18px rgba(12,4,32,.35));
     clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
 }
 .profile-av-inner {
@@ -344,17 +348,36 @@ a.ad.is-filled:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--
 }
 .profile-share svg { width: 17px; height: 17px; }
 .profile-share:hover { background: var(--neon); border-color: var(--neon); color: #fff; }
-.profile-bio { margin-top: 14px; font-size: .92rem; color: var(--text-2); max-width: 70ch; }
-.profile-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+.profile-bio {
+    position: relative; margin-top: 16px; padding: 13px 16px 14px;
+    background: color-mix(in srgb, var(--neon) 7%, var(--surface));
+    border-left: 3px solid var(--neon);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+.profile-bio p { font-size: .92rem; line-height: 1.6; color: var(--text-2); max-width: 70ch; }
+.profile-bio-label {
+    display: block; margin-bottom: 5px;
+    font-size: .64rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--neon);
+}
+body.lang-mm .profile-bio-label { font-size: .72rem; letter-spacing: 0; text-transform: none; }
+body.lang-mm .profile-bio p { font-family: var(--font-mm); font-size: .84rem; line-height: 1.75; }
+/* One strip rather than separate tiles: four figures read as a single
+   summary line and no tile is left half-empty at the right. */
+.profile-stats {
+    display: flex; flex-wrap: wrap; margin-top: 18px;
+    background: var(--surface); border: 1px solid var(--line);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
 .pstat {
     --stat-c: var(--neon);
-    position: relative; min-width: 0; padding: 12px 14px 12px 16px;
-    background: color-mix(in srgb, var(--stat-c) 9%, var(--surface));
-   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    position: relative; flex: 1 1 0; min-width: 116px; padding: 11px 14px;
 }
-.pstat::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--stat-c); }
-.pstat:nth-child(2) { --stat-c: var(--pink); }
-.pstat:nth-child(3) { --stat-c: var(--cyan); }
+.pstat + .pstat { border-left: 1px solid var(--line-soft); }
+.pstat::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--stat-c); }
+.pstat:nth-child(2) { --stat-c: var(--ok); }
+.pstat:nth-child(3) { --stat-c: var(--pink); }
+.pstat:nth-child(4) { --stat-c: var(--cyan); }
+.pstat b { color: var(--stat-c) !important; }
 .pstat b {
     display: block; font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; line-height: 1.15;
     color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -381,18 +404,23 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
 .pcontact-ico svg { width: 19px; height: 19px; }
-.pcontact-meta { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+/* Channel name and handle sit on one line; a long handle wraps under it
+   instead of leaving the row half empty. */
+.pcontact-meta { flex: 1 1 auto; min-width: 0; display: flex; flex-flow: row wrap; align-items: baseline; gap: 2px 8px; }
 .pcontact-meta b { font-family: var(--font-display); font-size: .9rem; font-weight: 600; color: var(--ink); }
-.pcontact-meta span { font-size: .76rem; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pcontact-meta span { flex: 1 1 auto; min-width: 0; font-size: .78rem; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pcontact-go { flex: none; display: flex; color: var(--ch, var(--neon)); transition: transform var(--t-fast); }
 .pcontact-go svg { width: 16px; height: 16px; }
 .pcontact:hover .pcontact-go { transform: translateX(3px); }
 .store-listings-head { margin-bottom: 10px; }
 .store-ad { padding-block: 16px 0; }
 .store-count {
-    display: inline-grid; place-items: center; min-width: 26px; height: 22px; padding: 0 7px; margin-left: 6px;
-    vertical-align: middle; font-family: var(--font-mono); font-size: .72rem; color: #fff; background: var(--grad);
+    display: inline-grid; place-items: center; min-width: 24px; height: 21px; padding: 0 7px; margin-left: 8px;
+    vertical-align: middle; font-family: var(--font-mono); font-size: .72rem; font-weight: 700;
+    color: var(--neon); background: color-mix(in srgb, var(--neon) 12%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--neon) 35%, transparent);
 }
+.store-count:empty { display: none; }
 .store-count:empty { display: none; }
 .store-grid { margin-top: 0; }
 /* ---------- 6. Blog ------------------------------------------------------ */
@@ -603,8 +631,11 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     .profile-top { gap: 12px; margin-top: -32px; }
     .profile-id, .profile-share { margin-top: 40px; }
     .profile-av { width: 74px; height: 74px; }
-    .profile-stats { gap: 6px; }
-    .pstat { padding: 9px 8px 9px 11px; }
+    .pstat { flex: 1 1 42%; min-width: 0; padding: 9px 11px; }
+    .pstat:nth-child(3) { border-left: 0; }
+    .pstat:nth-child(n+3) { border-top: 1px solid var(--line-soft); }
+    .pstat b { font-size: 1.15rem; }
+    .profile-bio { padding: 11px 13px 12px; }
     .pstat b { font-size: 1.05rem; }
     .pstat span { font-size: .58rem; letter-spacing: .04em; }
     .pcontact { gap: 8px; padding: 8px; }

@@ -190,6 +190,7 @@ router.get('/sellers/:username', (req, res) => {
         seller: store.publicUser(seller),
         stats: {
             total: mine.filter((l) => l.status !== 'sold').length,
+            sold: mine.filter((l) => l.status === 'sold').length,
             games: [...new Set(mine.map((l) => l.game))],
         },
         items: sortListings(mine.filter((l) => l.status !== 'sold'), req.query.sort),

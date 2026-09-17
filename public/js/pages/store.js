@@ -69,10 +69,11 @@
                     </div>
                     <button type="button" class="profile-share" id="copyStore" aria-label="${esc(t('copyLink'))}" title="${esc(t('copyLink'))}">${ICONS.copy}</button>
                 </div>
-                ${bio ? `<p class="profile-bio">${esc(bio)}</p>` : ''}
+                ${bio ? `<div class="profile-bio"><span class="profile-bio-label" data-i18n="storeAbout">${esc(t('storeAbout'))}</span><p>${esc(bio)}</p></div>` : ''}
 
                 <div class="profile-stats">
                     <div class="pstat"><b class="tabular">${data.stats.total}</b><span data-i18n="sellerListings">${esc(t('sellerListings'))}</span></div>
+                    <div class="pstat"><b class="tabular">${data.stats.sold || 0}</b><span data-i18n="storeSold">${esc(t('storeSold'))}</span></div>
                     <div class="pstat"><b class="tabular">${games.length}</b><span data-i18n="storeGames">${esc(t('storeGames'))}</span></div>
                     <div class="pstat"><b>${esc(monthYear(s.createdAt))}</b><span data-i18n="storeSince">${esc(t('storeSince'))}</span></div>
                 </div>

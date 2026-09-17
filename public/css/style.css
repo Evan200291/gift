@@ -521,7 +521,15 @@ select option { background: var(--surface); color: var(--text); }
    un-shrinkable width was winning: that one column ballooned while the
    other two got squeezed down to their own min-content, well below the
    card content that then visibly overflowed them. */
-.grid > [data-ad] { min-width: 0; }
+/* The ad slot's copy (title + body + CTA button) and its absolute-positioned
+   "Advertisement" flag badge are sized for a full listing-card-width tile.
+   Squeezed into one third of the row (the mobile 3-column layout below, or
+   even a single ~260px desktop column), the badge text overflows the whole
+   card and paints over the wrapped title beneath it. Give it the full row
+   width instead of a single column — min-width:0 still matters here since a
+   full-width auto track still won't shrink an un-shrinkable child below its
+   content size otherwise. */
+.grid > [data-ad] { grid-column: 1 / -1; min-width: 0; }
 .listings-more { display: flex; justify-content: center; margin-top: 24px; }
 /* Full browse page: two wide columns instead of many small ones. */
 .browse-grid { grid-template-columns: 1fr; }

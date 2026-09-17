@@ -512,57 +512,6 @@ main :is(section, div):has(> .shell > [data-ad="footer"]) { padding-bottom: 0; }
 }
 .hero-inner > * { min-width: 0; }
 .hero-copy { max-width: 580px; }
-/* One connected stat bar (three cells split by hairlines) rather than three
-   loose numbers floating on the page background. */
-.hero-stats {
-    position: relative; overflow: hidden;
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    border: 1px solid var(--arcade-line);
-    background:
-        radial-gradient(80% 140% at 100% 0%, rgba(240,53,154,.18), transparent 55%),
-        radial-gradient(70% 130% at 0% 100%, rgba(0,184,200,.14), transparent 60%),
-        var(--arcade);
-    box-shadow: 0 0 0 1px rgba(165,123,255,.14) inset, 0 0 28px -14px var(--neon);
-    clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
-}
-.hero-stats::before {
-    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
-    background: var(--grad); pointer-events: none;
-}
-.stat-chip {
-    position: relative; z-index: 1;
-    display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; align-items: center;
-    --stat-c: var(--neon-bright);
-    padding: 15px 14px 13px; min-width: 0; border-right: 1px solid var(--arcade-line);
-}
-/* Each figure gets its own colour: a lit bar on top, a glowing icon and a
-   number in the same hue. */
-.stat-chip::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--stat-c); box-shadow: 0 0 12px -2px var(--stat-c); }
-.stat-chip:last-child { border-right: 0; }
-.stat-ico {
-    grid-row: 1 / span 2; width: 34px; height: 34px;
-    display: grid; place-items: center;
-    color: var(--stat-c);
-    background: color-mix(in srgb, var(--stat-c) 22%, transparent);
-    border: 1px solid color-mix(in srgb, var(--stat-c) 45%, transparent);
-    box-shadow: 0 0 16px -6px var(--stat-c);
-    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
-}
-/* One colour per stat so the bar reads at a glance. */
-.stat-chip:nth-child(2) { --stat-c: #FF5FB0; }
-.stat-chip:nth-child(3) { --stat-c: #3EE0EE; }
-.stat-ico svg { width: 17px; height: 17px; }
-.stat-chip b {
-    font-family: var(--font-display); font-size: 1.35rem; font-weight: 700;
-    color: var(--stat-c); line-height: 1.1; font-variant-numeric: tabular-nums;
-    text-shadow: 0 0 18px color-mix(in srgb, var(--stat-c) 55%, transparent);
-}
-.stat-label { font-size: .62rem; color: var(--arcade-dim); letter-spacing: .06em; text-transform: uppercase; font-weight: 600; line-height: 1.25; }
-/* The generic `body.lang-mm [data-i18n]` size rule (.78em of the parent)
-   outranks .stat-label on specificity, so in Myanmar the label rendered at
-   ~12.5px instead of its intended small size and broke mid-word in the
-   narrow mobile cells. */
-body.lang-mm .stat-label { font-size: .64rem; letter-spacing: 0; line-height: 1.4; color: var(--arcade-dim); }
 /* "How buying works" strip. Desktop only: beside the taller trusted-sellers
    card the compact stat bar left dead space, so the left column stacks the
    stat bar over these three steps and both columns end on the same line.
@@ -1389,6 +1338,9 @@ body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
 /* ---------- 17. Responsive ----------------------------------------------- */
 @media (max-width: 980px) {
     .hero-inner { grid-template-columns: 1fr; }
+    /* The left column only holds the desktop-only "How buying works" strip,
+       so below 981px it is empty and would just add a grid gap. */
+    .hero-copy { display: none; }
     .hero-visual { max-width: 460px; min-height: 0; }
     .detail { grid-template-columns: 1fr; gap: 14px; padding-top: 10px; }
     /* Phones: gallery, then price/contact straight away, then the details. */
@@ -1413,6 +1365,10 @@ body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
     .hero-media.shell { margin-top: 0; padding-inline: 0; }
     .hero-banner { aspect-ratio: 2.2 / 1; clip-path: none; }
     .hero-inner { padding-top: 12px; gap: 12px; }
+    /* The hero's own bottom padding plus the next section's top padding read
+       as a dead strip under the sellers panel. */
+    .hero { padding-bottom: 0; }
+    .hero + .section-sm { padding-top: 14px; }
     .hero-dots { height: 22px; }
     .hero-dot { height: 18px; }
     .section { padding-block: 28px; }
@@ -1491,14 +1447,6 @@ body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
     .footer-bottom span { color: var(--footer-dim); }
     .footer-bottom b { color: var(--footer-ink); }
     .toast-stack { left: 16px; right: 16px; bottom: calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom, 0px)); max-width: none; }
-    /* Icon + number share the first line, label spans underneath — keeps
-       each cell to two short lines in a ~110px-wide column. */
-    .stat-chip { column-gap: 7px; row-gap: 3px; padding: 10px; }
-    .stat-ico { grid-row: auto; width: 24px; height: 24px; }
-    .stat-ico svg { width: 13px; height: 13px; }
-    .stat-chip b { font-size: 1.1rem; }
-    .stat-label { grid-column: 1 / -1; font-size: .56rem; letter-spacing: .03em; }
-    body.lang-mm .stat-label { font-size: .58rem; letter-spacing: 0; }
     .top-sellers-head { padding: 9px 12px; }
     .ts-item { gap: 8px; padding: 10px 12px; }
     .ts-av { width: 30px; height: 30px; }

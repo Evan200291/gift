@@ -337,7 +337,6 @@
                 ? rows.slice(0, 4).map(window.UI.sellerCard).join('')
                 : emptyState('emptyTitle', 'emptyBody', '🛡️');
             window.UI.paintSellerCards($('#sellerGrid'));
-            $('#statSellers').textContent = String(data.total || 0);
             renderHeroHud(rows);
         } catch {
             $('#sellerGrid').innerHTML = '';
@@ -380,8 +379,6 @@
             state.total = data.total || 0;
             renderCategories(data.counts);
             renderChips();
-            $('#statAccounts').textContent = String(data.total || 0);
-            $('#statGames').textContent = String((data.games || games()).length);
         } catch {
             renderCategories({});
         }

@@ -273,26 +273,21 @@
         const av = s.avatar
             ? `<img src="${esc(s.avatar)}" alt="">`
             : esc((s.displayName || s.username || '?').charAt(0).toUpperCase());
-        return `<a class="hud-sel" href="/store/${esc(s.username)}">
-            <div class="hud-sel-top">
-                <span class="hud-av" style="background:${esc(accent)}">${av}</span>
-                <span class="hud-info">
-                    <span class="hud-name"><span class="hud-name-text">${esc(s.displayName || s.username)}</span>${s.verified ? ICONS.verified : ''}</span>
-                    ${firstGame ? `<span class="hud-game">${esc(gameName(firstGame))}</span>` : ''}
-                </span>
-            </div>
-            <div class="hud-sel-bot"><span><b>${s.listingCount || 0}</b> ${esc(t('sellerListings'))}</span><span class="go">${esc(t('viewDetails'))} →</span></div>
+        return `<a class="ts-item" href="/store/${esc(s.username)}">
+            <span class="ts-av" style="background:${esc(accent)}">${av}</span>
+            <span class="ts-info">
+                <span class="ts-name"><span class="ts-name-text">${esc(s.displayName || s.username)}</span>${s.verified ? ICONS.verified : ''}</span>
+                <span class="ts-meta"><b>${s.listingCount || 0}</b> ${esc(t('sellerListings'))}</span>
+            </span>
         </a>`;
     }
 
     function renderHeroHud(rows) {
         const grid = $('#heroHudGrid');
         if (!grid) return;
-        const updated = $('#heroHudUpdated');
-        if (updated) updated.textContent = t('updatedNow') || '';
         grid.innerHTML = rows.length
             ? rows.slice(0, 4).map(hudSellerCard).join('')
-            : `<div class="hud-empty" style="grid-column:1/-1;">${esc(t('emptyTitle'))}</div>`;
+            : `<div class="ts-empty">${esc(t('emptyTitle'))}</div>`;
     }
 
     async function loadSellers() {

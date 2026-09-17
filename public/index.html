@@ -42,28 +42,30 @@
 
                 <div class="hero-stats">
                     <div class="stat-chip">
+                        <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="14" height="13" rx="1.5"/><path d="M7 3h13a1 1 0 0 1 1 1v12"/></svg></span>
                         <b id="statAccounts" class="tabular">—</b>
-                        <span data-i18n="statAccounts">Live accounts</span>
+                        <span class="stat-label" data-i18n="statAccounts">Live accounts</span>
                     </div>
                     <div class="stat-chip">
+                        <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></span>
                         <b id="statSellers" class="tabular">—</b>
-                        <span data-i18n="statSellers">Verified sellers</span>
+                        <span class="stat-label" data-i18n="statSellers">Verified sellers</span>
                     </div>
                     <div class="stat-chip">
+                        <span class="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="19" height="11" rx="5.5"/><path d="M7.5 10.5v4M5.5 12.5h4"/><circle cx="15.5" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="13.5" r="1" fill="currentColor" stroke="none"/></svg></span>
                         <b id="statGames" class="tabular">4</b>
-                        <span data-i18n="statGames">Games covered</span>
+                        <span class="stat-label" data-i18n="statGames">Games covered</span>
                     </div>
                 </div>
             </div>
 
             <div class="hero-visual">
-                <div class="hud" id="heroHud">
-                    <div class="hud-top">
-                        <b data-i18n="trustedSellers">TRUSTED SELLERS</b>
-                        <span class="hud-live"><span class="dot"></span>LIVE</span>
+                <div class="top-sellers">
+                    <div class="top-sellers-head">
+                        <span class="top-sellers-title" data-i18n="trustedSellers">Trusted sellers</span>
+                        <a class="top-sellers-all" href="/sellers"><span data-i18n="viewAll">View all</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
                     </div>
-                    <div class="hud-grid" id="heroHudGrid"></div>
-                    <div class="hud-foot"><span data-i18n="allSubsActive">ALL SUBSCRIPTIONS ACTIVE</span><span id="heroHudUpdated"></span></div>
+                    <div class="top-sellers-grid" id="heroHudGrid"></div>
                 </div>
             </div>
         </div>
@@ -85,8 +87,6 @@
     <!-- ========== Listings ========== -->
     <section id="listings" class="section">
         <div class="shell">
-            <h2 class="section-title-sm" data-i18n="listingsTitle">Latest accounts</h2>
-
             <div class="search" id="searchWrap" style="max-width:420px;margin-bottom:14px;">
                 <span class="ico" id="searchIcon"></span>
                 <input type="search" id="searchInput" autocomplete="off"

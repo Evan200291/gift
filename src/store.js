@@ -73,6 +73,13 @@ const AD_SLOTS = [
         recommended: '1600 × 200',
     },
     {
+        id: 'portal-login',
+        name: 'Seller portal — sign-in page',
+        blurb: 'Under the sign-in card on the seller portal. Seen by sellers, not buyers.',
+        ratio: '8 / 1',
+        recommended: '1600 × 200',
+    },
+    {
         id: 'footer-brand',
         name: 'Site-wide — beside the footer logo',
         blurb: 'Compact spot next to the EXABYTE logo in the footer of every page.',

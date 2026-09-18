@@ -51,6 +51,13 @@
             safe: { x: 400, y: 24, w: 800, h: 152, W: 1600, H: 200 }, safeLabel: 'Centre 800 × 152 px',
         },
         {
+            id: 'portal-login', variant: 'wide', preview: 'full',
+            name: 'Seller portal — sign-in page',
+            blurb: 'Under the sign-in card on the seller portal. Seen by sellers signing in, not by buyers.',
+            upload: '1600 × 200 px', desktop: '≈ 380 × 48 px (8:1)', phone: '≈ 350 × 88 px (4:1, sides trimmed)',
+            safe: { x: 400, y: 24, w: 800, h: 152, W: 1600, H: 200 }, safeLabel: 'Centre 800 × 152 px',
+        },
+        {
             id: 'footer-brand', variant: 'mini', preview: 'mini',
             name: 'Site-wide — beside the footer logo',
             blurb: 'Compact spot right next to the EXABYTE logo in the footer of every page. Small on phones, so use a logo or 2–3 big words.',

@@ -63,7 +63,11 @@
         const brand = (site() && site().brand) || "EXABYTE";
         const tmpl = document.documentElement.getAttribute("data-title") || "%s";
         document.title = tmpl.replace("%s", brand);
-        const mark = $("#authMark"); if (mark) mark.innerHTML = window.UI.brandMark(brand.trim().charAt(0).toUpperCase());
+        // ui.js can fail to load (a dropped request, a restart mid-page-load);
+        // without this guard the rest of boot() never runs and the sign-in
+        // form is dead, rather than just unstyled.
+        const brandMark = (letter) => (window.UI && window.UI.brandMark ? window.UI.brandMark(letter) : letter);
+        const mark = $("#authMark"); if (mark) mark.innerHTML = brandMark(brand.trim().charAt(0).toUpperCase());
         const name = $("#authBrand"); if (name) name.textContent = brand;
         const tagline = $("#authTagline"); if (tagline) tagline.textContent = (site() && site().tagline) || "Digital Store";
 
@@ -175,7 +179,7 @@
         paintAvatar($("#meAvatar"), name, ME.avatar);
         const brand = (site() && site().brand) || "EXABYTE";
         const pb = $("#portalBrand"); if (pb) pb.textContent = brand;
-        const pm = $("#portalMark"); if (pm) pm.innerHTML = window.UI.brandMark(brand.trim().charAt(0).toUpperCase());
+        const pm = $("#portalMark"); if (pm) pm.innerHTML = (window.UI && window.UI.brandMark ? window.UI.brandMark(brand.trim().charAt(0).toUpperCase()) : brand.trim().charAt(0).toUpperCase());
     }
 
     /* =============================================================

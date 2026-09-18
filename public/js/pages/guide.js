@@ -284,8 +284,8 @@
                         <div class="guide-idea-row">
                             <div class="field"><label for="ideaName">${esc(c.ideas.name)}</label><input id="ideaName" type="text" name="name" maxlength="60" autocomplete="name"></div>
                             <div class="field"><label for="ideaContact">${esc(c.ideas.contact)}</label><input id="ideaContact" type="text" name="contact" maxlength="100" placeholder="${esc(c.ideas.contactPh)}"></div>
+                            <button type="submit" class="btn btn-primary">${esc(c.ideas.send)}</button>
                         </div>
-                        <div class="guide-actions"><button type="submit" class="btn btn-primary">${esc(c.ideas.send)}</button></div>
                     </form>
                 </div>
             </div>

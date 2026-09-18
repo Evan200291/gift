@@ -807,9 +807,12 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
     clip-path: polygon(0 0, calc(100% - var(--cut-lg)) 0, 100% var(--cut-lg), 100% 100%, var(--cut-lg) 100%, 0 calc(100% - var(--cut-lg)));
 }
 .guide-ideas::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--grad); }
-.guide-idea-form { display: flex; flex-direction: column; gap: 12px; max-width: 760px; }
+.guide-idea-form { display: flex; flex-direction: column; gap: 12px; }
 .guide-idea-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.guide-idea-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* Name, contact and the send button share one aligned row so the form
+   does not trail off into empty space on a wide screen. */
+.guide-idea-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+.guide-idea-row .btn { height: 42px; }
 .guide-topics { display: flex; flex-wrap: wrap; gap: 6px; }
 .guide-topic { position: relative; cursor: pointer; }
 .guide-topic input { position: absolute; opacity: 0; pointer-events: none; }
@@ -903,6 +906,12 @@ body.lang-mm .guide-hero h1, body.lang-mm .guide-head h2 { font-family: var(--fo
 .footer-brand-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .footer-brand-row .brand { flex: none; }
 .footer-brand-ad { flex: 1 1 180px; min-width: 160px; max-width: 320px; margin-left: auto; }
+@media (min-width: 721px) {
+    /* Beside a 150px logo the slot was a sliver; under it, it lines up with
+       the blurb and shows at its real 4:1 shape. */
+    .footer-brand-row { display: block; }
+    .footer-brand-ad { width: 100%; max-width: 300px; margin: 14px 0 0; }
+}
 .ad-mini { aspect-ratio: 4 / 1; }
 .ad-mini.is-empty {
     display: flex; align-items: center; gap: 8px; aspect-ratio: auto; min-height: 44px;

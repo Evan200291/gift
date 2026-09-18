@@ -1185,12 +1185,19 @@ body:has(> .site-footer) { display: flex; flex-direction: column; }
 body:has(> .site-footer) > main { flex: 1 0 auto; width: 100%; }
 .site-footer { position: relative; margin-top: 30px; border-top: 1px solid var(--line); background: var(--surface); }
 .site-footer::before { content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 2px; background: var(--grad); }
-.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 26px; padding-block: 36px 26px; }
-.footer-about p { color: var(--text-2); font-size: .86rem; max-width: 38ch; margin-top: 9px; }
-.footer-grid h4 { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-3); margin-bottom: 12px; font-weight: 700; }
-.footer-list { display: flex; flex-direction: column; gap: 8px; }
-.footer-list a, .footer-list span { color: var(--text-2); font-size: .86rem; transition: color var(--t-fast); }
-.footer-list a:hover { color: var(--neon); }
+.footer-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr)); gap: 30px; padding-block: 34px 26px; }
+.footer-about p { color: var(--text-2); font-size: .86rem; line-height: 1.6; max-width: 40ch; margin-top: 12px; }
+.footer-grid h4 {
+    display: flex; align-items: center; gap: 7px;
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .12em;
+    color: var(--text-3); margin-bottom: 14px; font-weight: 700;
+}
+.footer-grid h4::before { content: ''; width: 6px; height: 6px; background: var(--neon); transform: rotate(45deg); flex: none; }
+.footer-grid > div:nth-child(3) h4::before { background: var(--pink); }
+.footer-grid > div:nth-child(4) h4::before { background: var(--cyan); }
+.footer-list { display: flex; flex-direction: column; gap: 9px; align-items: flex-start; }
+.footer-list a, .footer-list span { position: relative; color: var(--text-2); font-size: .86rem; transition: color var(--t-fast), transform var(--t-fast); }
+.footer-list a:hover { color: var(--neon); transform: translateX(3px); }
 .footer-bottom { border-top: 1px solid var(--line); padding-block: 16px; color: var(--text-3); font-size: .78rem; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
 .footer-bottom b { color: var(--neon-deep); }
 
@@ -1333,28 +1340,26 @@ body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
 .ex-loader.is-out { opacity: 0; }
 .ex-loader-core { position: relative; width: 120px; height: 120px; display: grid; place-items: center; }
 .ex-loader-rings { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.ex-ring-track { fill: none; stroke: rgba(34,197,94,.14); stroke-width: 4; }
+.ex-ring-track { fill: none; stroke: rgba(123,63,242,.16); stroke-width: 4; }
 .ex-ring-arc {
     fill: none; stroke: url(#exLoaderGrad); stroke-width: 4; stroke-linecap: round;
     stroke-dasharray: 210 330; transform-origin: 60px 60px;
     animation: exSpin 1.1s linear infinite;
-    filter: drop-shadow(0 0 6px rgba(92,242,166,.7));
+    filter: drop-shadow(0 0 6px rgba(199,125,255,.75));
 }
 .ex-ring-dash {
-    fill: none; stroke: #22C55E; stroke-width: 2; stroke-dasharray: 4 10; opacity: .55;
+    fill: none; stroke: var(--cyan); stroke-width: 2; stroke-dasharray: 4 10; opacity: .6;
     transform-origin: 60px 60px; animation: exSpin 3.2s linear infinite reverse;
 }
 .ex-loader-mark {
     position: relative; width: 54px; height: 54px; padding: 12px;
     display: grid; place-items: center; color: #fff;
-    background: linear-gradient(145deg, #22C55E, #0E9F5A);
+    background: linear-gradient(145deg, #7B3FF2, #C43BE0);
     clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 11px 100%, 0 calc(100% - 11px));
     animation: exPulse 1.6s ease-in-out infinite;
 }
 .ex-loader-mark svg { width: 100%; height: 100%; display: block; }
-.ex-loader-text { font-family: var(--font-display); font-size: .82rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #16A34A; }
-:root[data-theme="dark"] .ex-loader-text { color: #5CF2A6; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ex-loader-text { color: #5CF2A6; } }
+.ex-loader-text { font-family: var(--font-display); font-size: .82rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--neon); }
 @keyframes exSpin { to { transform: rotate(360deg); } }
 @keyframes exPulse { 0%, 100% { transform: scale(1); box-shadow: none; } 50% { transform: scale(1.06); } }
 @media (prefers-reduced-motion: reduce) {

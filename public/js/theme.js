@@ -113,7 +113,7 @@
             <div class="ex-loader-core">
                 <svg class="ex-loader-rings" viewBox="0 0 120 120" aria-hidden="true">
                     <defs><linearGradient id="exLoaderGrad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0" stop-color="#5CF2A6"/><stop offset="1" stop-color="#0E9F5A" stop-opacity="0"/>
+                        <stop offset="0" stop-color="#C77DFF"/><stop offset="1" stop-color="#F0359A" stop-opacity="0"/>
                     </linearGradient></defs>
                     <circle class="ex-ring-track" cx="60" cy="60" r="52"/>
                     <circle class="ex-ring-arc" cx="60" cy="60" r="52"/>

@@ -884,7 +884,9 @@ select option { background: var(--surface); color: var(--text); }
 }
 /* Full browse page: two wide columns instead of many small ones. */
 .browse-grid { grid-template-columns: 1fr; }
-@media (min-width: 680px) { .browse-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 680px)  { .browse-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 900px)  { .browse-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1200px) { .browse-grid { grid-template-columns: repeat(6, 1fr); } }
 .card {
     position: relative; display: flex; flex-direction: column;
     border: 1px solid var(--line);

@@ -205,9 +205,11 @@
         // footer) instead of the 16:9 "card" shape sized for a single column
         // — at full width that used to render much taller than every other
         // ad on the page.
-        if (cards.length >= 4) {
-            cards.splice(Math.min(4, cards.length), 0,
-                '<div data-ad="home-inline" data-ad-variant="wide"></div>');
+        // Only when at least one card follows it: with exactly one row of
+        // results the banner landed at the end of the grid, right above the
+        // footer banner, and the page showed the same ad twice in a row.
+        if (cards.length > 4) {
+            cards.splice(4, 0, '<div data-ad="home-inline" data-ad-variant="wide"></div>');
         }
         grid.innerHTML = cards.join('');
         window.UI.wireCards(grid);

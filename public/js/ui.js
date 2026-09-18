@@ -293,7 +293,7 @@
                </a>`
             : '';
 
-        return `<article class="card${listing.status === 'sold' ? ' is-sold' : ''}" data-href="${esc(listingHref(listing))}" tabindex="0" role="link">
+        return `<article class="card${listing.status === 'sold' ? ' is-sold' : ''}" data-game="${esc(listing.game)}" data-href="${esc(listingHref(listing))}" tabindex="0" role="link">
             <div class="card-media">
                 ${media}
                 ${count > 1 ? `<div class="media-top"><span class="pill pill-count">${count} ${esc(t('images'))}</span></div>` : ''}

@@ -1369,7 +1369,10 @@ body.lang-mm .mtabbar a [data-i18n] { font-size: .56rem; line-height: 1.3; }
 }
 @media (max-width: 720px) {
     :root { --nav-h: 58px; }
-    .shell { padding-inline: 14px; }
+    .shell { padding-inline: 10px; }
+    /* The cards carry each game's name already — the heading above them is
+       just another line of text on a small screen. */
+    .cat-title { display: none; }
     /* Phones: full-bleed and attached to the header, and a shorter 2.2:1 box
        (see the banner geometry note in section 7). */
     .hero-media.shell { margin-top: 0; padding-inline: 0; }

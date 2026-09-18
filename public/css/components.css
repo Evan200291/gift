@@ -641,6 +641,18 @@ body.lang-mm .profile-label { font-size: .74rem; letter-spacing: 0; text-transfo
        as extra empty space inside (and around) the banner. */
     .ad-wide .ad-empty { padding: 16px; }
 }
+/* Phones: the banner is one compact line — flag, title and the contact
+   button. The body copy belongs to the roomier desktop version. */
+@media (max-width: 720px) {
+    .ad-wide .ad-empty { padding: 9px 11px; gap: 6px 10px; flex-wrap: nowrap; }
+    .ad-wide .ad-empty-copy > span { display: none; }
+    .ad-wide .ad-empty b { font-size: .84rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Flag beside the title, not above it: at this height a stacked label
+       was clipped, and the banner must stay marked as advertising. */
+    .ad-wide .ad-empty-copy { flex-direction: row; align-items: center; gap: 8px; }
+    .ad-wide .ad-flag-inline { margin: 0; flex: none; font-size: .48rem; padding: 2px 5px; }
+    .ad-wide .ad-empty .btn { padding: 7px 10px; font-size: .74rem; }
+}
 @media (min-width: 901px) {
     .mobile-nav { display: none !important; }
 }
